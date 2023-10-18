@@ -1,17 +1,22 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Alert, Keyboard } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function FloatingButton() {
     const handleButtonPress = () => {
         Alert.prompt(
-            'Enter Text',
-            'Please enter some text:',
-            (text) => {
-                if (text) {
-                    alert('You entered: ' + text);
+            'Team Number',
+            'Enter the number of the team to scout:',
+            (number) => {
+                if (number) {
+                    alert('You entered: ' + number);
                 }
-            }
+            },    
+            'plain-text',
+            '',
+            'numeric',
+            4
+
         );
     }
 
@@ -38,3 +43,5 @@ const styles = StyleSheet.create({
         zIndex: 1000
     },
 });
+
+
