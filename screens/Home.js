@@ -1,28 +1,70 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import FloatingButton from "./PlusButton";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-
+  const [buttonCount, setButtonCount] = useState(1);
   const navigateToTeam = () => {
     navigation.navigate("3990");
   };
 
+  const addNewTeam = (x) => {
+    setButtonCount(buttonCount + 1)
+  };
+
+  const renderButtons = () => {
+    const buttons = [];
+
+    for (let i = 0; i < buttonCount; i++) {
+      buttons.push(
+        <TouchableOpacity key={i} onPress={navigateToTeam}>
+          <View style={styles.button}>
+            <Text style={styles.boldText}>3990</Text>
+            <Icon name="arrow-forward-outline" size={30} color="#1E1E1E" style={styles.icon} />
+          </View>
+        </TouchableOpacity>
+      );
+    }
+
+    return buttons;
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={navigateToTeam}>
-        <View style={styles.button}>
-          <Text style={styles.boldText}>Team 3990</Text>
-          <Icon name="arrow-forward-outline" size={30} color="#1E1E1E" style={styles.icon} />
-        </View>
-      </TouchableOpacity>
+      {renderButtons()}
+      
       <FloatingButton />
     </View>
   );
+  function FloatingButton() {
+    const handleButtonPress = () => {
+        Alert.prompt(
+            'Team Number',
+            'Enter the number of the team to scout:',
+            (number) => {
+                if (number) {
+                    alert('You entered: ' + number);
+                    addNewTeam(number);
+                }
+            },    
+            'plain-text',
+            '',
+            'numeric',
+  
+        );
+    }
+  
+    return (
+        <View style={styles.floatingButton}>
+            <TouchableOpacity onPress={handleButtonPress}>
+                <Icon name="add" size={30} color="#F6EB14" />
+            </TouchableOpacity>
+        </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -46,6 +88,18 @@ const styles = StyleSheet.create({
   icon: {
     marginLeft: 150, 
   },
+  floatingButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 25,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000
+},
 });
 
 export default HomeScreen;
