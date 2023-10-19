@@ -1,8 +1,27 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, Button } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { saveData, loadData } from '../logic/TeamLogic';
+
+// Example usage
+const saveExampleData = async () => {
+  const data = { name: 'John', age: 30 };
+  await saveData('userData', data);
+  console.log('Data saved.');
+};
+
+const loadExampleData = async () => {
+  const data = await loadData('userData');
+  if (data) {
+    console.log('Loaded data:', data);
+  } else {
+    console.log('No data found.');
+  }
+};
+
+
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -22,7 +41,7 @@ const HomeScreen = () => {
       buttons.push(
         <TouchableOpacity key={i} onPress={navigateToTeam}>
           <View style={styles.button}>
-            <Text style={styles.boldText}>3990</Text>
+            <Text style={styles.boldText}>{3990}</Text>
             <Icon name="arrow-forward-outline" size={30} color="#1E1E1E" style={styles.icon} />
           </View>
         </TouchableOpacity>
@@ -35,7 +54,8 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       {renderButtons()}
-      
+      <Button title="Save Example Data" onPress={saveExampleData} />
+      <Button title={{loadExampleData}} onPress={loadExampleData} />
       <FloatingButton />
     </View>
   );
