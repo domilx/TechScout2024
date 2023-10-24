@@ -1,23 +1,35 @@
-// AsyncStorageUtils.js
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Function to save data to AsyncStorage
-export const saveData = async (key, data) => {
+export const saveTeam = async (teamNumber) => {
   try {
-    await AsyncStorage.setItem(key, JSON.stringify(data));
+    const teams = await loadTeams();
+    const id = Date.now().toString();
+    const newTeam = { id, teamNumber };
+    teams.push(newTeam);
+    teams.sort((a, b) => a.teamNumber - b.teamNumber);
+    await AsyncStorage.setItem('teams', JSON.stringify(teams));
   } catch (error) {
-    console.error('Error saving data:', error);
+    console.error('Error saving team:', error);
   }
 };
 
-// Function to load data from AsyncStorage
-export const loadData = async (key) => {
+export const loadTeams = async () => {
   try {
-    const data = await AsyncStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
+    const teamsJSON = await AsyncStorage.getItem('teams');
+    const teams = teamsJSON ? JSON.parse(teamsJSON) : [];
+    teams.sort((a, b) => a.teamNumber - b.teamNumber);
+    return teams;
   } catch (error) {
-    console.error('Error loading data:', error);
-    return null;
+    console.error('Error loading teams:', error);
+    return [];
+  }
+};
+
+
+export async function clearStorage() {
+  try {
+    await AsyncStorage.removeItem('teams');
+  } catch (error) {
+    console.error('Error clearing storage:', error);
   }
 };

@@ -5,7 +5,6 @@ import TabNavigator from "./TabNavigator";
 import HomeScreen from "./Home";
 import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-
 const Stack = createStackNavigator();
 
 const Settings = () => {

@@ -1,88 +1,110 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Alert, Button } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Alert, Button, TextInput } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { saveData, loadData } from '../logic/TeamLogic';
-
-// Example usage
-const saveExampleData = async () => {
-  const data = { name: 'John', age: 30 };
-  await saveData('userData', data);
-  console.log('Data saved.');
-};
-
-const loadExampleData = async () => {
-  const data = await loadData('userData');
-  if (data) {
-    console.log('Loaded data:', data);
-  } else {
-    console.log('No data found.');
-  }
-};
-
-
+import { saveTeam, loadTeams } from "../logic/TeamLogic";
+import Dialog from "react-native-dialog";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [buttonCount, setButtonCount] = useState(1);
-  const navigateToTeam = () => {
-    navigation.navigate("3990");
+  const [teams, setTeams] = useState([]);
+  const [visible, setVisible] = useState(false);
+
+  const onSettingPressed = async () => {
+    await clearStorage();
+    setTeams([]);
+    alert("Storage cleared and teams removed");
+  };
+  
+  useEffect(() => {
+    loadTeams().then((loadedTeams) => setTeams(loadedTeams));
+  }, []);
+
+  const showDialog = () => {
+    setVisible(true);
   };
 
-  const addNewTeam = (x) => {
-    setButtonCount(buttonCount + 1)
+  const handleCancel = () => {
+    setVisible(false);
   };
 
-  const renderButtons = () => {
-    const buttons = [];
+  const navigateToTeam = (team) => {
+    navigation.navigate(team);
+  };
 
-    for (let i = 0; i < buttonCount; i++) {
-      buttons.push(
-        <TouchableOpacity key={i} onPress={navigateToTeam}>
-          <View style={styles.button}>
-            <Text style={styles.boldText}>{3990}</Text>
-            <Icon name="arrow-forward-outline" size={30} color="#1E1E1E" style={styles.icon} />
-          </View>
-        </TouchableOpacity>
-      );
-    }
-
-    return buttons;
+  const Placeholder = () => {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.boldText}>Welcome to Scout!</Text>
+        <Text style={styles.boldText}>Add a team to get started!</Text>
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      {renderButtons()}
-      <Button title="Save Example Data" onPress={saveExampleData} />
-      <Button title={{loadExampleData}} onPress={loadExampleData} />
+      <Placeholder />
+      {teams.map((team) => (
+        <TouchableOpacity
+          key={team.id}
+          onPress={() => navigateToTeam(team.teamNumber)}
+        >
+          <View style={styles.button}>
+            <Text style={styles.boldText}>{`Team ${team.teamNumber}`}</Text>
+            <Icon
+              name="arrow-forward-outline"
+              size={30}
+              color="#1E1E1E"
+              style={styles.icon}
+            />
+          </View>
+        </TouchableOpacity>
+      ))}
       <FloatingButton />
+      <AddTeamDialog />
     </View>
   );
-  function FloatingButton() {
-    const handleButtonPress = () => {
-        Alert.prompt(
-            'Team Number',
-            'Enter the number of the team to scout:',
-            (number) => {
-                if (number) {
-                    alert('You entered: ' + number);
-                    addNewTeam(number);
-                }
-            },    
-            'plain-text',
-            '',
-            'numeric',
-  
-        );
-    }
-  
+
+  function AddTeamDialog() {
+    const [input, setInput] = useState("");
+    const handleCloseDialog = () => {
+      if (input.trim() !== "") {
+        const newTeam = { id: Date.now().toString(), teamNumber: input };
+        setTeams((prevTeams) => [newTeam, ...prevTeams]);
+        setVisible(false);
+        setInput("");
+        saveTeam(input);
+      }
+    };
     return (
-        <View style={styles.floatingButton}>
-            <TouchableOpacity onPress={handleButtonPress}>
-                <Icon name="add" size={30} color="#F6EB14" />
-            </TouchableOpacity>
-        </View>
+      <View style={styles.popup}>
+        <Dialog.Container visible={visible}>
+          <Dialog.Title>Add a team</Dialog.Title>
+          <Dialog.Description>
+            Do you want to add a new team to scout?
+          </Dialog.Description>
+
+          <Dialog.Input
+            onChangeText={(value) => setInput(value)}
+            value={input}
+            keyboardType="numeric"
+            placeholder="Team Number"
+            autoFocus={true}
+          ></Dialog.Input>
+          <Dialog.Button label="Cancel" onPress={handleCancel} />
+          <Dialog.Button label="Add" onPress={handleCloseDialog} />
+        </Dialog.Container>
+      </View>
+    );
+  }
+  function FloatingButton() {
+    return (
+      <View style={styles.floatingButton}>
+        <TouchableOpacity onPress={showDialog}>
+          <Icon name="add" size={30} color="#F6EB14" />
+        </TouchableOpacity>
+      </View>
     );
   }
 };
@@ -94,9 +116,15 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     backgroundColor: "#F0F5FF",
   },
+  popup: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   button: {
-    flexDirection: "row", 
-    alignItems: "center", 
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
     margin: 10,
     borderRadius: 10,
@@ -106,20 +134,20 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   icon: {
-    marginLeft: 150, 
+    marginLeft: 150,
   },
   floatingButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     bottom: 25,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: "#1E1E1E",
     borderRadius: 30,
     width: 60,
     height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000
-},
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
 });
 
 export default HomeScreen;
