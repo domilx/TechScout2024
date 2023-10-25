@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
-import HomeScreen from "./Home";
+import TeamScreen from "./Teams";
 import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 const Stack = createStackNavigator();
@@ -30,7 +30,7 @@ const StackNavigator = () => {
       <Stack.Navigator initialRouteName="Teams">
         <Stack.Screen
           name="Teams"
-          component={HomeScreen}
+          component={TeamScreen}
           options={{
             headerStyle: {
               backgroundColor: "#1E1E1E",

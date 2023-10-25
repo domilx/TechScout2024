@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, Alert, Button, TextInput } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { saveTeam, loadTeams } from "../logic/TeamLogic";
+import { saveTeam, loadTeams, clearStorage } from "../logic/StorageLogic";
 import Dialog from "react-native-dialog";
 
-const HomeScreen = () => {
+const TeamScreen = () => {
   const navigation = useNavigation();
   const [teams, setTeams] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -150,4 +150,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default TeamScreen;
