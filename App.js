@@ -1,20 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import StackNavigator from './screens/StackNavigator';
 
-export default function App() {
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <StackNavigator>      
+      <Text style={styles.credit}>made by domi & noril</Text>
+    </StackNavigator>
+    
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+styles = StyleSheet.create({
+  credit: {
+    marginTop: 5,
+    color: 'grey',
+    textAlign: 'center',
+  }
+})
+export default App;
