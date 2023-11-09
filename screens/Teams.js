@@ -1,26 +1,43 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Alert, Button, TextInput } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { View, Text, StyleSheet, Alert, Button, TextInput, Animated  } from "react-native";
+import {
+  TouchableOpacity,
+  Swipeable
+} from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { saveTeam, loadTeams, clearStorage } from "../logic/StorageLogic";
+import { saveTeam, loadTeams, removeTeam } from "../logic/StorageLogic";
 import Dialog from "react-native-dialog";
-
-const TeamScreen = () => {
+const TeamScreen = ({ route }) => {
   const navigation = useNavigation();
   const [teams, setTeams] = useState([]);
   const [visible, setVisible] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
 
-  const onSettingPressed = async () => {
-    await clearStorage();
-    setTeams([]);
-    alert("Storage cleared and teams removed");
+  const fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500, // Adjust the duration as needed
+      useNativeDriver: true,
+    }).start();
+  };
+
+  useEffect(() => {
+    loadTeams().then((loadedTeams) => {
+      console.log("Teams loaded:", loadedTeams);
+      setTeams(loadedTeams);
+    });
+  }, [route.params?.teamsCleared]);
+
+  const reloadTeams = async () => {
+    try {
+      const loadedTeams = await loadTeams();
+      setTeams(loadedTeams);
+    } catch (error) {
+      console.error("Error loading teams:", error);
+    }
   };
   
-  useEffect(() => {
-    loadTeams().then((loadedTeams) => setTeams(loadedTeams));
-  }, []);
-
   const showDialog = () => {
     setVisible(true);
   };
@@ -30,7 +47,10 @@ const TeamScreen = () => {
   };
 
   const navigateToTeam = (team) => {
-    navigation.navigate(team);
+    navigation.navigate("teamScreen", {
+      teamNumber: team,
+      otherParam: "may use later",
+    });
   };
 
   const Placeholder = () => {
@@ -42,24 +62,74 @@ const TeamScreen = () => {
     );
   };
 
+  function handleDeleteTeam(teamId) {
+    return(
+      Alert.alert(
+        "Delete Team",
+        "Are you sure you want to delete this team?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              await removeTeam(teamId);
+              reloadTeams();
+            },
+          },
+        ],
+        { cancelable: false }
+      )
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Placeholder />
+      {teams.length === 0 ? <Placeholder /> : null}
       {teams.map((team) => (
-        <TouchableOpacity
+        <Swipeable
           key={team.id}
-          onPress={() => navigateToTeam(team.teamNumber)}
+          renderRightActions={(progress, dragX) => {
+            const scale = dragX.interpolate({
+              inputRange: [-80, 0],
+              outputRange: [1, 0],
+              extrapolate: "clamp",
+            });
+
+            fadeIn(); // Call fadeIn to trigger the fade-in animation
+
+            return (
+              <Animated.View
+                style={[
+                  styles.deleteButtonContainer,
+                  { transform: [{ scale }], opacity: fadeAnim },
+                ]}
+              >
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteTeam('2')}
+                >
+                  <Text style={styles.deleteButtonText}>Settings</Text>
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          }}
         >
-          <View style={styles.button}>
-            <Text style={styles.boldText}>{`Team ${team.teamNumber}`}</Text>
-            <Icon
-              name="arrow-forward-outline"
-              size={30}
-              color="#1E1E1E"
-              style={styles.icon}
-            />
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigateToTeam(team.teamNumber)}>
+            <View style={styles.button}>
+              <Text style={styles.boldText}>{`Team ${team.teamNumber}`}</Text>
+              <Icon
+                name="arrow-forward-outline"
+                size={30}
+                color="#1E1E1E"
+                style={styles.icon}
+              />
+            </View>
+          </TouchableOpacity>
+        </Swipeable>
       ))}
       <FloatingButton />
       <AddTeamDialog />
@@ -68,14 +138,14 @@ const TeamScreen = () => {
 
   function AddTeamDialog() {
     const [input, setInput] = useState("");
-    const handleCloseDialog = () => {
-      if (input.trim() !== "") {
-        const newTeam = { id: Date.now().toString(), teamNumber: input };
-        setTeams((prevTeams) => [newTeam, ...prevTeams]);
+    const handleCloseDialog =  async () => {
+      if (input.trim() !== "" && !isNaN(input)) {
         setVisible(false);
+        await saveTeam(input);
         setInput("");
-        saveTeam(input);
+        reloadTeams();
       }
+   
     };
     return (
       <View style={styles.popup}>
@@ -91,6 +161,7 @@ const TeamScreen = () => {
             keyboardType="numeric"
             placeholder="Team Number"
             autoFocus={true}
+            maxLength={4}
           ></Dialog.Input>
           <Dialog.Button label="Cancel" onPress={handleCancel} />
           <Dialog.Button label="Add" onPress={handleCloseDialog} />
@@ -110,32 +181,34 @@ const TeamScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    backgroundColor: "#F0F5FF",
-  },
+ 
   popup: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
+  container: {
+    flex: 1, 
+    padding: 10, 
+    backgroundColor: "#fff",
+  },
   button: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     padding: 10,
-    margin: 10,
+    margin: 5,
     borderRadius: 10,
+    width: '95%',
+    backgroundColor: "#F6EB14",
   },
+  
   boldText: {
     fontWeight: "bold",
     fontSize: 30,
   },
-  icon: {
-    marginLeft: 150,
-  },
+  
   floatingButton: {
     position: "absolute",
     right: 20,
@@ -148,6 +221,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1000,
   },
+  deleteButton: {
+    flex: 1,
+    backgroundColor: 'red', // Customize the color as needed
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80, // Customize the width as needed
+  },
+  deleteButtonContainer: {
+    flex: 1,
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
+
+  deleteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  
+
 });
 
 export default TeamScreen;
