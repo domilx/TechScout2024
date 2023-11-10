@@ -47,6 +47,7 @@ function TabNavigator() {
         <Tab.Screen
           name="Pits"
           component={Pits}
+          initialParams={{currentTeamNumber: currentTeamNumber}}
           options={{
             tabBarLabel: "Pits",
             tabBarIcon: ({ color, size, focused }) => (
@@ -77,6 +78,7 @@ function TabNavigator() {
         <Tab.Screen
           name="QR"
           component={CodeGenerator}
+          initialParams={{currentTeamNumber: currentTeamNumber}}
           options={{
             tabBarLabel: "QR",
             tabBarIcon: ({ color, size, focused }) => (

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import QRCode from 'react-native-qrcode-svg';
 
-function CodeGenerator() {
+function CodeGenerator({ route }) {
+  let logoFromFile = require('../assets/logo.png');
+
+  const { currentTeamNumber } = route.params;
   const [pitModels, setPitModels] = useState([]);
 
   useEffect(() => {
@@ -35,39 +39,24 @@ function CodeGenerator() {
 
   return (
     <View>
+      {/* Clear storage will erase the whole array of team scouting*/}
       <Button title="Clear Storage" onPress={clearStorage} />
       <Button title="Refresh Data" onPress={refreshData} />
-
-    
-    <ScrollView>
-      <Text>---------------------------------</Text>
-      <Text>{JSON.stringify(pitModels, null, 2)}</Text>
-      <Text>---------------------------------</Text>
-    </ScrollView>
-
-      {/* <FlatList
-        data={pitModels}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View>
-            <Text>Team Number: {item.teamNumber}</Text>
-            <Text>Team Name: {item.teamName}</Text>
-            <Text>Robot width: {item.RobotWidth}</Text>
-            <Text>Robot Lenght: {item.RobotLength}</Text>
-            <Text>Robot Weight: {item.RobotWeight}</Text>
-            <Text>Robot drive type: {item.DriveType}</Text>
-            <Text>Robot motor type: {item.DriveMotors}</Text>
-            <Text>Scout notes: {item.ScoutNotes}</Text>
-            <Text>Able to do first game piece: {item.GamePiece1.toString()}</Text>
-            <Text>Able to do second game piece: {item.GamePiece2.toString()}</Text>
-            <Text>AutoObjective 1: {item.AutoObj1.toString()}</Text>
-            <Text>AutoObjective 2: {item.AutoObj2.toString()}</Text>
-            <Text>---------------------------------</Text>
-          </View>
-        )}
-      /> */}
+  
+      <ScrollView>
+        {pitModels
+          .filter((pitData) => pitData.teamNumber === currentTeamNumber)
+          .map((currentTeamPitData, index) => (
+            <View key={index}>
+              <Text>Qr Code:</Text>
+              <QRCode value={JSON.stringify(currentTeamPitData, null,2)} size={300} logo={logoFromFile} logoSize={75}/>
+              <Text>{JSON.stringify(currentTeamPitData, null,2)}</Text>
+            </View>
+          ))}
+      </ScrollView>
     </View>
   );
+  
 }
 
 export default CodeGenerator;
