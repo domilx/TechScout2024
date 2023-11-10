@@ -4,16 +4,13 @@ import {
   TouchableOpacity,
   Swipeable
 } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { saveTeam, loadTeams, removeTeam } from "../logic/StorageLogic";
+import { saveTeam, loadTeams, removeTeam } from "../logic/TeamLogic";
 import Dialog from "react-native-dialog";
-const TeamScreen = ({ route }) => {
-  const navigation = useNavigation();
+const TeamScreen = ({ route, navigation }) => {
   const [teams, setTeams] = useState([]);
   const [visible, setVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
-
   const fadeIn = () => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -47,11 +44,9 @@ const TeamScreen = ({ route }) => {
   };
 
   const navigateToTeam = (team) => {
-    navigation.navigate("teamScreen", {
-      teamNumber: team,
-      otherParam: "may use later",
-    });
+    navigation.navigate('teamScreen', { teamNumber: team,});
   };
+  
 
   const Placeholder = () => {
     return (

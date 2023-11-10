@@ -5,13 +5,13 @@ import TabNavigator from "./TabNavigator";
 import TeamScreen from "./Teams";
 import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { clearStorage } from "../logic/StorageLogic";
+import { clearStorage } from "../logic/TeamLogic";
 const Stack = createStackNavigator();
 
-const StackNavigator = () => {
+const StackNavigator = (route) => {
   const Settings = () => {
     const onSettingPressed = async () => {
-      alert("Storage cleared and teams removed");
+      alert("alert ");
       await clearStorage();
     };
 
@@ -53,6 +53,7 @@ const StackNavigator = () => {
         <Stack.Screen
           name="teamScreen"
           component={TabNavigator}
+          initialParams={{ teamNumber: '33' }}
           options={{
             headerStyle: {
               backgroundColor: "#1E1E1E",

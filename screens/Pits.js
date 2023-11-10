@@ -11,7 +11,6 @@ DropDownPicker.setListMode("MODAL");
 
 
 function Pits({ navigation }) {
-
   
   // Model saving logic
   const [newPitData, setNewPitData] = useState(PitModel); // Save the data using PitModel model

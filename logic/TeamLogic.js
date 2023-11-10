@@ -24,7 +24,15 @@ export const loadTeams = async () => {
     return [];
   }
 };
-
+export async function removeTeam(id) {
+  try {
+    const teams = await loadTeams();
+    const newTeams = teams.filter((team) => team.id !== id);
+    await AsyncStorage.setItem('teams', JSON.stringify(newTeams));
+  } catch (error) {
+    console.error('Error removing team:', error);
+  }
+}
 
 export async function clearStorage() {
   try {
