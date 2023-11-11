@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 function CodeGenerator() {
   const [pitModels, setPitModels] = useState([]);
 
@@ -19,14 +20,7 @@ function CodeGenerator() {
     }
   };
 
-  const clearStorage = async () => {
-    try {
-      await AsyncStorage.removeItem('pitModels');
-      setPitModels([]);
-    } catch (error) {
-      console.error('Error clearing storage:', error);
-    }
-  };
+
 
   const refreshData = () => {
     loadPitData();
@@ -35,7 +29,6 @@ function CodeGenerator() {
 
   return (
     <View>
-      <Button title="Clear Storage" onPress={clearStorage} />
       <Button title="Refresh Data" onPress={refreshData} />
 
     
