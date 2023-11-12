@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { Vibration } from 'react-native';
-import { validateField } from './ValidationLogic';
+import { validateEmptyField } from './ValidationLogic';
 
 // save the pit data to Async, will verify if the input is empty
 export const savePitData = async (newPitData) => {
@@ -9,13 +9,13 @@ export const savePitData = async (newPitData) => {
 
     // Validation for empty data points
     if (
-      validateField('Team Name', newPitData.teamName) ||
-      validateField('Robot Length', newPitData.RobotLength) ||
-      validateField('Robot Width', newPitData.RobotWidth) ||
-      validateField('Robot Weight', newPitData.RobotWeight) ||
-      validateField('Robot Drive Type', newPitData.DriveType) ||
-      validateField('Robot Drive Motors', newPitData.DriveMotors) ||
-      validateField('Driver Experience', newPitData.DriverExperience)
+      validateEmptyField('Team Name', newPitData.teamName) ||
+      validateEmptyField('Robot Length', newPitData.RobotLength) ||
+      validateEmptyField('Robot Width', newPitData.RobotWidth) ||
+      validateEmptyField('Robot Weight', newPitData.RobotWeight) ||
+      validateEmptyField('Robot Drive Type', newPitData.DriveType) ||
+      validateEmptyField('Robot Drive Motors', newPitData.DriveMotors) ||
+      validateEmptyField('Driver Experience', newPitData.DriverExperience)
     ) {
       return; // break the save function
     }
