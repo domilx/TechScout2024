@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PitModel from '../screens/pitModel';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Alert } from 'react-native';
-
+import { savePitData } from '../logic/PitLogic';
 
 DropDownPicker.setListMode("MODAL");
 
@@ -21,53 +21,13 @@ function Pits({ route }) {
     teamNumber: currentTeamNumber,  
   });
   
-  // save pit data to Async Storage
-  
-const savePitData = async () => {
-  try {
-    const existingPitModels = await AsyncStorage.getItem('pitModels');
-    const pitModels = existingPitModels ? JSON.parse(existingPitModels) : [];
-
-    const existingModelIndex = pitModels.findIndex(
-      (model) => model.teamNumber === newPitData.teamNumber
-    );
-
-    if (existingModelIndex !== -1) {
-      // if model with the same teamNumber exists
-
-      // Handle replacing or rejecting data 
-      Alert.alert(
-        'Data Exists',
-        'A model with the same teamNumber already exists. Do you want to replace it with the new data?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Replace',
-            onPress: async () => {
-              // Replace existing data with the new one
-              pitModels[existingModelIndex] = newPitData;
-              await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-              Vibration.vibrate();
-            },
-          },
-        ],
-        { cancelable: false }
-      );
-    } else {
-      // Add the new Pit Model instance to the array
-      pitModels.push(newPitData);
-      // Return the new models to AsyncStorage
-      await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-      alert('Data saved to AsyncStorage');
-      Vibration.vibrate();
-    }
-  } catch (error) {
-    console.error('Error saving Pit Data:', error);
+  // save pit data logic
+  const HandleSavePitData = async () => {
+    await savePitData(newPitData);
   }
-};
+  
+  
+  
  
 
   // dropdown selection rendering options 
@@ -414,7 +374,7 @@ const savePitData = async () => {
       </View>
 
 
-      <TouchableOpacity onPress={savePitData}>  
+      <TouchableOpacity onPress={HandleSavePitData}>  
         <View style={styles.saveButton}>
           <Text style={styles.text}>Save to Async</Text>
         </View>
