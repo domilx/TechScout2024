@@ -4,36 +4,71 @@ import { View, Text, TextInput, TouchableOpacity, Vibration, StyleSheet, ScrollV
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PitModel from '../screens/pitModel';
 import DropDownPicker from 'react-native-dropdown-picker';
-
+import { Alert } from 'react-native';
 
 
 DropDownPicker.setListMode("MODAL");
 
 
-function Pits({ navigation }) {
+function Pits({ route }) {
   
-  // Model saving logic
-  const [newPitData, setNewPitData] = useState(PitModel); // Save the data using PitModel model
+  const { currentTeamNumber } = route.params;
 
+
+  // Model saving logic
+  const [newPitData, setNewPitData] = useState({
+    ...PitModel,  
+    teamNumber: currentTeamNumber,  
+  });
   
   // save pit data to Async Storage
-    const savePitData = async () => {
-      try {
-        const existingPitModels = await AsyncStorage.getItem('pitModels');
-        
-        const pitModels = existingPitModels ? JSON.parse(existingPitModels) : [];
   
-        // Add the new Pit Model instance to the array
-        pitModels.push(newPitData);
-        // Retourner les nouveaux models dans le AsyncStorage
-        await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-        
-        alert('Data saved to AsyncStorage');
-        Vibration.vibrate()
-      } catch (error) {
-        console.error('Error saving Pit Data:', error);
-      }
-    };
+const savePitData = async () => {
+  try {
+    const existingPitModels = await AsyncStorage.getItem('pitModels');
+    const pitModels = existingPitModels ? JSON.parse(existingPitModels) : [];
+
+    const existingModelIndex = pitModels.findIndex(
+      (model) => model.teamNumber === newPitData.teamNumber
+    );
+
+    if (existingModelIndex !== -1) {
+      // if model with the same teamNumber exists
+
+      // Handle replacing or rejecting data 
+      Alert.alert(
+        'Data Exists',
+        'A model with the same teamNumber already exists. Do you want to replace it with the new data?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Replace',
+            onPress: async () => {
+              // Replace existing data with the new one
+              pitModels[existingModelIndex] = newPitData;
+              await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
+              Vibration.vibrate();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      // Add the new Pit Model instance to the array
+      pitModels.push(newPitData);
+      // Return the new models to AsyncStorage
+      await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
+      alert('Data saved to AsyncStorage');
+      Vibration.vibrate();
+    }
+  } catch (error) {
+    console.error('Error saving Pit Data:', error);
+  }
+};
+ 
 
   // dropdown selection rendering options 
   const [DriveTypeOpen, setDriveTypeOpen] = useState(false);
@@ -141,25 +176,10 @@ function Pits({ navigation }) {
   showsVerticalScrollIndicator = {false}
   keyboardDismissMode = {"on-drag"}
 >
+
+      <Text style={styles.text}>Pit Scouting for Team {currentTeamNumber}</Text>
       <Text style = {styles.text}>Team Scouting</Text>
       <View style = {styles.subViews}>
-        
-
-          <TextInput
-        keyboardType='number-pad'
-        maxLength={4}
-        style = {styles.input}
-        placeholder="Team Number"
-        value={newPitData.teamNumber}
-        onChangeText={(text) => {
-          if (!isNaN(text)) {
-            setNewPitData({ ...newPitData, teamNumber: text.toString() });
-          }else {
-            setNewPitData({ ...newPitData, teamNumber: '' });
-            alert("Robot Width must be of type 'Number'")
-          }
-        }}
-        />
         
 
             <TextInput
