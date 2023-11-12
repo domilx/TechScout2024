@@ -4,10 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 
+
 function CodeGenerator({ route }) {
   let logoFromFile = require('../assets/logo.png');
 
   const { currentTeamNumber } = route.params;
+
   const [pitModels, setPitModels] = useState([]);
   const [currentTeamData, setCurrentTeamData] = useState(null);
 
@@ -25,11 +27,13 @@ function CodeGenerator({ route }) {
     }
   };
 
+
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleContent = () => {
     setModalVisible(!isModalVisible);
   };
+
 
   const refreshData = () => {
     loadPitData();
@@ -43,6 +47,7 @@ function CodeGenerator({ route }) {
 
   return (
     <View>
+
       <View style={styles.topContainer}>
         <TouchableOpacity onPress={refreshData}>
           <View style={styles.loadButton}>
@@ -51,6 +56,7 @@ function CodeGenerator({ route }) {
           </View>
         </TouchableOpacity>
       </View>
+
 
      
         {/* QR code rendering */}

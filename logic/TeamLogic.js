@@ -34,10 +34,3 @@ export async function removeTeam(id) {
   }
 }
 
-export async function clearStorage() {
-  try {
-    await AsyncStorage.removeItem('teams');
-  } catch (error) {
-    console.error('Error clearing storage:', error);
-  }
-};
