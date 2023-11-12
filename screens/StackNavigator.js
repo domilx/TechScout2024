@@ -82,14 +82,20 @@ const StackNavigator = () => {
 
       {/* settings screen */}
       <Modal isVisible={isModalVisible} onBackdropPress={closeModal} style={styles.modalScreen}>
-        <View style={styles.modalContainer}>
+        <View style={styles.tittleContainer}>
           <Text style={styles.tittleText}>Settings Screen</Text>
+        </View>
+        <View style={styles.modalContainer}>
+          <Text>Options</Text>
           <TouchableOpacity onPress={clearModelsButton} style={styles.buttons}>
             <Text style={styles.buttonsText}>Clear Models</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={clearTeamsButton} style={styles.buttons}>
             <Text style={styles.buttonsText}>Clear Teams</Text>
           </TouchableOpacity>
+          
+        </View>
+        <View style={styles.returnContainer}>
           <TouchableOpacity onPress={closeModal} style={styles.closeModal}>
             <Icon name={"arrow-back-outline"} color={"#1E1E1E"} size={30} style={styles.iconStyle} />
             <Text style={styles.buttonsText}>Close Settings</Text>
@@ -104,42 +110,54 @@ export default StackNavigator;
 
 
 const styles = StyleSheet.create({
-  modalScreen: { 
-    backgroundColor: 'white', 
-    margin: 0 },
+  modalScreen: {
+    backgroundColor: 'white',
+    margin: 0,
+  },
 
   modalContainer: {
-    height: 200, 
-    width: '100%', 
-    backgroundColor: 'white', 
-    justifyContent: 'space-between', 
-    alignItems: 'center' 
-
+    flex: 3,
+    justifyContent: "flex-start",
+    alignItems: 'center',
   },
-  
-  closeModal: {
 
+  tittleContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingTop: 100,
+    
+  },
+
+  returnContainer: {
+    height: 200,
+    width: '100%',
+    paddingBottom: 100,
+    backgroundColor: 'white',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+
+  closeModal: {
     flexDirection: "row",
-    marginTop: 20,
-    width: 300,
+    width: '80%',
     height: 50,
-    borderWidth: 5,
+    borderWidth: 2,
     borderRadius: 10,
     alignItems: "center",
-    justifyContent: "left",
+    justifyContent: "center",
     backgroundColor: "#F6EB14",
   },
 
-  iconStyle:{
-    marginRight: 50,
-    marginLeft: 15,
+  iconStyle: {
+    marginRight: 10,
   },
 
   buttons: {
     marginTop: 20,
     width: 200,
     height: 50,
-    borderWidth: 4,
+    borderWidth: 2,
     borderRadius: 10,
     borderColor: "",
     alignItems: "center",
@@ -155,8 +173,5 @@ const styles = StyleSheet.create({
   tittleText: {
     fontSize: 42,
     fontWeight: "bold",
-  }
-
-
-
-})
+  },
+});
