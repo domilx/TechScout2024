@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { Vibration } from 'react-native';
-import { validateField } from './EmptyValidationLogic';
+import { validateField } from './ValidationLogic';
 
 // save the pit data to Async, will verify if the input is empty
 export const savePitData = async (newPitData) => {

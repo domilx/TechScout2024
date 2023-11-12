@@ -1,8 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { validateNewTeam } from './ValidationLogic';
 
 export const saveTeam = async (teamNumber) => {
   try {
     const teams = await loadTeams();
+    if (
+      validateNewTeam(teamNumber, teams) 
+    ) {
+      return; // break the save function if team exists
+    }
+
     const id = Date.now().toString();
     const newTeam = { id, teamNumber };
     teams.push(newTeam);
@@ -12,6 +19,8 @@ export const saveTeam = async (teamNumber) => {
     console.error('Error saving team:', error);
   }
 };
+
+
 
 export const loadTeams = async () => {
   try {

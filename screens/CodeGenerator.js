@@ -148,16 +148,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   closeButton: {
-    width: 200, 
-    flexDirection: "row",
+    minWidth: 200,
+    width: "auto",
     height: 50, 
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingHorizontal: 20,
     justifyContent: "center", 
     alignItems: "center", 
     backgroundColor:"#F6EB14", 
     borderRadius: "10", 
-    margin: 50
+    marginTop: 40,
+    marginBottom: 10,
+    marginHorizontal: 30,
   },
   closeButtonText: {
     color: 'white',
