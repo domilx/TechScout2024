@@ -63,7 +63,7 @@ const StackNavigator = () => {
         <Stack.Screen
           name="teamScreen"
           component={TabNavigator}
-          initialParams={{ teamNumber: "33" }}
+          initialParams={{ teamNumber: "" }}
           options={{
             headerStyle: {
               backgroundColor: "#1E1E1E",
@@ -83,7 +83,7 @@ const StackNavigator = () => {
       {/* settings screen */}
       <Modal isVisible={isModalVisible} onBackdropPress={closeModal} style={styles.modalScreen}>
         <View style={styles.tittleContainer}>
-          <Text style={styles.tittleText}>Settings Screen</Text>
+          <Text style={styles.tittleText}>Settings</Text>
         </View>
         <View style={styles.modalContainer}>
           <Text>Options</Text>
