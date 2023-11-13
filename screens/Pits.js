@@ -158,7 +158,7 @@ function Pits({ route }) {
           maxLength={3}
           keyboardType='number-pad'
           placeholder="Robot Width"
-          value={newPitData.RobotWidth}
+          value={newPitData.RobotWidth.toString()}
           onChangeText={(text) => {
             if (!isNaN(text)) {
               setNewPitData({ ...newPitData, RobotWidth: text.toString() });
@@ -175,7 +175,7 @@ function Pits({ route }) {
           maxLength={3}
           keyboardType='number-pad'
           placeholder="Robot Length"
-          value={newPitData.RobotLength}
+          value={newPitData.RobotLength.toString()}
           onChangeText={(text) => {
             if (!isNaN(text)) {
               setNewPitData({ ...newPitData, RobotLength: text.toString() });
@@ -189,7 +189,7 @@ function Pits({ route }) {
           style = {styles.input}
           keyboardType='decimal-pad'
           placeholder="Robot Weight"
-          value={newPitData.RobotWeight}
+          value={newPitData.RobotWeight.toString()}
           onChangeText={(text) => {
             if (!isNaN(text)) {
               setNewPitData({ ...newPitData, RobotWeight: text.toString() });
@@ -437,7 +437,10 @@ function Pits({ route }) {
       borderWidth: 1,
       marginBottom: 10,
       paddingLeft: 10,
-      borderRadius: 5,
+      ...Platform.select({
+        ios: {
+          borderRadius: 5,
+        },}),
       borderWidth: 2,
     },
 
@@ -449,13 +452,19 @@ function Pits({ route }) {
       borderWidth: 1,
       marginBottom: 10,
       paddingLeft: 10,
-      borderRadius: 5,
+      ...Platform.select({
+        ios: {
+          borderRadius: 5,
+        },}),
       borderWidth: 2,
     },
 
     counterButton: {
       backgroundColor: "#00AA44",
-      borderRadius: 5,
+      ...Platform.select({
+        ios: {
+          borderRadius: 5,
+        },}),
       alignItems: "center",
       justifyContent: "center",
       width: 100,
@@ -480,7 +489,10 @@ function Pits({ route }) {
       marginLeft: 10,
       paddingLeft: 10,
       paddingRight: 10,
-      borderRadius: 5,
+      ...Platform.select({
+        ios: {
+          borderRadius: 5,
+        },}),
       borderWidth: 3,
     },
 
@@ -508,7 +520,10 @@ function Pits({ route }) {
       borderWidth: 1,
       margin: 10,
       paddingLeft: 10,
-      borderRadius: 5,
+      ...Platform.select({
+        ios: {
+          borderRadius: 5,
+        },}),
       borderWidth: 2,
       
     },
@@ -522,7 +537,10 @@ function Pits({ route }) {
       borderWidth: 1,
       margin: 10,
       paddingLeft: 10,
-      borderRadius: 5,
+      ...Platform.select({
+        ios: {
+          borderRadius: 5,
+        },}),
       borderWidth: 2,
       
     },
@@ -533,7 +551,10 @@ function Pits({ route }) {
       justifyContent: "center", 
       alignItems: "center", 
       backgroundColor:"#F6EB14", 
-      borderRadius: "10", 
+      ...Platform.select({
+        ios: {
+          borderRadius: 10,
+        },}),
       margin: 50},
 
     // DropDown picker Prop styles
@@ -542,7 +563,10 @@ function Pits({ route }) {
       backgroundColor: 'lightgray',
       borderWidth: 2,
       borderColor: "black",
-      borderRadius: 10,
+      ...Platform.select({
+        ios: {
+          borderRadius: 10,
+        },}),
       margin: 5
     },
 

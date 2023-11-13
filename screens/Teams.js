@@ -4,19 +4,13 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { saveTeam, loadTeams } from "../logic/TeamLogic";
 import Dialog from "react-native-dialog";
 import Modal from "react-native-modal";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import { runOnJS } from 'react-native-reanimated';
+import { clearTeamsStorage, clearModelsStorage  } from "../logic/SettingsLogic";
+
 const TeamScreen = ({ route, navigation }) => {
   const [teams, setTeams] = useState([]);
   const [visible, setVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
-    if (success) {
-      console.log(`Long pressed for ${e.duration} ms!`);
-      setModalVisible(!isModalVisible);
-
-    }
-  });
+  
 
   const closeModal = () => {
     setModalVisible(false);
@@ -104,20 +98,23 @@ const TeamScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       {teams.length === 0 ? <Placeholder /> : null}
       {teams.map((team) => (
-          <GestureDetector gesture={longPressGesture}>
-        <TouchableOpacity onPress={() => navigateToTeam(team.teamNumber)}>
-          <View style={styles.button}>
-            <Text style={styles.boldText}>{`Team ${team.teamNumber}`}</Text>
-            <Icon
-              name="arrow-forward-outline"
-              size={30}
-              color="#1E1E1E"
-              style={styles.icon}
-            />
-          </View>
-        </TouchableOpacity>
-        </GestureDetector>
-      ))}
+    <TouchableOpacity onPress={() => navigateToTeam(team.teamNumber)} onLongPress={() => {
+      setModalVisible(!isModalVisible);
+
+  }}
+  delayLongPress={1000}>
+      <View style={styles.button}>
+        <Text style={styles.boldText}>{`Team ${team.teamNumber}`}</Text>
+        <Icon
+          name="arrow-forward-outline"
+          size={30}
+          color="#1E1E1E"
+          style={styles.icon}
+        />
+      </View>
+    </TouchableOpacity>
+))}
+
 
       <FloatingButton />
       <AddTeamDialog />
@@ -185,6 +182,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "95%",
     backgroundColor: "#F6EB14",
+    
+    borderWidth: 2,
+    borderRadius: 10,
+    borderColor: "",
   },
   boldText: {
     fontWeight: "bold",
@@ -201,6 +202,70 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
+  },
+  modalScreen: {
+    backgroundColor: 'white',
+    margin: 0,
+  },
+
+  modalContainer: {
+    flex: 3,
+    justifyContent: "flex-start",
+    alignItems: 'center',
+  },
+
+  tittleContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingTop: 100,
+    
+  },
+
+  returnContainer: {
+    height: 200,
+    width: '100%',
+    paddingBottom: 100,
+    backgroundColor: 'white',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+
+  closeModal: {
+    flexDirection: "row",
+    width: '80%',
+    height: 50,
+    borderWidth: 2,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6EB14",
+  },
+
+  iconStyle: {
+    marginRight: 10,
+  },
+
+  buttons: {
+    marginTop: 20,
+    width: 200,
+    height: 50,
+    borderWidth: 2,
+    borderRadius: 10,
+    borderColor: "",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6EB14",
+  },
+
+  buttonsText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  tittleText: {
+    fontSize: 42,
+    fontWeight: "bold",
   },
 });
 

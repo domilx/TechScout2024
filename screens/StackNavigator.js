@@ -13,7 +13,7 @@ const Stack = createStackNavigator();
 
 const Settings = ({ onSettingsPress }) => (
   <TouchableOpacity onPress={onSettingsPress}>
-    <Icon name={"cog-outline"} color={"#F6EB14"} size={32} style={{ marginRight: 12 }} />
+    <Icon name={"help"} color={"#F6EB14"} size={32} style={{ marginRight: 12 }} />
   </TouchableOpacity>
 );
 
@@ -27,6 +27,10 @@ const StackNavigator = () => {
 
   const closeModal = () => {
     setModalVisible(false);
+  };
+  const clearTeamButton = async () => {
+    await clearTeamsStorage();
+    alert("team removed");
   };
 
   const clearTeamsButton = async() => {
@@ -83,22 +87,16 @@ const StackNavigator = () => {
       {/* settings screen */}
       <Modal isVisible={isModalVisible} onBackdropPress={closeModal} style={styles.modalScreen}>
         <View style={styles.tittleContainer}>
-          <Text style={styles.tittleText}>Settings</Text>
+          <Text style={styles.tittleText}>Help</Text>
         </View>
         <View style={styles.modalContainer}>
-          <Text>Options</Text>
-          <TouchableOpacity onPress={clearModelsButton} style={styles.buttons}>
-            <Text style={styles.buttonsText}>Clear Models</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={clearTeamsButton} style={styles.buttons}>
-            <Text style={styles.buttonsText}>Clear Teams</Text>
-          </TouchableOpacity>
+          <Text>Hold a team to enter settings</Text>
           
         </View>
         <View style={styles.returnContainer}>
           <TouchableOpacity onPress={closeModal} style={styles.closeModal}>
             <Icon name={"arrow-back-outline"} color={"#1E1E1E"} size={30} style={styles.iconStyle} />
-            <Text style={styles.buttonsText}>Close Settings</Text>
+            <Text style={styles.buttonsText}>Back to teams</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -143,7 +141,10 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 50,
     borderWidth: 2,
-    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}),
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#F6EB14",
@@ -158,7 +159,10 @@ const styles = StyleSheet.create({
     width: 200,
     height: 50,
     borderWidth: 2,
-    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}),
     borderColor: "",
     alignItems: "center",
     justifyContent: "center",
