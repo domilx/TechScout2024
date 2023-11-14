@@ -108,7 +108,10 @@ const styles = StyleSheet.create({
       justifyContent: "space-between", 
       alignItems: "center", 
       backgroundColor:"#F6EB14", 
-      borderRadius: "10", 
+      ...Platform.select({
+        ios: {
+          borderRadius: 10,
+        },}), 
       margin: 50},
 
   buttonText:{
@@ -129,7 +132,10 @@ const styles = StyleSheet.create({
   openButton: {
     backgroundColor: '#F194FF',
     padding: 10,
-    borderRadius: 5,
+    ...Platform.select({
+      ios: {
+        borderRadius: 5,
+      },}),
   },
   centeredView: {
     flex: 1,
@@ -139,7 +145,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     backgroundColor: 'white',
-    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}),
     padding: 20,
     alignItems: 'center',
   },
@@ -155,7 +164,10 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignItems: "center", 
     backgroundColor:"#F6EB14", 
-    borderRadius: "10", 
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}), 
     marginTop: 40,
     marginBottom: 10,
     marginHorizontal: 30,
@@ -173,7 +185,10 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignItems: "center", 
     backgroundColor:"#F6EB14", 
-    borderRadius: "10", 
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}),
     margin: 50},
 
 
