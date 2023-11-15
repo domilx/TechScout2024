@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet } from 'rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
 import Icon2 from 'react-native-vector-icons/AntDesign';
-
+import { encodePitData } from '../logic/EncodingLogic';
 
 function CodeGenerator({ route }) {
   let logoFromFile = require('../assets/logo.png');
@@ -35,55 +35,84 @@ function CodeGenerator({ route }) {
   };
 
 
-  const refreshData = () => {
-    loadPitData();
-  };
-
   // Store the current team's data
   useEffect(() => {
     const currentData = pitModels.find((pitData) => pitData.teamNumber === currentTeamNumber);
     setCurrentTeamData(currentData);
   }, [pitModels, currentTeamNumber]);
 
+  const refreshData = async () => {
+    loadPitData();
+  };
+
+  const [encodedData, setEncodedData] = useState([]);
+  const [displayQR, setDisplayQR] = useState(false);
+  const handleEncoding = async () => {
+    try {
+      await refreshData();
+      const encodedData = await encodePitData(currentTeamData);
+      await setEncodedData(encodedData);
+      await AsyncStorage.setItem('encodedData', JSON.stringify(encodedData));
+      setDisplayQR(true);
+      // console.log(Object.keys(JSON.stringify(currentTeamData, 2, null)).length)
+      // console.log(Object.keys(JSON.stringify(encodePitData, 2, null)).length)
+    } catch (error) {
+      console.error('Error encoding or saving data:', error);
+    }
+  };
+  
+
+
   return (
+    
+
     <View>
 
-      <View style={styles.topContainer}>
-        <TouchableOpacity onPress={refreshData}>
-          <View style={styles.loadButton}>
-            <Text style={styles.buttonText}>Load QR</Text>
-            <Icon2 name={'qrcode'} color={'black'} size={30} />
-          </View>
-        </TouchableOpacity>
-      </View>
+    {currentTeamData === undefined ? (
+      <Text>No data found for Team {currentTeamNumber} </Text>
+    ): (
+      <View>    
 
-
-     
-        {/* QR code rendering */}
-        {currentTeamData && (
-          <View style={styles.scrollStyle}>
-            <QRCode value={JSON.stringify(currentTeamData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
-          </View>
-        )}
-      <View style={styles.scrollStyle}>
-        <TouchableOpacity onPress={toggleContent}>
-          <View style={styles.dataButton}>
-            <Text style={styles.buttonText}>Show Data</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-
-        <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleContent}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text>{JSON.stringify(currentTeamData, null, 2)}</Text>
-              <TouchableOpacity onPress={toggleContent} style={styles.closeButton}>
-                <Text style={styles.buttonText}>Close</Text>
-              </TouchableOpacity>
+        <View style={styles.topContainer}>
+          <TouchableOpacity onPress={handleEncoding}>
+            <View style={styles.loadButton}>
+              <Text style={styles.buttonText}>Load QR</Text>
+              <Icon2 name={'qrcode'} color={'black'} size={30} />
             </View>
-          </View>
-        </Modal>
-      
+          </TouchableOpacity>
+        </View>
+
+        {displayQR ? (
+            <View style={styles.scrollStyle}>
+              <QRCode value={JSON.stringify(encodedData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
+            </View>
+             
+        ):(
+          <Text>Press to Generate QR code</Text>
+        )}
+          
+
+        <View style={styles.scrollStyle}>
+          <TouchableOpacity onPress={toggleContent}>
+            <View style={styles.dataButton}>
+              <Text style={styles.buttonText}>Show Data</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+          <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleContent}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                {/* <Text>{JSON.stringify(currentTeamData, null, 2)}</Text> */}
+                <Text>{JSON.stringify(currentTeamData, null, 2)}</Text>
+                <TouchableOpacity onPress={toggleContent} style={styles.closeButton}>
+                  <Text style={styles.buttonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      )}
     </View>
   );
 }
@@ -108,7 +137,10 @@ const styles = StyleSheet.create({
       justifyContent: "space-between", 
       alignItems: "center", 
       backgroundColor:"#F6EB14", 
-      borderRadius: "10", 
+      ...Platform.select({
+        ios: {
+          borderRadius: 10,
+        },}), 
       margin: 50},
 
   buttonText:{
@@ -129,7 +161,10 @@ const styles = StyleSheet.create({
   openButton: {
     backgroundColor: '#F194FF',
     padding: 10,
-    borderRadius: 5,
+    ...Platform.select({
+      ios: {
+        borderRadius: 5,
+      },}),
   },
   centeredView: {
     flex: 1,
@@ -139,7 +174,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     backgroundColor: 'white',
-    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}),
     padding: 20,
     alignItems: 'center',
   },
@@ -155,7 +193,10 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignItems: "center", 
     backgroundColor:"#F6EB14", 
-    borderRadius: "10", 
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}), 
     marginTop: 40,
     marginBottom: 10,
     marginHorizontal: 30,
@@ -173,7 +214,10 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignItems: "center", 
     backgroundColor:"#F6EB14", 
-    borderRadius: "10", 
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },}),
     margin: 50},
 
 
