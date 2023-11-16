@@ -83,20 +83,24 @@ function Pits({ route }) {
   // DropDown selector item values
   const [DriveType, setDriveType] = useState(null);
   const [driveTypes, setType] = useState([
+
     { label: "Swerve", value: "Swerve" },
     { label: "Tank 4 wheel", value: "Tank 4 wheel" },
     { label: "Tank 6 wheel", value: "Tank 6 wheel" },
     { label: "Tank 8 wheel", value: "Tank 8 wheel" },
     { label: "Other", value: "Other" },
+
   ]);
 
   const [DriveMotor, setDriveMotor] = useState(null);
   const [driveMotors, setMotor] = useState([
+
     { label: "FALCON", value: "FALCON" },
     { label: "NEO", value: "NEO" },
     { label: "KRAKEN", value: "KRAKEN" },
     { label: "CIM", value: "CIM" },
     { label: "MINI CIM", value: "MINI CIM" },
+
   ]);
 
   const [DriverExperience, setDriverExperience] = useState(null);
