@@ -1,32 +1,5 @@
 
-
-// All boolean data is false by default
-// Stability is defined on a scale of 0 to X
-
-
-const PitModel = {
-      teamNumber: "",
-      teamName: "",
-      DriveType: "",
-      DriveMotors: "",
-      DriverExperience: 0,
-      RobotWeight: 0,
-      RobotWidth: 0,
-      RobotLength: 0,
-      Stability: 0,
-      GamePiece1: false,
-      GamePiece2: false,
-      AutoObj1: false,
-      AutoObj2: false,
-      EndGameObj1: false,
-      EndGameObj2: false,
-      ScoutNotes: ""
-    }
-
-
-
-/*interface PitModel {
-  RobScout: string;
+export interface PitModel {  RobScout: string;
   TeamNb: number;
   RobTeamNm: string;
   RobDrive: DriveBaseType;
@@ -55,21 +28,19 @@ const PitModel = {
 }
 
 // Enums for dropdowns
-enum DriveBaseType {
+export enum DriveBaseType {
   Swerve = 'Swerve',
   Tank = 'Tank',
   Other = 'Other',
 }
 
-enum DriveBaseMotor {
-  CIM = 0,
+export enum DriveBaseMotor {  CIM = 0,
   NEO = 1,
   FALCON = 2,
   KRAKEN = 3,
 }
 
-enum DriverExperience {
-  Zero = 0,
+export enum DriverExperience {  Zero = 0,
   One = 1,
   Two = 2,
   Three = 3,
@@ -77,9 +48,37 @@ enum DriverExperience {
   Unknown = 'Unknown',
 }
 
-enum Stability {
-  NO = 0,
+export enum Stability {  NO = 0,
   YES = 1,
   VERY_STABLE = 2,
-}*/
-export default PitModel;
+}
+
+
+// Create an initial state object that matches the PitModel interface
+export const initialPitData: PitModel = {  RobScout: "",
+  TeamNb: 0, // Assuming this is a number
+  RobTeamNm: "",
+  RobDrive: DriveBaseType.Other, // Default value as 'Other'
+  RobMotor: DriveBaseMotor.CIM, // Default value as 'CIM'
+  RobDriveExp: DriverExperience.Zero, // Default as 'Zero'
+  RobWtlbs: 0,
+  RobWidth: 0,
+  RobLength: 0,
+  RobStble: Stability.NO, // Default as 'NO'
+  RobQuest1: false,
+  RobQuest2: false,
+  RobQuest3: false,
+  RobQuest4: false,
+  RobQuest5: false,
+  RobQuest6: false,
+  RobQuest7: false,
+  RobQuest8: false,
+  RobQuest9: false,
+  RobQuest10: false,
+  RobQuest11: false,
+  RobQuest12: false,
+  RobQuest13: false,
+  RobQuest14: false,
+  RobQuest15: false,
+  RobComm1: "",
+};
