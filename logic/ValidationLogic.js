@@ -14,14 +14,17 @@ export function validateEmptyField(fieldName, fieldValue) {
   }
 }
 
-export function validateNewTeam(teamNumber, teamList) {
+export async function validateNewTeam(teamNumber, teamList) {
   try {
     if (!teamNumber || teamNumber.trim() === '') {
       throw new Error('Team Number cannot be empty');
     }
-
-    if (teamList.some(item => item.teamNumber === teamNumber)) {
-      throw new Error('Team Number already exists');
+   
+    for (const team of teamList) {
+      if (team.teamNumber == teamNumber) {
+        throw new Error('Team Number already exists');
+       
+      }
     }
 
     return false; // Validation passed

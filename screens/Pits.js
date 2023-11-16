@@ -22,7 +22,6 @@ function Pits({ route }) {
     ...PitModel,
     teamNumber: currentTeamNumber,
   });
-
   // save pit data logic
   const HandleSavePitData = async () => {
     await savePitData(newPitData);

@@ -107,7 +107,6 @@ const TeamScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     loadTeams().then((loadedTeams) => {
-      console.log("Teams loaded:", loadedTeams);
       setTeams(loadedTeams);
     });
   }, [route.params?.teamsCleared]);

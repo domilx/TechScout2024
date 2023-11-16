@@ -4,12 +4,11 @@ import { validateNewTeam } from './ValidationLogic';
 export const saveTeam = async (teamNumber) => {
   try {
     const teams = await loadTeams();
-
-    if (validateNewTeam(teamNumber, teams)) {
+    
+    if (await validateNewTeam(teamNumber, teams)) {
       console.warn('Team already exists. Aborting.');
       return;
     }
-
     const numericTeamNumber = +teamNumber;
 
     const id = Date.now().toString();
