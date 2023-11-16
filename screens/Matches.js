@@ -1,17 +1,18 @@
-import React from 'react';
-import { View, Text,  StatusBar, Button } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, Button } from 'react-native';
+
+
 
 function Matches() {
     
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F0F5FF' }}>
-        <Text>Matches Screen</Text>
-        <Button
-          title="SAVE"
-         
-        />
-      </View>
-    );
-  }
+  return (
+    <View>
+      <Text>MATCHES</Text>
+
+
+    </View>
+  )
+
+}
 
 export default Matches;

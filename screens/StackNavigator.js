@@ -1,49 +1,53 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
 import TeamScreen from "./Teams";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View, Text, Button } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { clearStorage } from "../logic/StorageLogic";
+import Modal from "react-native-modal";
+
 const Stack = createStackNavigator();
 
-const StackNavigator = () => {
-  const Settings = () => {
-    const onSettingPressed = async () => {
-      alert("Storage cleared and teams removed");
-      await clearStorage();
-    };
+const Settings = ({ onSettingsPress }) => (
+  <TouchableOpacity onPress={onSettingsPress}>
+    <Icon
+      name={"help"}
+      color={"#F6EB14"}
+      size={32}
+      style={{ marginRight: 12 }}
+    />
+  </TouchableOpacity>
+);
 
-    return (
-      <TouchableOpacity onPress={onSettingPressed}>
-        <Icon
-          name={"cog-outline"}
-          color={"#F6EB14"}
-          size={32}
-          style={{ marginRight: 12 }}
-        />
-      </TouchableOpacity>
-    );
+const StackNavigator = () => {
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const onSettingPressed = async () => {
+    setModalVisible(!isModalVisible);
   };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+ 
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Teams">
         <Stack.Screen
           name="Teams"
           component={TeamScreen}
-          options={({ route, navigation }) => ({
+          options={({ }) => ({
             headerStyle: {
               backgroundColor: "#1E1E1E",
             },
             headerTintColor: "#F6EB14",
             headerRight: () => (
               <Settings
-                onSettingsPress={async () => {
-                  await clearStorage();
-                  alert("Storage cleared and teams removed");
-                  // Here, you can trigger a screen refresh or pass a parameter to TeamScreen
-                  navigation.setParams({ teamsCleared: true }); // Set the parameter
+                onSettingsPress={() => {
+                  onSettingPressed();
                 }}
               />
             ),
@@ -53,17 +57,67 @@ const StackNavigator = () => {
         <Stack.Screen
           name="teamScreen"
           component={TabNavigator}
+          initialParams={{ teamNumber: "" }}
           options={{
             headerStyle: {
               backgroundColor: "#1E1E1E",
             },
             headerTintColor: "#F6EB14",
-            headerRight: () => <Settings />,
+            headerRight: () => (
+              <Settings
+                onSettingsPress={() => {
+                  onSettingPressed();
+                }}
+              />
+            ),
           }}
         />
       </Stack.Navigator>
+
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={closeModal}
+        onSwipeComplete={closeModal}
+        swipeDirection={["down"]}
+        style={styles.modalit}
+      >
+        <View style={styles.content}>
+          <Text style={styles.tittleText}>Help</Text>
+          <Text style={styles.contentTitle}>
+            &#x2022; Add a team by tapping the plus button
+          </Text>
+          <Text style={styles.contentTitle}>
+            &#x2022; Hold a team button to enter edit mode
+          </Text>
+          <Button onPress={closeModal} title="Close" />
+        </View>
+      </Modal>
     </NavigationContainer>
   );
 };
 
 export default StackNavigator;
+
+const styles = StyleSheet.create({
+  modalit: {
+    justifyContent: "flex-end",
+    margin: 0,
+  },
+  content: {
+    backgroundColor: "white",
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+  },
+  contentTitle: {
+    fontSize: 18,
+    marginBottom: 12,
+  },
+  tittleText: {
+    fontSize: 25,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
+});
