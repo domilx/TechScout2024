@@ -17,17 +17,6 @@ function TabNavigator() {
   const { params } = route;
   const currentTeamNumber = params ? params.teamNumber : null;
 
-  useEffect(() => {
-    // Log the current team number every 5 seconds
-    const intervalId = setInterval(() => {
-      console.log('Current Team: ', currentTeamNumber);
-    }, 5000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [currentTeamNumber]);
-
   return (
     <NavigationContainer independent={true}>
       <StatusBar barStyle="white-content" />
