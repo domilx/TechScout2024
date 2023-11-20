@@ -92,7 +92,7 @@ function Pits({ route }) {
 
   // Save function
   const handleSavePitData = async () => {
-    const success = await savePitData(newPitData);
+    const success = await savePitData(newPitData, currentTeamNumber);
     if(success) {
       alert('Data saved successfully!');
     } else {
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
       },
     }),
     margin: 5,
+    zIndex: 5000,
   },
 
   modalContentContainerStyle: {

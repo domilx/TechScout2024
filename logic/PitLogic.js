@@ -2,13 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { Vibration } from 'react-native';
 import { validateEmptyField } from './ValidationLogic';
-
+import { initialPitData } from '../Models/PitModel';
+import { loadTeams } from './TeamLogic';
 // save the pit data to Async, will verify if the input is empty
-export const savePitData = async (newPitData) => {
+export const savePitData1 = async (newPitData) => {
   try {
 
     // Validation for empty data points
-    if (
+    /*if (
       validateEmptyField('Team Name', newPitData.teamName) ||
       validateEmptyField('Robot Length', newPitData.RobotLength) ||
       validateEmptyField('Robot Width', newPitData.RobotWidth) ||
@@ -18,7 +19,7 @@ export const savePitData = async (newPitData) => {
       validateEmptyField('Driver Experience', newPitData.DriverExperience)
     ) {
       return; // break the save function
-    }
+    }*/
     
 
     try {
@@ -69,6 +70,61 @@ export const savePitData = async (newPitData) => {
     // Handle the error, you can show an alert or log it
     Alert.alert('Error', 'An error occurred while processing the data.');
   }
+}; 
+
+
+export const savePitData = async (data, currentTeamNumber) => {
+  try {
+    // Load existing teams
+    const teams = await loadTeams();
+
+    // Find the index of the team with the specified team number
+    const targetTeamIndex = teams.findIndex(team => team.teamNumber === currentTeamNumber);
+
+    if (targetTeamIndex === -1) {
+      console.warn('Team not found. Aborting pit data save.');
+      return false;
+    }
+
+    // Create a copy of the target team to avoid mutating the original array
+    const updatedTeam = { ...teams[targetTeamIndex], pitData: data };
+
+    // Update the team within the array
+    const updatedTeams = [...teams];
+    updatedTeams[targetTeamIndex] = updatedTeam;
+
+    // Save the updated teams array
+    await AsyncStorage.setItem('teams', JSON.stringify(updatedTeams));
+    console.log(await loadTeams(currentTeamNumber));
+    // Return true to indicate success
+    return true;
+  } catch (error) {
+    // Handle errors (e.g., AsyncStorage is not available, storage quota exceeded)
+    console.error('Error saving pit data:', error);
+
+    // Return false to indicate failure
+    return false;
+  }
 };
 
 
+// Assuming this function is in the same file or imported where the PitModel and enums are defined
+
+export const loadPitData = async (currentTeamNumber) => {
+  try {
+    // Load existing teams
+    const teams = await loadTeams();
+
+    // Find the team with the specified team number
+    const targetTeam = teams.find(team => team.teamNumber === currentTeamNumber);
+
+    // If the team is found, return its pit data; otherwise, return initialPitData
+    return targetTeam ? targetTeam.pitData || initialPitData : initialPitData;
+  } catch (error) {
+    // Handle errors (e.g., AsyncStorage is not available)
+    console.error('Error loading pit data:', error);
+
+    // Return the initialPitData in case of an error
+    return initialPitData;
+  }
+};
