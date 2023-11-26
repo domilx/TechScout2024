@@ -5,7 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  FlatList,
   Switch,
   Platform,
 } from 'react-native';
@@ -81,6 +81,7 @@ function Pits({ route }) {
       [field]: value,
     }));
   };
+  
 
   // Setter for boolean fields
   const setBooleanField = (field, value) => {
@@ -92,70 +93,81 @@ function Pits({ route }) {
 
   // Save function
   const handleSavePitData = async () => {
-    const success = await savePitData(newPitData, currentTeamNumber);
-    if(success) {
-      alert('Data saved successfully!');
-    } else {
-      alert('Failed to save data.');
-    }
+    await savePitData(newPitData, currentTeamNumber);
   };
 
   // Dropdown selector for DriveBaseType enum
-  const driveBaseTypeItems = Object.keys(DriveBaseType).map(key => ({
+  const driveBaseTypeItems = Object.keys(DriveBaseType).map((key) => ({
     label: DriveBaseType[key],
     value: DriveBaseType[key],
   }));
 
   // ... other components ...
 
+  // FlatList data
+  const data = [
+    { key: 'Team Name', value: newPitData.RobTeamNm },
+    { key: 'Robot Weight (lbs)', value: newPitData.RobWtlbs.toString() },
+    { key: 'Drivebase Type', value: newPitData.RobDrive }, // Assuming RobDrive is the key for the Drivebase Type
+    { key: 'Has Autonomy?', value: newPitData.RobQuest1.toString() },
+    // Add more data items as needed
+  ];
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-      keyboardDismissMode={'on-drag'}
-    >
-      <Text style={styles.text}>Pit Scouting for Team {currentTeamNumber}</Text>
-      
-      {/* Text input example */}
-      <InputField
-        label="Team Name"
-        value={newPitData.RobTeamNm}
-        onChange={(text) => setField('RobTeamNm', text)}
-      />
-      
-      {/* Number input example */}
-      <InputField
-        label="Robot Weight (lbs)"
-        value={newPitData.RobWtlbs.toString()}
-        onChange={(text) => setField('RobWtlbs', parseInt(text))}
-        keyboardType="numeric"
-      />
-
-      {/* Enum dropdown example */}
-      <DropDownSelector
-        label="Drivebase Type"
-        items={driveBaseTypeItems}
-        value={newPitData.RobDrive}
-        setValue={(value) => setEnumField('RobDrive', value)}
-      />
-
-      {/* Boolean switch example */}
-      <ToggleSwitch
-        label="Has Autonomy?"
-        value={newPitData.RobQuest1}
-        onToggle={(newValue) => setBooleanField('RobQuest1', newValue)}
-      />
-      
-      {/* Save button */}
+    <FlatList
+    style={styles.container}
+    data={data}
+    keyExtractor={(item) => item.key}
+    renderItem={({ item }) => (
+      <View>
+        {item.key === 'Team Name' && (
+          <InputField
+            label={item.key}
+            value={item.value}
+            onChange={(text) => setField('RobTeamNm', text)}
+          />
+        )}
+        {item.key === 'Robot Weight (lbs)' && (
+          <InputField
+            label={item.key}
+            value={item.value}
+            onChange={(text) => setField('RobWtlbs', parseInt(text))}
+            keyboardType="numeric"
+          />
+        )}
+        {item.key === 'Drivebase Type' && (
+          <DropDownSelector
+            label={item.key}
+            items={driveBaseTypeItems}
+            value={item.value}
+            setValue={(value) => setEnumField('RobDrive', value)}
+          />
+        )}
+        {item.key === 'Has Autonomy?' && (
+          <ToggleSwitch
+            label={item.key}
+            value={newPitData.RobQuest1}
+            onToggle={(newValue) => setBooleanField('RobQuest1', newValue)}
+          />
+        )}
+        {/* Add more conditions and components as needed */}
+      </View>
+    )}
+    ListHeaderComponent={() => (
+      <View>
+        <Text style={styles.text}>Pit Scouting for Team {currentTeamNumber}</Text>
+        {/* Add other components outside of the list header */}
+      </View>
+    )}
+    ListFooterComponent={() => (
       <TouchableOpacity onPress={handleSavePitData}>
         <View style={styles.saveButton}>
           <Text style={styles.text}>Save Data</Text>
         </View>
       </TouchableOpacity>
-
-    </ScrollView>
-  );
+    )}
+  />
+);
 }
 
 

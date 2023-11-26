@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import { encodePitData } from '../logic/EncodingLogic';
+import { loadPitData } from '../logic/PitLogic';
 
-function CodeGenerator({ route }) {
+/*function CodeGeneratorRaph({ route }) {
   let logoFromFile = require('../assets/logo.png');
 
   const { currentTeamNumber } = route.params;
@@ -103,7 +104,7 @@ function CodeGenerator({ route }) {
           <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleContent}>
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                {/* <Text>{JSON.stringify(currentTeamData, null, 2)}</Text> */}
+                
                 <Text>{JSON.stringify(currentTeamData, null, 2)}</Text>
                 <TouchableOpacity onPress={toggleContent} style={styles.closeButton}>
                   <Text style={styles.buttonText}>Close</Text>
@@ -115,6 +116,27 @@ function CodeGenerator({ route }) {
       )}
     </View>
   );
+}*/
+
+function CodeGenerator({ route }) {
+const { currentTeamNumber } = route.params;
+  const [currentTeamData, setCurrentTeamData] = useState([]);
+  
+
+
+  const handlshowdata = async () => {
+    setCurrentTeamData(await loadPitData(currentTeamNumber));
+
+  }
+
+  return (
+    <View>
+      <Button title="updateData" onPress={handlshowdata} />
+      <Text>{currentTeamNumber}</Text>
+      <Text>{JSON.stringify(currentTeamData)}</Text>
+    </View>
+    
+  )
 }
 
 export default CodeGenerator;

@@ -1,122 +1,73 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-import { Vibration } from 'react-native';
 import { validateEmptyField } from './ValidationLogic';
 import { initialPitData } from '../Models/PitModel';
 import { loadTeams } from './TeamLogic';
 // save the pit data to Async, will verify if the input is empty
-export const savePitData1 = async (newPitData) => {
+export const savePitData = async (newPitData, TeamNumber) => {
   try {
+    // Load existing teams from AsyncStorage
+    const teamsJson = await AsyncStorage.getItem('teams');
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
 
-    // Validation for empty data points
-    /*if (
-      validateEmptyField('Team Name', newPitData.teamName) ||
-      validateEmptyField('Robot Length', newPitData.RobotLength) ||
-      validateEmptyField('Robot Width', newPitData.RobotWidth) ||
-      validateEmptyField('Robot Weight', newPitData.RobotWeight) ||
-      validateEmptyField('Robot Drive Type', newPitData.DriveType) ||
-      validateEmptyField('Robot Drive Motors', newPitData.DriveMotors) ||
-      validateEmptyField('Driver Experience', newPitData.DriverExperience)
-    ) {
-      return; // break the save function
-    }*/
-    
+    // Find the target team based on TeamNumber
+    const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
 
-    try {
-      const existingPitModels = await AsyncStorage.getItem('pitModels');
-      const pitModels = existingPitModels ? JSON.parse(existingPitModels) : [];
+    if (targetTeamIndex !== -1) {
+      // Team with the same number already exists
+      Alert.alert(
+        'Data Exists',
+        'Do you want to replace existing data?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Replace',
+            onPress: async () => {
+              // Update the target team with the new pit data
+              teams[targetTeamIndex].pitData = newPitData;
 
-      const existingModelIndex = pitModels.findIndex(
-        (model) => model.teamNumber === newPitData.teamNumber
+              // Save the updated teams to AsyncStorage
+              await AsyncStorage.setItem('teams', JSON.stringify(teams));
+
+              // Notify the user that data has been saved
+              alert('Data replaced in AsyncStorage');
+            },
+          },
+        ],
+        { cancelable: false }
       );
+    } else {
+      // Add a new team since it doesn't exist
+      teams.push({
+        teamNumber: TeamNumber,
+        pitData: newPitData,
+      });
 
-      if (existingModelIndex !== -1) {
-        // if model with the same teamNumber exists
+      // Save the updated teams to AsyncStorage
+      await AsyncStorage.setItem('teams', JSON.stringify(teams));
 
-        // Handle replacing or rejecting data 
-        Alert.alert(
-          'Data Exists',
-          'A model with the same teamNumber already exists. Do you want to replace it with the new data?',
-          [
-            {
-              text: 'Cancel',
-              style: 'cancel',
-            },
-            {
-              text: 'Replace',
-              onPress: async () => {
-                // Replace existing data with the new one
-                pitModels[existingModelIndex] = newPitData;
-                await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-                Vibration.vibrate();
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      } else {
-        // Add the new Pit Model instance to the array
-        pitModels.push(newPitData);
-        // Return the new models to AsyncStorage
-        await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-        alert('Data saved to AsyncStorage');
-        Vibration.vibrate();
-      }
-    } catch (error) {
-      console.error('Error saving Pit Data:', error);
+      // Notify the user that data has been saved
+      alert('Data saved to AsyncStorage');
     }
   } catch (error) {
-    console.error('Error in the savePitData function:', error);
-    // Handle the error, you can show an alert or log it
-    Alert.alert('Error', 'An error occurred while processing the data.');
-  }
-}; 
-
-
-export const savePitData = async (data, currentTeamNumber) => {
-  try {
-    // Load existing teams
-    const teams = await loadTeams();
-
-    // Find the index of the team with the specified team number
-    const targetTeamIndex = teams.findIndex(team => team.teamNumber === currentTeamNumber);
-
-    if (targetTeamIndex === -1) {
-      console.warn('Team not found. Aborting pit data save.');
-      return false;
-    }
-
-    // Create a copy of the target team to avoid mutating the original array
-    const updatedTeam = { ...teams[targetTeamIndex], pitData: data };
-
-    // Update the team within the array
-    const updatedTeams = [...teams];
-    updatedTeams[targetTeamIndex] = updatedTeam;
-
-    // Save the updated teams array
-    await AsyncStorage.setItem('teams', JSON.stringify(updatedTeams));
-    console.log(await loadTeams(currentTeamNumber));
-    // Return true to indicate success
-    return true;
-  } catch (error) {
-    // Handle errors (e.g., AsyncStorage is not available, storage quota exceeded)
     console.error('Error saving pit data:', error);
-
-    // Return false to indicate failure
-    return false;
+    throw error;
   }
 };
 
 
-// Assuming this function is in the same file or imported where the PitModel and enums are defined
 
 export const loadPitData = async (currentTeamNumber) => {
   try {
     // Load existing teams
     const teams = await loadTeams();
-
+    
     // Find the team with the specified team number
-    const targetTeam = teams.find(team => team.teamNumber === currentTeamNumber);
+    const targetTeam = teams.find(team => team.teamNumber == currentTeamNumber || team.teamNumber.toString() == currentTeamNumber);
+    console.log(targetTeam);
 
     // If the team is found, return its pit data; otherwise, return initialPitData
     return targetTeam ? targetTeam.pitData || initialPitData : initialPitData;

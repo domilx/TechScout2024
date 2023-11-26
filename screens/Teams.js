@@ -101,7 +101,7 @@ const TeamScreen = ({ route, navigation }) => {
   };
 
   const clearModelsButton = async () => {
-    await clearModelsStorage();
+    await clearModelsStorage(currentTeam);
     alert("Storage cleared and models removed");
   };
 
