@@ -119,6 +119,9 @@ import { loadPitData } from '../logic/PitLogic';
 }*/
 
 function CodeGenerator({ route }) {
+useEffect(() => {
+  handlshowdata();
+}, []);
 const { currentTeamNumber } = route.params;
   const [currentTeamData, setCurrentTeamData] = useState([]);
   

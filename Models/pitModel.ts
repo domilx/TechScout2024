@@ -1,6 +1,6 @@
 
 export interface PitModel {  RobScout: string;
-  TeamNb: number;
+ // TeamNb: number;
   RobTeamNm: string;
   RobDrive: DriveBaseType;
   RobMotor: DriveBaseMotor;
@@ -34,29 +34,29 @@ export enum DriveBaseType {
   Other = 'Other',
 }
 
-export enum DriveBaseMotor {  CIM = 0,
-  NEO = 1,
-  FALCON = 2,
-  KRAKEN = 3,
+export enum DriveBaseMotor {  CIM = 'CIM',
+  NEO = 'NEO',
+  FALCON = 'FALCON',
+  KRAKEN = 'KRAKEN',
 }
 
-export enum DriverExperience {  Zero = 0,
-  One = 1,
-  Two = 2,
-  Three = 3,
-  Four = 4,
+export enum DriverExperience {  Zero = 'Zero',
+  One = 'One',
+  Two = 'Two',
+  Three = 'Three',
+  Four = 'Four',
   Unknown = 'Unknown',
 }
 
-export enum Stability {  NO = 0,
-  YES = 1,
-  VERY_STABLE = 2,
+export enum Stability {  NO = 'Not Stable',
+  YES = 'Stable',
+  VERY_STABLE = 'Very Stable',
 }
 
 
 // Create an initial state object that matches the PitModel interface
 export const initialPitData: PitModel = {  RobScout: "",
-  TeamNb: 0, // Assuming this is a number
+ // TeamNb: 0, 
   RobTeamNm: "",
   RobDrive: DriveBaseType.Other, // Default value as 'Other'
   RobMotor: DriveBaseMotor.CIM, // Default value as 'CIM'
