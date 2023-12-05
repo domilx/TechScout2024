@@ -52,6 +52,7 @@ function TabNavigator() {
         <Tab.Screen
           name="Matches"
           component={Matches}
+          initialParams={{currentTeamNumber: currentTeamNumber}}
           options={{
             tabBarLabel: "Matches",
             tabBarIcon: ({ color, size, focused }) => (

@@ -130,7 +130,7 @@ const TeamScreen = ({ route, navigation }) => {
   };
 
   const navigateToTeam = (team) => {
-    navigation.navigate("teamScreen", { teamNumber: team });
+    navigation.navigate("Scouting", { teamNumber: team });
   };
 
   const Placeholder = () => {

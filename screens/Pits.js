@@ -17,68 +17,8 @@ import {
   DriverExperience,
   Stability,
 } from "../Models/PitModel";
-import { Dropdown } from "react-native-element-dropdown";
+import { DropDownSelector, ToggleSwitch, InputField, SaveButton } from "../assets/ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
-
-// Define the InputField component
-const InputField = ({
-  label,
-  value,
-  onChange,
-  keyboardType = "default",
-  maxLength = null,
-}) => (
-  <View style={styles.inputContainer}>
-    <Text style={styles.label}>{label}</Text>
-    <TextInput
-      style={styles.input}
-      value={value}
-      onChangeText={onChange}
-      keyboardType={keyboardType}
-      maxLength={maxLength}
-    />
-  </View>
-);
-
-
-// Define the ToggleSwitch component
-const ToggleSwitch = ({ label, onToggle, value }) => (
-  <View style={styles.switchContainer}>
-    <Text>{label}</Text>
-    <Switch
-      trackColor={{ false: "gray", true: "green" }}
-      thumbColor={value ? "white" : "white"}
-      onValueChange={onToggle}
-      value={value}
-    />
-  </View>
-);
-
-// Define the DropDownSelector component
-const DropDownSelector = ({ label, items, value, setValue }) => {
-  return (
-    <View style={styles.subViews}>
-      <Text style={styles.text}>{label}</Text>
-      <Dropdown
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        data={items}
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder="Select item"
-        value={value}
-        onChange={(item) => {
-          setValue(item.value);
-        }}
-        zIndex={5000}
-      />
-    </View>
-  );
-};
 
 function Pits({ route }) {
   const { currentTeamNumber } = route.params;
@@ -88,6 +28,11 @@ function Pits({ route }) {
     const loadPitDataOnMount = async () => {
       const loadedPitData = await loadPitData(currentTeamNumber);
       setNewPitData(loadedPitData);
+      setField("TeamNb", currentTeamNumber)
+      if (loadedPitData === null) {
+        setNewPitData(initialPitData);
+      }
+      console.log(newPitData);
     };
 
     loadPitDataOnMount();
@@ -153,8 +98,6 @@ function Pits({ route }) {
     value: Stability[key],
   }));
 
-  // ... other components ...
-
   // FlatList data
   const data = [
     { key: "Robot Scout", value: newPitData.RobScout },
@@ -166,21 +109,21 @@ function Pits({ route }) {
     { key: "Drivebase Motor", value: newPitData.RobMotor },
     { key: "Drivebase Experience", value: newPitData.RobDriveExp },
     { key: "Stability", value: newPitData.RobStble },
-    { key: "Has Autonomy?", value: newPitData.RobQuest1.toString() },
-    { key: "RobQuest1", value: newPitData.RobQuest2.toString() },
-    { key: "RobQuest2", value: newPitData.RobQuest3.toString() },
-    { key: "RobQuest4", value: newPitData.RobQuest4.toString() },
-    { key: "RobQuest5", value: newPitData.RobQuest5.toString() },
-    { key: "RobQuest6", value: newPitData.RobQuest6.toString() },
-    { key: "RobQuest7", value: newPitData.RobQuest7.toString() },
-    { key: "RobQuest8", value: newPitData.RobQuest8.toString() },
-    { key: "RobQuest9", value: newPitData.RobQuest9.toString() },
-    { key: "RobQuest10", value: newPitData.RobQuest10.toString() },
-    { key: "RobQuest11", value: newPitData.RobQuest11.toString() },
-    { key: "RobQuest12", value: newPitData.RobQuest12.toString() },
-    { key: "RobQuest13", value: newPitData.RobQuest13.toString() },
-    { key: "RobQuest14", value: newPitData.RobQuest14.toString() },
-    { key: "RobQuest15", value: newPitData.RobQuest15.toString() },
+    { key: "Has Autonomy?", value: newPitData.RobQuest1 },
+    { key: "RobQuest1", value: newPitData.RobQuest2 },
+    { key: "RobQuest2", value: newPitData.RobQuest3 },
+    { key: "RobQuest4", value: newPitData.RobQuest4 },
+    { key: "RobQuest5", value: newPitData.RobQuest5 },
+    { key: "RobQuest6", value: newPitData.RobQuest6 },
+    { key: "RobQuest7", value: newPitData.RobQuest7 },
+    { key: "RobQuest8", value: newPitData.RobQuest8 },
+    { key: "RobQuest9", value: newPitData.RobQuest9 },
+    { key: "RobQuest11", value: newPitData.RobQuest11 },
+    { key: "RobQuest10", value: newPitData.RobQuest10 },
+    { key: "RobQuest13", value: newPitData.RobQuest13 },
+    { key: "RobQuest12", value: newPitData.RobQuest12 },
+    { key: "RobQuest14", value: newPitData.RobQuest14},
+    { key: "RobQuest15", value: newPitData.RobQuest15 },
     { key: "Communication", value: newPitData.RobComm1 },
     // Add more data items as needed
   ];
@@ -296,176 +239,30 @@ function Pits({ route }) {
       </View>
     )}
     ListFooterComponent={() => (
-      <TouchableOpacity onPress={handleSavePitData}>
-        <View style={styles.saveButton}>
-          <Text style={styles.text}>Save Data</Text>
-        </View>
-      </TouchableOpacity>
+      <SaveButton save={handleSavePitData} />
+      
     )}
   />
    ) }  
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingVertical: 20,
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  headerContainer: {
-    alignItems: "center",
-    marginVertical: 10,
-  },
-
-  headerText: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  dropdown: {
-    margin: 16,
-    height: 50,
-    width: 300,
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
+   const styles = StyleSheet.create({
+    container: {
+      flex: 1,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
-  },
-  label: {
-    width: 100,
-    marginRight: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    padding: 10,
-    flex: 1,
-  },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    marginVertical: 10,
-  },
-  subViews: {
-    width: "100%",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  dropDownContainer: {
-    width: "90%",
-    height: 40,
-  },
-  placeholderStyle: {
-    color: "grey",
-  },
-  modalContentContainerStyle: {
-    backgroundColor: "white",
-  },
-  saveButton: {
-    backgroundColor: "#F6EB14",
-    borderRadius: 10,
-    padding: 15,
-    alignItems: "center",
-  },
-
-  // DropDown picker Prop styles
-  dropDownContainer: {
-    width: "95%",
-    backgroundColor: "lightgray",
-    borderWidth: 2,
-    borderColor: "black",
-    ...Platform.select({
-      ios: {
-        borderRadius: 10,
-      },
-    }),
-    margin: 5,
-    zIndex: 5000,
-  },
-
-  modalContentContainerStyle: {
-    backgroundColor: "white",
-  },
-
-  modalTitleStyle: {
-    fontWeight: "bold",
-    fontSize: 20,
-    textAlign: "center",
-  },
-  selectedItemContainerStyle: {
-    backgroundColor: "#5edb76",
-  },
-  selectedItemLabelStyle: {
-    fontWeight: "bold",
-    fontSize: 20,
-  },
-  placeholderStyle: {
-    color: "grey",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-    borderRadius: 10, // Make the container round
-    backgroundColor: "#F0F0F0", // Add a background color
-    padding: 10, // Add padding for better spacing
-  },
-
-  input: {
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    padding: 10,
-    flex: 1,
-  },
-
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    marginVertical: 10,
-    borderRadius: 10, // Make the container round
-    padding: 10, // Add padding for better spacing
-  },
-
-  subViews: {
-    width: "100%",
-    alignItems: "center",
-    marginVertical: 10,
-    borderRadius: 10, // Make the container round
-    backgroundColor: "#F0F0F0", // Add a background color
-    padding: 10, // Add padding for better spacing
-  },
-
-  saveButton: {
-    backgroundColor: "#F6EB14",
-    borderRadius: 10,
-    padding: 15,
-    alignItems: "center",
-  },
-});
+    headerContainer: {
+      alignItems: "center",
+      marginVertical: 10,
+    },
+    headerText: {
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+    saveButton: {
+      backgroundColor: "#F6EB14",
+      borderRadius: 10,
+      padding: 15,
+      alignItems: "center",
+    },
+  });
 
 export default Pits;

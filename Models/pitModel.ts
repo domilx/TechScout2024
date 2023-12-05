@@ -1,6 +1,6 @@
 
 export interface PitModel {  RobScout: string;
- // TeamNb: number;
+  TeamNb: number;
   RobTeamNm: string;
   RobDrive: DriveBaseType;
   RobMotor: DriveBaseMotor;
@@ -56,7 +56,7 @@ export enum Stability {  NO = 'Not Stable',
 
 // Create an initial state object that matches the PitModel interface
 export const initialPitData: PitModel = {  RobScout: "",
- // TeamNb: 0, 
+  TeamNb: 0, 
   RobTeamNm: "",
   RobDrive: DriveBaseType.Other, // Default value as 'Other'
   RobMotor: DriveBaseMotor.CIM, // Default value as 'CIM'

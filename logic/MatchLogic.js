@@ -3,8 +3,9 @@ import { Alert } from 'react-native';
 import { validateEmptyField } from './ValidationLogic';
 import { initialPitData } from '../Models/PitModel';
 import { loadTeams } from './TeamLogic';
-// save the pit data to Async, will verify if the input is empty
-export const savePitData = async (newPitData, TeamNumber) => {
+import { initialMatchData } from '../Models/MatchModel';
+
+export const SaveMatchData = async (newMatchData, TeamNumber, MatchNumber) => {
   try {
     // Load existing teams from AsyncStorage
     const teamsJson = await AsyncStorage.getItem('teams');
@@ -12,6 +13,8 @@ export const savePitData = async (newPitData, TeamNumber) => {
 
     // Find the target team based on TeamNumber
     const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
+
+    const matchDataKey = `MatchData${MatchNumber}`;
 
     if (targetTeamIndex !== -1) {
       // Team with the same number already exists
@@ -26,8 +29,8 @@ export const savePitData = async (newPitData, TeamNumber) => {
           {
             text: 'Replace',
             onPress: async () => {
-              // Update the target team with the new pit data
-              teams[targetTeamIndex].pitData = newPitData;
+              // Update the target team with the new pit data under the specified match data key
+              teams[targetTeamIndex][matchDataKey] = newMatchData;
 
               // Save the updated teams to AsyncStorage
               await AsyncStorage.setItem('teams', JSON.stringify(teams));
@@ -41,10 +44,12 @@ export const savePitData = async (newPitData, TeamNumber) => {
       );
     } else {
       // Add a new team since it doesn't exist
-      teams.push({
+      const newTeam = {
         teamNumber: TeamNumber,
-        pitData: newPitData,
-      });
+      };
+      newTeam[matchDataKey] = newMatchData;
+
+      teams.push(newTeam);
 
       // Save the updated teams to AsyncStorage
       await AsyncStorage.setItem('teams', JSON.stringify(teams));
@@ -59,23 +64,31 @@ export const savePitData = async (newPitData, TeamNumber) => {
 };
 
 
-
-export const loadPitData = async (currentTeamNumber) => {
+export const loadMatchData = async (currentTeamNumber, MatchNumber) => {
   try {
     // Load existing teams
     const teams = await loadTeams();
-    
+
     // Find the team with the specified team number
     const targetTeam = teams.find(team => team.teamNumber == currentTeamNumber || team.teamNumber.toString() == currentTeamNumber);
-    //console.log(targetTeam);
 
-    // If the team is found, return its pit data; otherwise, return initialPitData
-    return targetTeam ? targetTeam.pitData || initialPitData : initialPitData;
+    if (targetTeam) {
+      const matchDataKey = `MatchData${MatchNumber}`;
+
+      // Return the match data for the specified match number; otherwise, return initialMatchData
+      return targetTeam[matchDataKey] || initialMatchData;
+    } else {
+      // If the team is not found, return initialMatchData
+      return initialMatchData;
+    }
   } catch (error) {
     // Handle errors (e.g., AsyncStorage is not available)
-    console.error('Error loading pit data:', error);
+    console.error('Error loading match data:', error);
 
-    // Return the initialPitData in case of an error
-    return initialPitData;
+    // Return the initialMatchData in case of an error
+    return initialMatchData;
   }
 };
+
+
+

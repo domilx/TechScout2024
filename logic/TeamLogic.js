@@ -59,3 +59,78 @@ export const editTeam = async (teamNumberToEdit, newTeamNumber) => {
   }
 };
 
+export const loadTeamData = async (teamNumber) => {
+  try {
+    const teams = await loadTeams();
+    const team = teams.find((t) => t.teamNumber === teamNumber);
+    return team || null; // Return null if the team is not found
+  } catch (error) {
+    console.error('Error loading team:', error);
+    throw error;
+  }
+};
+
+
+
+
+export const saveCurrentMatchCount = async (teamNumber, matchNumber) => {
+  try {
+    // Load existing teams from AsyncStorage
+    const teamsJson = await AsyncStorage.getItem('teams');
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
+
+    // Find the target team based on TeamNumber
+    const targetTeamIndex = teams.findIndex(
+      (team) => team.teamNumber === teamNumber
+    );
+
+    // Update the target team with the new match number
+    teams[targetTeamIndex].matchNumber = matchNumber + 1;
+
+    // Save the updated teams to AsyncStorage
+    await AsyncStorage.setItem('teams', JSON.stringify(teams));
+
+    // Notify the user that data has been saved
+    console.log('Match number saved successfully');
+  } catch (error) {
+    console.error('Error saving match number:', error);
+    throw error;
+  }
+};
+
+
+export const loadMatchCount = async (teamNumber) => {
+  try {
+    // Load existing teams from AsyncStorage
+    const teamsJson = await AsyncStorage.getItem('teams');
+    
+    if (!teamsJson) {
+      // If teamsJson is null or undefined, return null (no teams stored)
+      return null;
+    }
+
+    const teams = JSON.parse(teamsJson);
+
+    if (!Array.isArray(teams)) {
+      // If teams is not an array, return null (unexpected data format)
+      return null;
+    }
+
+    // Filter teams based on TeamNumber
+    const filteredTeams = teams.filter((team) => team.teamNumber === teamNumber);
+
+    // Retrieve the first element of the filtered array (or null if no match)
+    const targetTeam = filteredTeams.length > 0 ? filteredTeams[0] : null;
+
+    // Return the current match number or null if the team is not found
+    return targetTeam ? targetTeam.matchNumber || null : null;
+  } catch (error) {
+    console.error('Error getting current match number:', error);
+    throw error;
+  }
+};
+
+  
+
+  
+

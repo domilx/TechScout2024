@@ -55,7 +55,7 @@ const StackNavigator = () => {
         />
 
         <Stack.Screen
-          name="teamScreen"
+          name="Scouting"
           component={TabNavigator}
           initialParams={{ teamNumber: "" }}
           options={{

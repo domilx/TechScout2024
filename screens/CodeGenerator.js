@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet, Button } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import QRCode from 'react-native-qrcode-svg';
-import Icon2 from 'react-native-vector-icons/AntDesign';
-import { encodePitData } from '../logic/EncodingLogic';
-import { loadPitData } from '../logic/PitLogic';
-
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Button,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import QRCode from "react-native-qrcode-svg";
+import Icon2 from "react-native-vector-icons/AntDesign";
+import { encodePitData } from "../logic/EncodingLogic";
+import { loadPitData } from "../logic/PitLogic";
+import { loadTeamData, loadTeams } from "../logic/TeamLogic";
+import { loadMatchData } from "../logic/MatchLogic";
 /*function CodeGeneratorRaph({ route }) {
   let logoFromFile = require('../assets/logo.png');
 
@@ -118,19 +127,16 @@ import { loadPitData } from '../logic/PitLogic';
   );
 }*/
 
-function CodeGenerator({ route }) {
-useEffect(() => {
-  handlshowdata();
-}, []);
-const { currentTeamNumber } = route.params;
+function CodeGeneratorDebug({ route }) {
+  useEffect(() => {
+    handlshowdata();
+  }, []);
+  const { currentTeamNumber } = route.params;
   const [currentTeamData, setCurrentTeamData] = useState([]);
-  
-
 
   const handlshowdata = async () => {
     setCurrentTeamData(await loadPitData(currentTeamNumber));
-
-  }
+  };
 
   return (
     <View>
@@ -138,13 +144,58 @@ const { currentTeamNumber } = route.params;
       <Text>{currentTeamNumber}</Text>
       <Text>{JSON.stringify(currentTeamData)}</Text>
     </View>
-    
-  )
+  );
+}
+
+function CodeGenerator({ route }) {
+  let logoFromFile = require("../assets/logo.png");
+  const { currentTeamNumber } = route.params;
+  const [currentTeamData, setCurrentTeamData] = useState([]);
+  const [currentMatchData, setCurrentMatchData] = useState([]);
+  const [displayQR, setDisplayQR] = useState(false);
+  useEffect(() => {
+    loadDataForQR();
+  }, []);
+
+  const loadDataForQR = async () => {
+    setCurrentTeamData(await loadPitData(currentTeamNumber));
+    setCurrentMatchData(await loadMatchData(currentTeamNumber, 1));
+   // console.log(await loadTeamData(currentTeamNumber));
+  };
+
+  const LoadQR = () => {
+    setDisplayQR(true);
+  }
+
+  return (
+    <View>
+    {currentTeamData === undefined ? (
+      <Text>No data found for Team {currentTeamNumber} </Text>
+    ): (
+      <View>    
+
+        <View style={styles.topContainer}>
+          <TouchableOpacity onPress={LoadQR}>
+            <View style={styles.loadButton}>
+              <Text style={styles.buttonText}>Load QR</Text>
+              <Icon2 name={'qrcode'} color={'black'} size={30} />
+            </View>
+          </TouchableOpacity>
+          {displayQR ? (
+          <View style={styles.scrollStyle}>
+              <QRCode value={JSON.stringify(currentTeamData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
+              <QRCode value={JSON.stringify(currentMatchData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
+              <Text>{JSON.stringify(currentTeamData)}</Text>
+              
+            </View>):(<View></View>)}
+        </View>
+        </View>
+      )}
+    </View>
+  );
 }
 
 export default CodeGenerator;
-
-
 
 const styles = StyleSheet.create({
   topContainer: {
@@ -154,57 +205,61 @@ const styles = StyleSheet.create({
   },
 
   loadButton: {
-      width: 200, 
-      flexDirection: "row",
-      height: 50, 
-      paddingLeft: 20,
-      paddingRight: 20,
-      justifyContent: "space-between", 
-      alignItems: "center", 
-      backgroundColor:"#F6EB14", 
-      ...Platform.select({
-        ios: {
-          borderRadius: 10,
-        },}), 
-      margin: 50},
+    width: 200,
+    flexDirection: "row",
+    height: 50,
+    paddingLeft: 20,
+    paddingRight: 20,
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F6EB14",
+    ...Platform.select({
+      ios: {
+        borderRadius: 10,
+      },
+    }),
+    margin: 50,
+  },
 
-  buttonText:{
+  buttonText: {
     fontSize: 24,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
 
   scrollStyle: {
     alignItems: "center",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
 
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   openButton: {
-    backgroundColor: '#F194FF',
+    backgroundColor: "#F194FF",
     padding: 10,
     ...Platform.select({
       ios: {
         borderRadius: 5,
-      },}),
+      },
+    }),
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalView: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     ...Platform.select({
       ios: {
         borderRadius: 10,
-      },}),
+      },
+    }),
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalText: {
     fontSize: 16,
@@ -213,40 +268,38 @@ const styles = StyleSheet.create({
   closeButton: {
     minWidth: 200,
     width: "auto",
-    height: 50, 
+    height: 50,
     paddingHorizontal: 20,
-    justifyContent: "center", 
-    alignItems: "center", 
-    backgroundColor:"#F6EB14", 
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F6EB14",
     ...Platform.select({
       ios: {
         borderRadius: 10,
-      },}), 
+      },
+    }),
     marginTop: 40,
     marginBottom: 10,
     marginHorizontal: 30,
   },
   closeButtonText: {
-    color: 'white',
+    color: "white",
   },
 
   dataButton: {
-    width: 200, 
+    width: 200,
     flexDirection: "row",
-    height: 50, 
+    height: 50,
     paddingLeft: 20,
     paddingRight: 20,
-    justifyContent: "center", 
-    alignItems: "center", 
-    backgroundColor:"#F6EB14", 
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F6EB14",
     ...Platform.select({
       ios: {
         borderRadius: 10,
-      },}),
-    margin: 50},
-
-
-    
-  
-
-})
+      },
+    }),
+    margin: 50,
+  },
+});
