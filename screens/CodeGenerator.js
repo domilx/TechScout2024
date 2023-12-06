@@ -13,7 +13,7 @@ import QRCode from "react-native-qrcode-svg";
 import Icon2 from "react-native-vector-icons/AntDesign";
 import { encodePitData } from "../logic/EncodingLogic";
 import { loadPitData } from "../logic/PitLogic";
-import { loadTeamData, loadTeams } from "../logic/TeamLogic";
+import { loadMatchCount, loadTeamData, loadTeams, saveMatchCount } from "../logic/TeamLogic";
 import { loadMatchData } from "../logic/MatchLogic";
 /*function CodeGeneratorRaph({ route }) {
   let logoFromFile = require('../assets/logo.png');
@@ -153,15 +153,23 @@ function CodeGenerator({ route }) {
   const [currentTeamData, setCurrentTeamData] = useState([]);
   const [currentMatchData, setCurrentMatchData] = useState([]);
   const [displayQR, setDisplayQR] = useState(false);
+  const [handle3, setHandle3] = useState(0);
   useEffect(() => {
     loadDataForQR();
+    
   }, []);
 
+  const handle = async () => {
+    saveMatchCount(currentTeamNumber);
+    setHandle3(await loadMatchCount(currentTeamNumber));
+
+  }
   const loadDataForQR = async () => {
     setCurrentTeamData(await loadPitData(currentTeamNumber));
     setCurrentMatchData(await loadMatchData(currentTeamNumber, 1));
-   // console.log(await loadTeamData(currentTeamNumber));
-  };
+    setHandle3(await loadMatchCount(currentTeamNumber));
+    console.log(await loadTeams());
+    };
 
   const LoadQR = () => {
     setDisplayQR(true);
@@ -172,7 +180,7 @@ function CodeGenerator({ route }) {
     {currentTeamData === undefined ? (
       <Text>No data found for Team {currentTeamNumber} </Text>
     ): (
-      <View>    
+      <ScrollView>    
 
         <View style={styles.topContainer}>
           <TouchableOpacity onPress={LoadQR}>
@@ -184,16 +192,22 @@ function CodeGenerator({ route }) {
           {displayQR ? (
           <View style={styles.scrollStyle}>
               <QRCode value={JSON.stringify(currentTeamData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
+              <Text>             </Text>
               <QRCode value={JSON.stringify(currentMatchData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
               <Text>{JSON.stringify(currentTeamData)}</Text>
+              <Text>{JSON.stringify(currentMatchData)}</Text>
+              <Text>             </Text>
+              <Text> {JSON.stringify(handle3)}</Text>
+              <Button title="addMatch" onPress={handle} />
               
             </View>):(<View></View>)}
         </View>
-        </View>
+        </ScrollView>
       )}
     </View>
   );
 }
+
 
 export default CodeGenerator;
 

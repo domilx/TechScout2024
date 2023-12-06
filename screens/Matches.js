@@ -86,7 +86,7 @@ function Matches({ route }) {
     
     setMatchNumber(await loadMatchCount(currentTeamNumber));
 
-    console.log("chrismatch" + matchNumber);
+    //console.log("chrismatch" + matchNumber);
   };
 
   const PositionTypeItem = Object.keys(Position).map((key) => ({
@@ -350,7 +350,7 @@ function Matches({ route }) {
           
           onSubmit={() => {
             handleSaveMatchData();
-             setCurrentStep(0);
+            setCurrentStep(0);
            }}
           scrollViewProps={this.defaultScrollViewProps}
         >

@@ -70,67 +70,45 @@ export const loadTeamData = async (teamNumber) => {
   }
 };
 
+export const saveMatchCount = async (TeamNumber) => {
+  const teamsJson = await AsyncStorage.getItem('teams');
+  const teams = teamsJson ? JSON.parse(teamsJson) : [];
 
+  const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
 
-
-export const saveCurrentMatchCount = async (teamNumber, matchNumber) => {
-  try {
-    // Load existing teams from AsyncStorage
-    const teamsJson = await AsyncStorage.getItem('teams');
-    const teams = teamsJson ? JSON.parse(teamsJson) : [];
-
-    // Find the target team based on TeamNumber
-    const targetTeamIndex = teams.findIndex(
-      (team) => team.teamNumber === teamNumber
-    );
-
-    // Update the target team with the new match number
-    teams[targetTeamIndex].matchNumber = matchNumber + 1;
+  
+  if (targetTeamIndex !== -1) {
+    if ('matchNumber' in teams[targetTeamIndex]) {
+      teams[targetTeamIndex].matchNumber += 1;
+    } else {
+      teams[targetTeamIndex].matchNumber = 1;
+    }
 
     // Save the updated teams to AsyncStorage
     await AsyncStorage.setItem('teams', JSON.stringify(teams));
-
-    // Notify the user that data has been saved
-    console.log('Match number saved successfully');
-  } catch (error) {
-    console.error('Error saving match number:', error);
-    throw error;
+    
+    //console.log('Match count saved: ' + await loadMatchCount(TeamNumber));
+  } else {
+    console.log('Team not found');
   }
 };
+
 
 
 export const loadMatchCount = async (teamNumber) => {
-  try {
-    // Load existing teams from AsyncStorage
-    const teamsJson = await AsyncStorage.getItem('teams');
-    
-    if (!teamsJson) {
-      // If teamsJson is null or undefined, return null (no teams stored)
-      return null;
-    }
+  const teamsJson = await AsyncStorage.getItem('teams');
+  const teams = teamsJson ? JSON.parse(teamsJson) : [];
 
-    const teams = JSON.parse(teamsJson);
+  // Find the target team based on teamNumber
+  const targetTeam = teams.find(team => team.teamNumber == teamNumber || team.teamNumber.toString() == teamNumber);
 
-    if (!Array.isArray(teams)) {
-      // If teams is not an array, return null (unexpected data format)
-      return null;
-    }
-
-    // Filter teams based on TeamNumber
-    const filteredTeams = teams.filter((team) => team.teamNumber === teamNumber);
-
-    // Retrieve the first element of the filtered array (or null if no match)
-    const targetTeam = filteredTeams.length > 0 ? filteredTeams[0] : null;
-
-    // Return the current match number or null if the team is not found
-    return targetTeam ? targetTeam.matchNumber || null : null;
-  } catch (error) {
-    console.error('Error getting current match number:', error);
-    throw error;
+  // Check if the team is found
+  if (targetTeam) {
+    // Check if the matchNumber property exists, return it if true, otherwise return 0
+    return targetTeam.matchNumber || 0;
+  } else {
+    // Team not found
+    return 0;
   }
 };
-
-  
-
-  
 

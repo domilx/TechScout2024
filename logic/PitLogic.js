@@ -12,7 +12,7 @@ export const savePitData = async (newPitData, TeamNumber) => {
 
     // Find the target team based on TeamNumber
     const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
-
+    
     if (targetTeamIndex !== -1) {
       // Team with the same number already exists
       Alert.alert(
