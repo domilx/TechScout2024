@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Modal,
   ScrollView,
   StyleSheet,
   Button,
@@ -13,141 +12,151 @@ import QRCode from "react-native-qrcode-svg";
 import Icon2 from "react-native-vector-icons/AntDesign";
 import { encodePitData } from "../logic/EncodingLogic";
 import { loadPitData } from "../logic/PitLogic";
-import { loadMatchCount, loadTeamData, loadTeams, saveMatchCount } from "../logic/TeamLogic";
+import {
+  loadMatchCount,
+  loadTeamData,
+  loadTeams,
+  saveMatchCount,
+} from "../logic/TeamLogic";
 import { loadMatchData } from "../logic/MatchLogic";
-/*function CodeGeneratorRaph({ route }) {
-  let logoFromFile = require('../assets/logo.png');
+import Swiper from "react-native-swiper";
+import * as Haptics from "expo-haptics";
+import Icon from "react-native-vector-icons/Ionicons";
+import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
+import Modal from "react-native-modal";
 
+function CodeGenerator({ route }) {
+  let logoFromFile = require("../assets/logo.png");
+  const [currentPitData, setCurrentPitData] = useState([]);
+  const [MatchModalState, setMatchModalState] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const [items, setItems] = useState([]);
   const { currentTeamNumber } = route.params;
+  const [loading, setLoading] = useState(true);
 
-  const [pitModels, setPitModels] = useState([]);
-  const [currentTeamData, setCurrentTeamData] = useState(null);
 
   useEffect(() => {
-    loadPitData();
-  }, []);
-
-  const loadPitData = async () => {
-    try {
-      const existingPitModels = await AsyncStorage.getItem('pitModels');
-      const pitModels = existingPitModels ? JSON.parse(existingPitModels) : [];
-      setPitModels(pitModels);
-    } catch (error) {
-      console.error('Error loading Pit Data:', error);
-    }
-  };
-
-
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const toggleContent = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-
-  // Store the current team's data
-  useEffect(() => {
-    const currentData = pitModels.find((pitData) => pitData.teamNumber === currentTeamNumber);
-    setCurrentTeamData(currentData);
-  }, [pitModels, currentTeamNumber]);
-
-  const refreshData = async () => {
-    loadPitData();
-  };
-
-  const [encodedData, setEncodedData] = useState([]);
-  const [displayQR, setDisplayQR] = useState(false);
-  const handleEncoding = async () => {
-    try {
-      await refreshData();
-      const encodedData = await encodePitData(currentTeamData);
-      await setEncodedData(encodedData);
-      await AsyncStorage.setItem('encodedData', JSON.stringify(encodedData));
-      setDisplayQR(true);
-      // console.log(Object.keys(JSON.stringify(currentTeamData, 2, null)).length)
-      // console.log(Object.keys(JSON.stringify(encodePitData, 2, null)).length)
-    } catch (error) {
-      console.error('Error encoding or saving data:', error);
-    }
-  };
+    setLoading(false);
+    const loadDataForQR = async () => {
+      try {
+        const pitData = await loadPitData(currentTeamNumber);
+        const matchCount = await loadMatchCount(currentTeamNumber);
+        console.log("Match count: " + matchCount);
+        const loadedItems = {};
+        if (Number.isInteger(matchCount) && matchCount > 0) {
+          const matchDataPromises = Array.from({ length: matchCount }, async (_, i) => {
+            const matchData = await loadMatchData(currentTeamNumber, i + 1);
+            loadedItems[`MatchData${i + 1}`] = matchData;
+          });
+          await Promise.all(matchDataPromises);
+        }
+  
+        setCurrentPitData(pitData);
+        setItems(loadedItems);
+        setLoading(false);
+        console.log("Loaded data for QR/rweifujanbsdlad" + JSON.stringify(loadedItems));
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+  
+    loadDataForQR();
+  }, [currentTeamNumber]);
+  
+  if (loading) {
+    // You can replace this with a loading spinner or message
+    return <Text></Text>;
+  }
+  
   
 
+  const closeModal = () => {
+    setMatchModalState(false);
+    Haptics.impactAsync(Haptics.NotificationFeedbackType.Medium);
+  };
 
-  return (
-    
-
-    <View>
-
-    {currentTeamData === undefined ? (
-      <Text>No data found for Team {currentTeamNumber} </Text>
-    ): (
-      <View>    
-
-        <View style={styles.topContainer}>
-          <TouchableOpacity onPress={handleEncoding}>
-            <View style={styles.loadButton}>
-              <Text style={styles.buttonText}>Load QR</Text>
-              <Icon2 name={'qrcode'} color={'black'} size={30} />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {displayQR ? (
-            <View style={styles.scrollStyle}>
-              <QRCode value={JSON.stringify(encodedData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
-            </View>
-             
-        ):(
-          <Text>Press to Generate QR code</Text>
-        )}
-          
-
-        <View style={styles.scrollStyle}>
-          <TouchableOpacity onPress={toggleContent}>
-            <View style={styles.dataButton}>
-              <Text style={styles.buttonText}>Show Data</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-          <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleContent}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                
-                <Text>{JSON.stringify(currentTeamData, null, 2)}</Text>
-                <TouchableOpacity onPress={toggleContent} style={styles.closeButton}>
-                  <Text style={styles.buttonText}>Close</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-        </View>
-      )}
+  const SliderBox = ({ items }) => {
+    return (
+      <Swiper style={styles.wrapper} loop={false}>
+  {Object.keys(items).map((matchKey, index) => (
+    <View key={index} style={styles.slide}>
+      <QRCode
+        value={JSON.stringify(items[matchKey], null, 2)}
+        size={300}
+        logo={logoFromFile}
+        logoSize={75}
+      />
     </View>
-  );
-}*/
+  ))}
+</Swiper>
 
-function CodeGeneratorDebug({ route }) {
-  useEffect(() => {
-    handlshowdata();
-  }, []);
-  const { currentTeamNumber } = route.params;
-  const [currentTeamData, setCurrentTeamData] = useState([]);
-
-  const handlshowdata = async () => {
-    setCurrentTeamData(await loadPitData(currentTeamNumber));
+    );
   };
 
   return (
-    <View>
-      <Button title="updateData" onPress={handlshowdata} />
-      <Text>{currentTeamNumber}</Text>
-      <Text>{JSON.stringify(currentTeamData)}</Text>
+    <View style={styles.topContainer}>
+      <TouchableOpacity onPress={() => setIsClicked(!isClicked)}>
+        <Text style={styles.tittleText}>
+          Pit Data{" "}
+          <Icon3
+            color="#1E1E1E"
+            name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
+            size={30}
+            style={styles.iconStyle}
+          />
+        </Text>
+      </TouchableOpacity>
+      <QRCode
+        value={JSON.stringify(currentPitData, null, 2)}
+        size={300}
+        logo={logoFromFile}
+        logoSize={75}
+      />
+
+      <TouchableOpacity
+        onPress={() => setMatchModalState(true)}
+        style={styles.openModal}
+      >
+        <Text style={styles.buttonsText}>QR for Matches </Text>
+        <Icon
+          name={"arrow-forward"}
+          color={"#1E1E1E"}
+          size={30}
+          style={styles.iconStyle}
+        />
+      </TouchableOpacity>
+      <Modal
+        animationIn="slideInRight"
+        animationOut="slideOutRight"
+        animationInTiming={300}
+        animationOutTiming={300}
+        isVisible={MatchModalState}
+        onBackdropPress={closeModal}
+        style={styles.modalScreen}
+      >
+        <View style={styles.tittleContainer}>
+          <Text style={styles.tittleText}>Matches</Text>
+        </View>
+        <View style={styles.modalContainer}>
+          <SliderBox items={items}></SliderBox>
+        </View>
+        <View style={styles.returnContainer}>
+          <TouchableOpacity onPress={closeModal} style={styles.closeModal}>
+            <Icon
+              name={"arrow-back-outline"}
+              color={"#1E1E1E"}
+              size={30}
+              style={styles.iconStyle}
+            />
+            <Text style={styles.buttonsText}>QR for Pitscouting</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
 
-function CodeGenerator({ route }) {
+function CodeGeneratorDebug({ route }) {
   let logoFromFile = require("../assets/logo.png");
   const { currentTeamNumber } = route.params;
   const [currentTeamData, setCurrentTeamData] = useState([]);
@@ -156,58 +165,66 @@ function CodeGenerator({ route }) {
   const [handle3, setHandle3] = useState(0);
   useEffect(() => {
     loadDataForQR();
-    
   }, []);
 
   const handle = async () => {
     saveMatchCount(currentTeamNumber);
     setHandle3(await loadMatchCount(currentTeamNumber));
-
-  }
+  };
   const loadDataForQR = async () => {
     setCurrentTeamData(await loadPitData(currentTeamNumber));
     setCurrentMatchData(await loadMatchData(currentTeamNumber, 1));
     setHandle3(await loadMatchCount(currentTeamNumber));
     console.log(await loadTeams());
-    };
+  };
 
   const LoadQR = () => {
     setDisplayQR(true);
-  }
+  };
 
   return (
     <View>
-    {currentTeamData === undefined ? (
-      <Text>No data found for Team {currentTeamNumber} </Text>
-    ): (
-      <ScrollView>    
-
-        <View style={styles.topContainer}>
-          <TouchableOpacity onPress={LoadQR}>
-            <View style={styles.loadButton}>
-              <Text style={styles.buttonText}>Load QR</Text>
-              <Icon2 name={'qrcode'} color={'black'} size={30} />
-            </View>
-          </TouchableOpacity>
-          {displayQR ? (
-          <View style={styles.scrollStyle}>
-              <QRCode value={JSON.stringify(currentTeamData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
-              <Text>             </Text>
-              <QRCode value={JSON.stringify(currentMatchData, null, 2)} size={300} logo={logoFromFile} logoSize={75} />
-              <Text>{JSON.stringify(currentTeamData)}</Text>
-              <Text>{JSON.stringify(currentMatchData)}</Text>
-              <Text>             </Text>
-              <Text> {JSON.stringify(handle3)}</Text>
-              <Button title="addMatch" onPress={handle} />
-              
-            </View>):(<View></View>)}
-        </View>
+      {currentTeamData === undefined ? (
+        <Text>No data found for Team {currentTeamNumber} </Text>
+      ) : (
+        <ScrollView>
+          <View style={styles.topContainer}>
+            <TouchableOpacity onPress={LoadQR}>
+              <View style={styles.loadButton}>
+                <Text style={styles.buttonText}>Load QR</Text>
+                <Icon2 name={"qrcode"} color={"black"} size={30} />
+              </View>
+            </TouchableOpacity>
+            {displayQR ? (
+              <View style={styles.scrollStyle}>
+                <QRCode
+                  value={JSON.stringify(currentTeamData, null, 2)}
+                  size={300}
+                  logo={logoFromFile}
+                  logoSize={75}
+                />
+                <Text> </Text>
+                <QRCode
+                  value={JSON.stringify(currentMatchData, null, 2)}
+                  size={300}
+                  logo={logoFromFile}
+                  logoSize={75}
+                />
+                <Text>{JSON.stringify(currentTeamData)}</Text>
+                <Text>{JSON.stringify(currentMatchData)}</Text>
+                <Text> </Text>
+                <Text> {JSON.stringify(handle3)}</Text>
+                <Button title="addMatch" onPress={handle} />
+              </View>
+            ) : (
+              <View></View>
+            )}
+          </View>
         </ScrollView>
       )}
     </View>
   );
 }
-
 
 export default CodeGenerator;
 
@@ -216,6 +233,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
 
   loadButton: {
@@ -233,6 +251,21 @@ const styles = StyleSheet.create({
       },
     }),
     margin: 50,
+  },
+  wrapper: {},
+  slide: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 50,
+    marginHorizontal: 20,
+    borderRadius: 20,
+  },
+  text: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: "bold",
   },
 
   buttonText: {
@@ -315,5 +348,129 @@ const styles = StyleSheet.create({
       },
     }),
     margin: 50,
+  },
+  popup: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+    margin: 5,
+    borderRadius: 10,
+    width: "95%",
+    backgroundColor: "#F6EB14",
+
+    borderWidth: 2,
+    borderRadius: 10,
+    borderColor: "",
+  },
+  boldText: {
+    fontWeight: "bold",
+    fontSize: 30,
+  },
+  placeholder: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "bold",
+    fontSize: 30,
+  },
+
+  floatingButton: {
+    position: "absolute",
+    right: 20,
+    bottom: 25,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  modalScreen: {
+    backgroundColor: "white",
+    margin: 0,
+  },
+
+  modalContainer: {
+    flex: 3,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+
+  tittleContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingTop: 100,
+  },
+
+  returnContainer: {
+    height: 200,
+    width: "100%",
+    paddingBottom: 100,
+    backgroundColor: "white",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+
+  closeModal: {
+    flexDirection: "row",
+    width: "80%",
+    height: 50,
+    borderWidth: 2,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6EB14",
+  },
+  openModal: {
+    flexDirection: "row",
+    width: "80%",
+    height: 50,
+    borderWidth: 2,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6EB14",
+    marginTop: 50,
+  },
+
+  iconStyle: {
+    marginRight: 10,
+  },
+
+  buttons: {
+    marginTop: 20,
+    width: 200,
+    height: 50,
+    borderWidth: 2,
+    borderRadius: 10,
+    borderColor: "",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6EB14",
+  },
+
+  buttonsText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  tittleText: {
+    fontSize: 42,
+    fontWeight: "bold",
+    paddingBottom: 20,
   },
 });

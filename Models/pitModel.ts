@@ -1,4 +1,4 @@
-
+import { MatchModel } from './MatchModel';
 export interface PitModel {  RobScout: string;
   TeamNb: number;
   RobTeamNm: string;
@@ -25,6 +25,7 @@ export interface PitModel {  RobScout: string;
   RobQuest14: boolean;
   RobQuest15: boolean;
   RobComm1: string;
+  matches?: MatchModel[];
 }
 
 // Enums for dropdowns

@@ -32,7 +32,7 @@ function Pits({ route }) {
       if (loadedPitData === null) {
         setNewPitData(initialPitData);
       }
-      console.log(newPitData);
+      
     };
 
     loadPitDataOnMount();

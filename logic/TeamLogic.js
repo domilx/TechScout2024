@@ -30,6 +30,7 @@ export const loadTeams = async () => {
     const teamsJSON = await AsyncStorage.getItem('teams');
     const teams = teamsJSON ? JSON.parse(teamsJSON) : [];
     teams.sort((a, b) => a.teamNumber - b.teamNumber);
+    //console.log('Teams loaded'+ JSON.stringify(teams));
     return teams;
   } catch (error) {
     console.error('Error loading teams:', error);
@@ -63,7 +64,7 @@ export const loadTeamData = async (teamNumber) => {
   try {
     const teams = await loadTeams();
     const team = teams.find((t) => t.teamNumber === teamNumber);
-    return team || null; // Return null if the team is not found
+    return team ; 
   } catch (error) {
     console.error('Error loading team:', error);
     throw error;
@@ -93,22 +94,17 @@ export const saveMatchCount = async (TeamNumber) => {
   }
 };
 
-
-
-export const loadMatchCount = async (teamNumber) => {
-  const teamsJson = await AsyncStorage.getItem('teams');
-  const teams = teamsJson ? JSON.parse(teamsJson) : [];
-
-  // Find the target team based on teamNumber
-  const targetTeam = teams.find(team => team.teamNumber == teamNumber || team.teamNumber.toString() == teamNumber);
-
-  // Check if the team is found
-  if (targetTeam) {
-    // Check if the matchNumber property exists, return it if true, otherwise return 0
-    return targetTeam.matchNumber || 0;
-  } else {
-    // Team not found
-    return 0;
+export async function loadMatchCount(teamNumber) {
+  try {
+    // Retrieve data from AsyncStorage
+    const team = await loadTeamData(teamNumber);
+      return team.matchNumber;
+      
+    }
+   catch (error) {
+    console.error('Error retrieving data from AsyncStorage:', error);
+    return null; // or handle accordingly based on your app's error handling
   }
-};
+}
+
 

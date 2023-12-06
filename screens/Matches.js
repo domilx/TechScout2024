@@ -30,6 +30,7 @@ import {
   ToggleSwitch,
   DropDownSelector,
 } from "../assets/ReusableStuff";
+
 function Matches({ route }) {
   const { currentTeamNumber } = route.params;
   const [newMatchData, setNewMatchData] = useState(initialMatchData);
@@ -40,10 +41,9 @@ function Matches({ route }) {
   useEffect(() => {
     const loadMatchDataOnMount = async () => {
        setMatchNumber(await loadMatchCount(currentTeamNumber));
-      console.log(matchNumber);
+      
     };
     loadMatchDataOnMount();
-
   },);
 
   const setField = (field, value) => {
@@ -80,13 +80,12 @@ function Matches({ route }) {
   };
 
    async function handleSaveMatchData() {
+    const matchCount = await loadMatchCount(currentTeamNumber);
     setField("TeamNumber", currentTeamNumber);
-    await SaveMatchData(newMatchData, currentTeamNumber, matchNumber);
-    await saveCurrentMatchCount(currentTeamNumber, matchNumber);
+    await Promise.all(SaveMatchData(newMatchData, currentTeamNumber, matchNumber));    
+    setMatchNumber(matchCount);
+    console.log("chrismatch" + matchNumber);
     
-    setMatchNumber(await loadMatchCount(currentTeamNumber));
-
-    //console.log("chrismatch" + matchNumber);
   };
 
   const PositionTypeItem = Object.keys(Position).map((key) => ({

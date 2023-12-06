@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { validateEmptyField } from './ValidationLogic';
 import { initialPitData } from '../Models/PitModel';
-import { loadTeams } from './TeamLogic';
+import { loadTeams, saveMatchCount, loadMatchCount } from './TeamLogic';
 import { initialMatchData } from '../Models/MatchModel';
 
 export const SaveMatchData = async (newMatchData, TeamNumber, MatchNumber) => {
@@ -10,33 +10,32 @@ export const SaveMatchData = async (newMatchData, TeamNumber, MatchNumber) => {
     // Load existing teams from AsyncStorage
     const teamsJson = await AsyncStorage.getItem('teams');
     const teams = teamsJson ? JSON.parse(teamsJson) : [];
-
+    const currentMatchCount = await loadMatchCount();
     // Find the target team based on TeamNumber
     const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
 
     const matchDataKey = `MatchData${MatchNumber}`;
-
     if (targetTeamIndex !== -1) {
       // Team with the same number already exists
       Alert.alert(
-        'Data Exists',
-        'Do you want to replace existing data?',
+        'Save Match',
+        'Once saved, the data for this match cannot be changed. Are you sure you want to save?',
         [
           {
             text: 'Cancel',
             style: 'cancel',
           },
           {
-            text: 'Replace',
+            text: 'Save',
             onPress: async () => {
               // Update the target team with the new pit data under the specified match data key
               teams[targetTeamIndex][matchDataKey] = newMatchData;
 
               // Save the updated teams to AsyncStorage
               await AsyncStorage.setItem('teams', JSON.stringify(teams));
-
+              await saveMatchCount(TeamNumber, MatchNumber);
               // Notify the user that data has been saved
-              alert('Data replaced in AsyncStorage');
+              alert('Saved!');
             },
           },
         ],
