@@ -43,7 +43,7 @@ function Matches({ route }) {
        setMatchCount(await loadMatchCount(currentTeamNumber));
     };
     loadMatchDataOnMount();
-    console.log("chrismatch2222222 " + matchCount);
+    console.log("match count " + matchCount);
   },);
 
   const setField = (field, value) => {
