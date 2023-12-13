@@ -134,9 +134,7 @@ const styles = StyleSheet.create({
       elevation: 2,
     },
     label: {
-      width: 100,
-      marginRight: 10,
-    },
+      flex: 1,    },
     input: {
       borderWidth: 1,
       borderColor: "gray",

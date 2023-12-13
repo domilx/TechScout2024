@@ -76,6 +76,6 @@ export const loadPitData = async (currentTeamNumber) => {
     console.error('Error loading pit data:', error);
 
     // Return the initialPitData in case of an error
-    return initialPitData;
+    return null;
   }
 };

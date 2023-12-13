@@ -5,16 +5,16 @@ import { initialPitData } from '../Models/PitModel';
 import { loadTeams, saveMatchCount, loadMatchCount } from './TeamLogic';
 import { initialMatchData } from '../Models/MatchModel';
 
-export const SaveMatchData = async (newMatchData, TeamNumber, MatchNumber) => {
+export const SaveMatchData = async (newMatchData, TeamNumber, matchCount) => {
   try {
     // Load existing teams from AsyncStorage
     const teamsJson = await AsyncStorage.getItem('teams');
     const teams = teamsJson ? JSON.parse(teamsJson) : [];
-    const currentMatchCount = await loadMatchCount();
+   // const currentMatchCount = await loadMatchCount();
     // Find the target team based on TeamNumber
     const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
 
-    const matchDataKey = `MatchData${MatchNumber}`;
+    const matchDataKey = `MatchData${matchCount}`;
     if (targetTeamIndex !== -1) {
       // Team with the same number already exists
       Alert.alert(
@@ -33,7 +33,7 @@ export const SaveMatchData = async (newMatchData, TeamNumber, MatchNumber) => {
 
               // Save the updated teams to AsyncStorage
               await AsyncStorage.setItem('teams', JSON.stringify(teams));
-              await saveMatchCount(TeamNumber, MatchNumber);
+              await saveMatchCount(TeamNumber, matchCount);
               // Notify the user that data has been saved
               alert('Saved!');
             },

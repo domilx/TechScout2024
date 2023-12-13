@@ -34,16 +34,16 @@ import {
 function Matches({ route }) {
   const { currentTeamNumber } = route.params;
   const [newMatchData, setNewMatchData] = useState(initialMatchData);
-  const [matchNumber, setMatchNumber] = useState(0);
+  const [matchCount, setMatchCount] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
 
 
   useEffect(() => {
     const loadMatchDataOnMount = async () => {
-       setMatchNumber(await loadMatchCount(currentTeamNumber));
-      
+       setMatchCount(await loadMatchCount(currentTeamNumber));
     };
     loadMatchDataOnMount();
+    console.log("chrismatch2222222 " + matchCount);
   },);
 
   const setField = (field, value) => {
@@ -80,11 +80,10 @@ function Matches({ route }) {
   };
 
    async function handleSaveMatchData() {
-    const matchCount = await loadMatchCount(currentTeamNumber);
     setField("TeamNumber", currentTeamNumber);
-    await Promise.all(SaveMatchData(newMatchData, currentTeamNumber, matchNumber));    
-    setMatchNumber(matchCount);
-    console.log("chrismatch" + matchNumber);
+    await Promise.all(SaveMatchData(newMatchData, currentTeamNumber, matchCount));    
+    setMatchCount(matchCount + 1);
+    console.log("chrismatch" + matchCount);
     
   };
 

@@ -98,6 +98,9 @@ export async function loadMatchCount(teamNumber) {
   try {
     // Retrieve data from AsyncStorage
     const team = await loadTeamData(teamNumber);
+      if (team.matchNumber == null) {
+        return 0;
+      }
       return team.matchNumber;
       
     }

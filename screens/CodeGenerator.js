@@ -18,13 +18,15 @@ import {
   loadTeams,
   saveMatchCount,
 } from "../logic/TeamLogic";
+import { useIsFocused } from '@react-navigation/native';
 import { loadMatchData } from "../logic/MatchLogic";
 import Swiper from "react-native-swiper";
 import * as Haptics from "expo-haptics";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Modal from "react-native-modal";
-
+import { initialMatchData } from "../Models/MatchModel";
+import { initialPitData } from "../Models/PitModel";
 function CodeGenerator({ route }) {
   let logoFromFile = require("../assets/logo.png");
   const [currentPitData, setCurrentPitData] = useState([]);
@@ -33,15 +35,14 @@ function CodeGenerator({ route }) {
   const [items, setItems] = useState([]);
   const { currentTeamNumber } = route.params;
   const [loading, setLoading] = useState(true);
-
-
+  const [matchCount, setMatchCount] = useState(0);
+  const isFocused = useIsFocused();
   useEffect(() => {
-    setLoading(false);
+    setLoading(true);
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(currentTeamNumber);
-        const matchCount = await loadMatchCount(currentTeamNumber);
-        console.log("Match count: " + matchCount);
+        setMatchCount(await loadMatchCount(currentTeamNumber));
         const loadedItems = {};
         if (Number.isInteger(matchCount) && matchCount > 0) {
           const matchDataPromises = Array.from({ length: matchCount }, async (_, i) => {
@@ -50,21 +51,18 @@ function CodeGenerator({ route }) {
           });
           await Promise.all(matchDataPromises);
         }
-  
         setCurrentPitData(pitData);
         setItems(loadedItems);
         setLoading(false);
-        console.log("Loaded data for QR/rweifujanbsdlad" + JSON.stringify(loadedItems));
       } catch (error) {
         console.error("Error loading data:", error);
       }
     };
   
     loadDataForQR();
-  }, [currentTeamNumber]);
+  }, [currentTeamNumber, isFocused]);
   
   if (loading) {
-    // You can replace this with a loading spinner or message
     return <Text></Text>;
   }
   
@@ -92,26 +90,37 @@ function CodeGenerator({ route }) {
 
     );
   };
+  const Placeholder = () => {
+    return (
+      <View style={styles.placeholder}>
+        <Text style={styles.boldText}>Nothing Saved</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.topContainer}>
       <TouchableOpacity onPress={() => setIsClicked(!isClicked)}>
+
+      
         <Text style={styles.tittleText}>
           Pit Data{" "}
-          <Icon3
+          {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? ":" :  <Icon3
             color="#1E1E1E"
             name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
             size={30}
             style={styles.iconStyle}
-          />
+          />}
+         
         </Text>
       </TouchableOpacity>
-      <QRCode
+      {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? <Placeholder /> : <QRCode
         value={JSON.stringify(currentPitData, null, 2)}
         size={300}
         logo={logoFromFile}
         logoSize={75}
-      />
+      />}
+      
 
       <TouchableOpacity
         onPress={() => setMatchModalState(true)}
@@ -138,7 +147,7 @@ function CodeGenerator({ route }) {
           <Text style={styles.tittleText}>Matches</Text>
         </View>
         <View style={styles.modalContainer}>
-          <SliderBox items={items}></SliderBox>
+        {matchCount == 0 ? <Placeholder /> : <SliderBox items={items}></SliderBox>}
         </View>
         <View style={styles.returnContainer}>
           <TouchableOpacity onPress={closeModal} style={styles.closeModal}>
@@ -379,7 +388,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   placeholder: {
-    flex: 1,
+    height: 300,
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "bold",
