@@ -79,6 +79,7 @@ function CodeGenerator({ route }) {
       <Swiper style={styles.wrapper} loop={false}>
   {Object.keys(items).map((matchKey, index) => (
     <View key={index} style={styles.slide}>
+      <Text style={styles.boldText}>Match {items[matchKey].MatchNumber}</Text>
       <QRCode
         value={JSON.stringify(items[matchKey], null, 2)}
         size={300}
@@ -101,11 +102,21 @@ function CodeGenerator({ route }) {
 
   return (
     <View style={styles.topContainer}>
-      <TouchableOpacity onPress={() => setIsClicked(!isClicked)}>
-
+      <Text style={styles.tittleText}>
+          Pit Data for team {currentTeamNumber}
+      </Text>
       
-        <Text style={styles.tittleText}>
-          Pit Data{" "}
+      
+      {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? <Placeholder /> : <QRCode
+        value={JSON.stringify(currentPitData, null, 2)}
+        size={300}
+        logo={logoFromFile}
+        logoSize={75}
+      />}
+
+      <TouchableOpacity onPress={() => setIsClicked(!isClicked)}>
+        <Text style={styles.scannedText}>
+          Was Scanned{" "}
           {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? ":" :  <Icon3
             color="#1E1E1E"
             name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
@@ -115,13 +126,6 @@ function CodeGenerator({ route }) {
          
         </Text>
       </TouchableOpacity>
-      {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? <Placeholder /> : <QRCode
-        value={JSON.stringify(currentPitData, null, 2)}
-        size={300}
-        logo={logoFromFile}
-        logoSize={75}
-      />}
-      
 
       <TouchableOpacity
         onPress={() => setMatchModalState(true)}
@@ -145,7 +149,8 @@ function CodeGenerator({ route }) {
         style={styles.modalScreen}
       >
         <View style={styles.tittleContainer}>
-          <Text style={styles.tittleText}>Matches</Text>
+          <Text style={styles.tittleText}>QR for Matches</Text>  
+          <Text style={styles.boldText}>Team {currentTeamNumber}</Text>
         </View>
         <View style={styles.modalContainer}>
         {matchCount == 0 ? <Placeholder /> : <SliderBox items={items}></SliderBox>}
@@ -387,7 +392,15 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: "bold",
     fontSize: 30,
+    paddingBottom: 10
   },
+
+  scannedText: {
+    fontWeight: "400",
+    fontSize: 20,
+    paddingTop: 30
+  },
+
   placeholder: {
     height: 300,
     alignItems: "center",
@@ -479,7 +492,7 @@ const styles = StyleSheet.create({
   },
 
   tittleText: {
-    fontSize: 42,
+    fontSize: 32,
     fontWeight: "bold",
     paddingBottom: 20,
   },
