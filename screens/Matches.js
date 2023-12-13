@@ -9,6 +9,7 @@ import {
   FlatList,
   Switch,
   Platform,
+  Keyboard,
 } from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import {
@@ -152,8 +153,11 @@ function Matches({ route }) {
     { key: "TeleopStatus6", value: newMatchData.TeleopStatus6 },
   ];
 
+  const handleScroll = () => {
+    Keyboard.dismiss();
+  };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}  onStartShouldSetResponderCapture={handleScroll}>
       <ProgressSteps
         completedProgressBarColor="#1E1E1E"
         activeStepIconBorderColor="#1E1E1E"
@@ -182,6 +186,7 @@ function Matches({ route }) {
                       label={item.key}
                       value={item.value}
                       onChange={(text) => setField("ScoutName", text)}
+
                     />
                   )}
                   {item.key === "Match Number" && (
@@ -216,7 +221,8 @@ function Matches({ route }) {
                     label={item.key}
                     value={item.value}
                     items={TBDItem}
-                    onChange={(value) => setEnumField("AutoGamePiece1", value)}
+                    setValue={(value) => setEnumField("AutoGamePiece1", value)}
+                    
                   />
                 )}
                 {item.key === "AutoGamePiece2" && (
@@ -245,7 +251,7 @@ function Matches({ route }) {
                     label={item.key}
                     value={item.value}
                     items={PositionTypeItem}
-                    onChange={(text) => setEnumField("AutoPosition", text)}
+                    setValue={(text) => setEnumField("AutoPosition", text)}
                   />
                 )}
                 {item.key === "AutoMobility" && (
@@ -262,7 +268,7 @@ function Matches({ route }) {
                     label={item.key}
                     value={item.value}
                     items={ChargingStationTypeItem}
-                    onChange={(value) =>
+                    setValue={(value) =>
                       setEnumField("AutoChargingStation", value)
                     }
                   />
@@ -272,7 +278,7 @@ function Matches({ route }) {
                     label={item.key}
                     value={item.value}
                     items={TBDItem}
-                    onChange={(value) => setEnumField("AutoObjective1", value)}
+                    setValue={(value) => setEnumField("AutoObjective1", value)}
                   />
                 )}
                 {item.key === "AutoObjective2" && (
@@ -455,7 +461,7 @@ function Matches({ route }) {
                     label={item.key}
                     value={item.value}
                     items={SpeedTypeItem}
-                    onChange={(value) => setEnumField("TeleopStatus5", value)}
+                    setValue={(value) => setEnumField("TeleopStatus5", value)}
                   />
                 )}
                 {item.key === "TeleopStatus6" && (
@@ -463,7 +469,7 @@ function Matches({ route }) {
                     label={item.key}
                     value={item.value}
                     items={AwareTypeItem}
-                    onChange={(value) => setEnumField("TeleopStatus6", value)}
+                    setValue={(value) => setEnumField("TeleopStatus6", value)}
                   />
                 )}
               </View>

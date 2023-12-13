@@ -8,6 +8,8 @@ import {
   FlatList,
   Switch,
   Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { savePitData } from "../logic/PitLogic";
 import {
@@ -77,6 +79,10 @@ function Pits({ route }) {
     await savePitData(newPitData, currentTeamNumber);
   };
 
+  const handleScroll = () => {
+    Keyboard.dismiss();
+  };
+
   // Dropdown selector for DriveBaseType enum
   const driveBaseTypeItems = Object.keys(DriveBaseType).map((key) => ({
     label: DriveBaseType[key],
@@ -124,18 +130,25 @@ function Pits({ route }) {
     { key: "RobQuest12", value: newPitData.RobQuest12 },
     { key: "RobQuest14", value: newPitData.RobQuest14},
     { key: "RobQuest15", value: newPitData.RobQuest15 },
-    { key: "Communication", value: newPitData.RobComm1 },
+    { key: "Comments", value: newPitData.RobComm1 },
     // Add more data items as needed
   ];
   
 
   return (
+   <View  style={styles.container} onStartShouldSetResponderCapture={handleScroll}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 90} // Adjust this offset as needed
+
+      >
     <FlatList
     style={styles.container}
     data={data}
     keyExtractor={(item) => item.key}
     renderItem={({ item }) => (
-      <View>
+      <View >
         {item.key === "Robot Scout" && (
           <InputField
             label={item.key}
@@ -206,13 +219,6 @@ function Pits({ route }) {
             setValue={(value) => setEnumField("RobStble", value)}
           />
         )}
-        {item.key === "RobQuest1" && (
-          <ToggleSwitch
-            label={item.key}
-            value={newPitData.RobQuest1}
-            onToggle={(newValue) => setBooleanField("RobQuest1", newValue)}
-          />
-        )}
         {item.key.startsWith("RobQuest") && (
           <ToggleSwitch
             label={item.key}
@@ -220,7 +226,7 @@ function Pits({ route }) {
             onToggle={(newValue) => setBooleanField(item.key, newValue)}
           />
         )}
-        {item.key === "Communication" && (
+        {item.key === "Comments" && (
           <InputField
             label={item.key}
             value={item.value}
@@ -243,7 +249,10 @@ function Pits({ route }) {
       
     )}
   />
+  </KeyboardAvoidingView>
+  </View>
    ) }  
+   
 
    const styles = StyleSheet.create({
     container: {

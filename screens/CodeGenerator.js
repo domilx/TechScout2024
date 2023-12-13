@@ -33,24 +33,27 @@ function CodeGenerator({ route }) {
   const [MatchModalState, setMatchModalState] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [items, setItems] = useState([]);
-  const { currentTeamNumber } = route.params;
+  const {currentTeamNumber} = route.params;
   const [loading, setLoading] = useState(true);
   const [matchCount, setMatchCount] = useState(0);
   const isFocused = useIsFocused();
+
   useEffect(() => {
     setLoading(true);
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(currentTeamNumber);
-        setMatchCount(await loadMatchCount(currentTeamNumber));
+        const currentMatchCount = await loadMatchCount(currentTeamNumber);
+        //setMatchCount(await loadMatchCount(currentTeamNumber));
         const loadedItems = {};
-        if (Number.isInteger(matchCount) && matchCount > 0) {
+        if (Number.isInteger(currentMatchCount) && currentMatchCount > 0) {
           const matchDataPromises = Array.from({ length: matchCount }, async (_, i) => {
             const matchData = await loadMatchData(currentTeamNumber, i + 1);
             loadedItems[`MatchData${i + 1}`] = matchData;
           });
           await Promise.all(matchDataPromises);
         }
+        setMatchCount(currentMatchCount);
         setCurrentPitData(pitData);
         setItems(loadedItems);
         setLoading(false);
@@ -65,8 +68,6 @@ function CodeGenerator({ route }) {
   if (loading) {
     return <Text></Text>;
   }
-  
-  
 
   const closeModal = () => {
     setMatchModalState(false);
