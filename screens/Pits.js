@@ -21,6 +21,8 @@ import {
 } from "../Models/PitModel";
 import { DropDownSelector, ToggleSwitch, InputField, SaveButton } from "../assets/ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
+import { validateEmptyField } from "../logic/ValidationLogic";
+
 
 function Pits({ route }) {
   const { currentTeamNumber } = route.params;
@@ -74,10 +76,43 @@ function Pits({ route }) {
     }));
   };
 
-  // Save function
+  // // Save function
+  // const handleSavePitData = async () => {
+  //   console.log(newPitData.RobWidth)
+
+  //   await savePitData(newPitData, currentTeamNumber);
+  // };
+
   const handleSavePitData = async () => {
-    await savePitData(newPitData, currentTeamNumber);
+    try {
+      const validationFields = [
+        { field: "Robot Scout", value: newPitData.RobScout },
+        { field: "Team Name", value: newPitData.RobTeamNm },
+        { field: "Robot Weight", value: newPitData.RobWtlbs},
+        { field: "Robot Width", value: newPitData.RobWidth},
+        { field: "Robot Lenght", value: newPitData.RobLength},
+      ];
+  
+      const validationResults = await Promise.all(
+        validationFields.map(async ({ field, value }) => {
+          return { field, ...await validateEmptyField(field, value) };
+        })
+      );
+  
+      const failedValidation = validationResults.find(result => !result.isValid);
+  
+      if (failedValidation) {
+        alert(failedValidation.errorMessage);
+      } else {
+        // If all validations pass, save pit data
+        await savePitData(newPitData, currentTeamNumber);
+      }
+    } catch (validationFailed) {
+      console.error(validationFailed);
+    }
   };
+  
+  
 
   const handleScroll = () => {
     Keyboard.dismiss();

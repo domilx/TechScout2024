@@ -31,6 +31,7 @@ import {
   ToggleSwitch,
   DropDownSelector,
 } from "../assets/ReusableStuff";
+import { validateEmptyField } from "../logic/ValidationLogic.js";
 
 function Matches({ route }) {
   const { currentTeamNumber } = route.params;
@@ -79,16 +80,53 @@ function Matches({ route }) {
     }));
   };
 
+  // async function handleSaveMatchData() {
+  //   console.log("test")
+  //   setField("TeamNumber", currentTeamNumber);
+  //     const saveSuccess = await SaveMatchData(newMatchData, currentTeamNumber, matchCount);
+  
+  //     if (saveSuccess) {
+  //       // Increment matchCount only if the Save operation was successful
+  //       setMatchCount(matchCount + 1);
+  //     }
+  
+  // }
+
+  // save match data with validation steps
   async function handleSaveMatchData() {
-    setField("TeamNumber", currentTeamNumber);
-      const saveSuccess = await SaveMatchData(newMatchData, currentTeamNumber, matchCount);
+    try {
+      // on peut ajouter des fields si necessaire
+      const validationFields = [
+        { field: "Scout Name", value: newMatchData.ScoutName },
+        { field: "Match Number", value: newMatchData.MatchNumber },
+        { field: "Alliance Points", value: newMatchData.TotalPointsAlliance },
+      ];
   
-      if (saveSuccess) {
-        // Increment matchCount only if the Save operation was successful
-        setMatchCount(matchCount + 1);
+      const validationResults = await Promise.all(
+        validationFields.map(async ({ field, value }) => {
+          return { field, ...await validateEmptyField(field, value) };
+        })
+      );
+  
+      const failedValidation = validationResults.find(result => !result.isValid);
+  
+      if (failedValidation) {
+        alert(failedValidation.errorMessage);
+      } else {
+        // If all validations pass, save match data
+        setField("TeamNumber", currentTeamNumber);
+        const saveSuccess = await SaveMatchData(newMatchData, currentTeamNumber, matchCount);
+  
+        if (saveSuccess) {
+          // Increment matchCount only if the Save operation was successful
+          setMatchCount(matchCount + 1);
+        }
       }
-  
+    } catch (validationFailed) {
+      console.error(validationFailed);
+    }
   }
+  
   
 
   const PositionTypeItem = Object.keys(Position).map((key) => ({
