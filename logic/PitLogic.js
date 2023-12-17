@@ -13,7 +13,7 @@ export const savePitData = async (newPitData, TeamNumber) => {
     // Find the target team based on TeamNumber
     const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
     
-    if (targetTeamIndex !== -1) {
+    if (teams[targetTeamIndex].pitData !== undefined) {
       // Team with the same number already exists
       Alert.alert(
         'Data Exists',
@@ -41,16 +41,13 @@ export const savePitData = async (newPitData, TeamNumber) => {
       );
     } else {
       // Add a new team since it doesn't exist
-      teams.push({
-        teamNumber: TeamNumber,
-        pitData: newPitData,
-      });
+      teams[targetTeamIndex].pitData = newPitData;
 
       // Save the updated teams to AsyncStorage
       await AsyncStorage.setItem('teams', JSON.stringify(teams));
 
       // Notify the user that data has been saved
-      alert('Data saved to AsyncStorage');
+      alert('Data replaced in AsyncStorage');
     }
   } catch (error) {
     console.error('Error saving pit data:', error);

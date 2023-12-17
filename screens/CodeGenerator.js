@@ -27,6 +27,7 @@ import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Modal from "react-native-modal";
 import { initialMatchData } from "../Models/MatchModel";
 import { initialPitData } from "../Models/PitModel";
+
 function CodeGenerator({ route }) {
   let logoFromFile = require("../assets/logo.png");
   const [currentPitData, setCurrentPitData] = useState([]);
@@ -37,26 +38,37 @@ function CodeGenerator({ route }) {
   const [loading, setLoading] = useState(true);
   const [matchCount, setMatchCount] = useState(0);
   const isFocused = useIsFocused();
+  
 
   useEffect(() => {
     setLoading(true);
+    
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(currentTeamNumber);
         const currentMatchCount = await loadMatchCount(currentTeamNumber);
-        //setMatchCount(await loadMatchCount(currentTeamNumber));
-        const loadedItems = {};
+  
+        // Check if matchCount is a positive integer before proceeding
         if (Number.isInteger(currentMatchCount) && currentMatchCount > 0) {
-          const matchDataPromises = Array.from({ length: matchCount }, async (_, i) => {
+          const loadedItems = {};
+          const matchDataPromises = Array.from({ length: currentMatchCount }, async (_, i) => {
             const matchData = await loadMatchData(currentTeamNumber, i + 1);
             loadedItems[`MatchData${i + 1}`] = matchData;
           });
           await Promise.all(matchDataPromises);
+  
+          setMatchCount(currentMatchCount);
+          setCurrentPitData(pitData);
+          setItems(loadedItems);
+          setLoading(false);
+          //console.log(items);
+        } else {
+          // Handle the case where matchCount is not a positive integer
+          setMatchCount(currentMatchCount);
+          setCurrentPitData(pitData);
+          setLoading(false);
+          //console.log(items);
         }
-        setMatchCount(currentMatchCount);
-        setCurrentPitData(pitData);
-        setItems(loadedItems);
-        setLoading(false);
       } catch (error) {
         console.error("Error loading data:", error);
       }
@@ -65,8 +77,10 @@ function CodeGenerator({ route }) {
     loadDataForQR();
   }, [currentTeamNumber, isFocused]);
   
+  
+
   if (loading) {
-    return <Text></Text>;
+    return <Text>LOADING ...</Text>;
   }
 
   const closeModal = () => {
@@ -76,18 +90,21 @@ function CodeGenerator({ route }) {
 
   const SliderBox = ({ items }) => {
     return (
+
       <Swiper style={styles.wrapper} loop={false}>
-  {Object.keys(items).map((matchKey, index) => (
-    <View key={index} style={styles.slide}>
-      <Text style={styles.boldText}>Match {items[matchKey].MatchNumber}</Text>
-      <QRCode
-        value={JSON.stringify(items[matchKey], null, 2)}
-        size={300}
-        logo={logoFromFile}
-        logoSize={75}
-      />
-    </View>
-  ))}
+
+{Object.keys(items).map((matchKey, index) => (
+  <View key={index} style={styles.slide}>
+    <Text style={styles.boldText}>Match {JSON.stringify(items[matchKey].MatchNumber)}</Text>
+    <QRCode
+      value={JSON.stringify(items[matchKey], null, 2)}
+      size={300}
+      logo={logoFromFile}
+      logoSize={75}
+    />
+  </View>
+))}
+
 </Swiper>
 
     );

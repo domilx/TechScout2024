@@ -44,7 +44,6 @@ function Matches({ route }) {
        setMatchCount(await loadMatchCount(currentTeamNumber));
     };
     loadMatchDataOnMount();
-    console.log("match count " + matchCount);
   },);
 
   const setField = (field, value) => {
@@ -80,13 +79,17 @@ function Matches({ route }) {
     }));
   };
 
-   async function handleSaveMatchData() {
+  async function handleSaveMatchData() {
     setField("TeamNumber", currentTeamNumber);
-    await Promise.all(SaveMatchData(newMatchData, currentTeamNumber, matchCount));    
-    setMatchCount(matchCount + 1);
-    console.log("chrismatch" + matchCount);
-    
-  };
+      const saveSuccess = await SaveMatchData(newMatchData, currentTeamNumber, matchCount);
+  
+      if (saveSuccess) {
+        // Increment matchCount only if the Save operation was successful
+        setMatchCount(matchCount + 1);
+      }
+  
+  }
+  
 
   const PositionTypeItem = Object.keys(Position).map((key) => ({
     label: Position[key],
