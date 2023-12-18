@@ -57,13 +57,13 @@ export const ToggleSwitch = ({ label, onToggle, value }) => (
 export const DropDownSelector = ({ label, items, value, setValue }) => {
   return (
     <View style={styles.subViews}>
-      <Text style={styles.text}>{label}</Text>
+      <Text style={styles.label}>{label}</Text>
       <Dropdown
         style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
+        placeholderStyle={styles.dropdownPlaceholder}
+        selectedTextStyle={styles.dropdownSelectedText}
+        inputSearchStyle={styles.dropdownInputSearch}
+        iconStyle={styles.dropdownIcon}
         data={items}
         maxHeight={300}
         labelField="label"
@@ -79,91 +79,110 @@ export const DropDownSelector = ({ label, items, value, setValue }) => {
   );
 };
 
-export const SaveButton = ({save}) => {
-    return (
-        <TouchableOpacity onPress={save}>
-        <View style={styles.saveButton}>
-          <Text style={styles.text}>Save Data</Text>
-        </View>
-      </TouchableOpacity>
-    );
-    };
+export const SaveButton = ({ save }) => {
+  return (
+    <TouchableOpacity onPress={save}>
+      <View style={styles.saveButton}>
+        <Text style={styles.text}>Save Data</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    contentContainer: {
-      paddingVertical: 20,
-      alignItems: "center",
-    },
-    text: {
-      fontSize: 20,
-      fontWeight: "bold",
-    },
-    inputContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginVertical: 10,
-      borderRadius: 10,
-      backgroundColor: "#F0F0F0",
-      padding: 10,
-    },
-    headerContainer: {
-      alignItems: "center",
-      marginVertical: 10,
-    },
-    headerText: {
-      fontSize: 20,
-      fontWeight: "bold",
-    },
-    dropdown: {
-      margin: 16,
-      height: 50,
-      width: 300,
-      backgroundColor: "white",
-      borderRadius: 12,
-      padding: 12,
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.41,
-      elevation: 2,
-    },
-    label: {
-      flex: 1,    },
-    input: {
-      borderWidth: 1,
-      borderColor: "gray",
-      borderRadius: 5,
-      padding: 10,
-      flex: 1,
-    },
-    switchContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%",
-      marginVertical: 10,
-      borderRadius: 10,
-      padding: 10,
-    },
-    subViews: {
-      width: "100%",
-      alignItems: "center",
-      marginVertical: 10,
-      borderRadius: 10,
-      backgroundColor: "#F0F0F0",
-      padding: 10,
-    },
-    saveButton: {
-      backgroundColor: "#F6EB14",
-      borderRadius: 10,
-      padding: 15,
-      alignItems: "center",
-    },
-  });
-  
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  inputContainer: {
+    flexDirection: "column",
+    alignItems: "flex-start", // Align input and label to the start of the container
+    marginVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#F0F0F0",
+    padding: 10,
+    marginHorizontal: 20,
+  },
+  label: {
+    marginBottom: 5, // Add margin below the label
+    color: "#555", // Customize label text color
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#A0A0A0", // Customize input border color
+    borderRadius: 15,
+    padding: 10,
+    width: "100%", // Take up the full width of the container
+    fontSize: 16, // Customize input font size
+    color: "#333", // Customize input text color
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  dropdown: {
+    margin: 0,
+    height: 50,
+    width: "100%", // Take up the full width of the container
+    backgroundColor: "#F0F0F0", // Match the background color
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "#A0A0A0", // Customize border color
+    padding: 10,
+  },
+  dropdownPlaceholder: {
+    color: "#A0A0A0", // Customize placeholder text color
+  },
+  dropdownSelectedText: {
+    color: "#333", // Customize selected text color
+  },
+  dropdownInputSearch: {
+    color: "#333", // Customize search input text color
+  },
+  dropdownIcon: {
+    color: "#333", // Customize dropdown icon color
+  },
+  switchContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginVertical: 10,
+    borderRadius: 10,
+    padding: 10,
+  },
+  subViews: {
+    width: "90%",
+    alignItems: "center",
+    marginVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#F0F0F0",
+    padding: 10,
+    marginHorizontal: 20,
+
+    flexDirection: "column",
+    alignItems: "flex-start", // Align input and label to the start of the container
+    marginVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#F0F0F0",
+    padding: 10,
+    marginHorizontal: 20,
+  },
+  saveButton: {
+    backgroundColor: "#F6EB14",
+    borderRadius: 10,
+    padding: 15,
+    alignItems: "center",
+  },
+});

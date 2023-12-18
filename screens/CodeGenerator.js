@@ -18,7 +18,7 @@ import {
   loadTeams,
   saveMatchCount,
 } from "../logic/TeamLogic";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 import { loadMatchData } from "../logic/MatchLogic";
 import Swiper from "react-native-swiper";
 import * as Haptics from "expo-haptics";
@@ -34,29 +34,31 @@ function CodeGenerator({ route }) {
   const [MatchModalState, setMatchModalState] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [items, setItems] = useState([]);
-  const {currentTeamNumber} = route.params;
+  const { currentTeamNumber } = route.params;
   const [loading, setLoading] = useState(true);
   const [matchCount, setMatchCount] = useState(0);
   const isFocused = useIsFocused();
-  
 
   useEffect(() => {
     setLoading(true);
-    
+
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(currentTeamNumber);
         const currentMatchCount = await loadMatchCount(currentTeamNumber);
-  
+
         // Check if matchCount is a positive integer before proceeding
         if (Number.isInteger(currentMatchCount) && currentMatchCount > 0) {
           const loadedItems = {};
-          const matchDataPromises = Array.from({ length: currentMatchCount }, async (_, i) => {
-            const matchData = await loadMatchData(currentTeamNumber, i + 1);
-            loadedItems[`MatchData${i + 1}`] = matchData;
-          });
+          const matchDataPromises = Array.from(
+            { length: currentMatchCount },
+            async (_, i) => {
+              const matchData = await loadMatchData(currentTeamNumber, i + 1);
+              loadedItems[`MatchData${i + 1}`] = matchData;
+            }
+          );
           await Promise.all(matchDataPromises);
-  
+
           setMatchCount(currentMatchCount);
           setCurrentPitData(pitData);
           setItems(loadedItems);
@@ -73,11 +75,9 @@ function CodeGenerator({ route }) {
         console.error("Error loading data:", error);
       }
     };
-  
+
     loadDataForQR();
   }, [currentTeamNumber, isFocused]);
-  
-  
 
   if (loading) {
     return <Text>LOADING ...</Text>;
@@ -90,23 +90,21 @@ function CodeGenerator({ route }) {
 
   const SliderBox = ({ items }) => {
     return (
-
       <Swiper style={styles.wrapper} loop={false}>
-
-{Object.keys(items).map((matchKey, index) => (
-  <View key={index} style={styles.slide}>
-    <Text style={styles.boldText}>Match {JSON.stringify(items[matchKey].MatchNumber)}</Text>
-    <QRCode
-      value={JSON.stringify(items[matchKey], null, 2)}
-      size={300}
-      logo={logoFromFile}
-      logoSize={75}
-    />
-  </View>
-))}
-
-</Swiper>
-
+        {Object.keys(items).map((matchKey, index) => (
+          <View key={index} style={styles.slide}>
+            <Text style={styles.boldText}>
+              Match {JSON.stringify(items[matchKey].MatchNumber)}
+            </Text>
+            <QRCode
+              value={JSON.stringify(items[matchKey], null, 2)}
+              size={300}
+              logo={logoFromFile}
+              logoSize={75}
+            />
+          </View>
+        ))}
+      </Swiper>
     );
   };
   const Placeholder = () => {
@@ -120,27 +118,33 @@ function CodeGenerator({ route }) {
   return (
     <View style={styles.topContainer}>
       <Text style={styles.tittleText}>
-          Pit Data for team {currentTeamNumber}
+        Pit Data for team {currentTeamNumber}
       </Text>
-      
-      
-      {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? <Placeholder /> : <QRCode
-        value={JSON.stringify(currentPitData, null, 2)}
-        size={300}
-        logo={logoFromFile}
-        logoSize={75}
-      />}
+
+      {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? (
+        <Placeholder />
+      ) : (
+        <QRCode
+          value={JSON.stringify(currentPitData, null, 2)}
+          size={300}
+          logo={logoFromFile}
+          logoSize={75}
+        />
+      )}
 
       <TouchableOpacity onPress={() => setIsClicked(!isClicked)}>
         <Text style={styles.scannedText}>
           Was Scanned{" "}
-          {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? ":" :  <Icon3
-            color="#1E1E1E"
-            name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
-            size={30}
-            style={styles.iconStyle}
-          />}
-         
+          {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? (
+            ":"
+          ) : (
+            <Icon3
+              color="#1E1E1E"
+              name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
+              size={30}
+              style={styles.iconStyle}
+            />
+          )}
         </Text>
       </TouchableOpacity>
 
@@ -166,11 +170,15 @@ function CodeGenerator({ route }) {
         style={styles.modalScreen}
       >
         <View style={styles.tittleContainer}>
-          <Text style={styles.tittleText}>QR for Matches</Text>  
+          <Text style={styles.tittleText}>QR for Matches</Text>
           <Text style={styles.boldText}>Team {currentTeamNumber}</Text>
         </View>
         <View style={styles.modalContainer}>
-        {matchCount == 0 ? <Placeholder /> : <SliderBox items={items}></SliderBox>}
+          {matchCount == 0 ? (
+            <Placeholder />
+          ) : (
+            <SliderBox items={items}></SliderBox>
+          )}
         </View>
         <View style={styles.returnContainer}>
           <TouchableOpacity onPress={closeModal} style={styles.closeModal}>
@@ -409,13 +417,13 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: "bold",
     fontSize: 30,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
 
   scannedText: {
     fontWeight: "400",
     fontSize: 20,
-    paddingTop: 30
+    paddingTop: 30,
   },
 
   placeholder: {
