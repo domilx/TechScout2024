@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -19,8 +19,8 @@ import {
 } from "../Models/PitModel";
 import { Dropdown } from "react-native-element-dropdown";
 import { loadPitData } from "../logic/PitLogic";
+import * as Animatable from 'react-native-animatable'; // Import the library
 
-// Define the InputField component
 export const InputField = ({
   label,
   value,
@@ -40,12 +40,11 @@ export const InputField = ({
   </View>
 );
 
-// Define the ToggleSwitch component
 export const ToggleSwitch = ({ label, onToggle, value }) => (
   <View style={styles.switchContainer}>
     <Text>{label}</Text>
     <Switch
-      trackColor={{ false: "gray", true: "green" }}
+      trackColor={{ false: "#333", true: "#333" }}
       thumbColor={value ? "white" : "white"}
       onValueChange={onToggle}
       value={value}
@@ -53,7 +52,6 @@ export const ToggleSwitch = ({ label, onToggle, value }) => (
   </View>
 );
 
-// Define the DropDownSelector component
 export const DropDownSelector = ({ label, items, value, setValue }) => {
   return (
     <View style={styles.subViews}>
@@ -62,10 +60,10 @@ export const DropDownSelector = ({ label, items, value, setValue }) => {
         style={styles.dropdown}
         placeholderStyle={styles.dropdownPlaceholder}
         selectedTextStyle={styles.dropdownSelectedText}
-        inputSearchStyle={styles.dropdownInputSearch}
-        iconStyle={styles.dropdownIcon}
+        containerStyle={styles.list}
+        activeColor="#F0F0F0"
         data={items}
-        maxHeight={300}
+        maxHeight={200}
         labelField="label"
         valueField="value"
         placeholder="Select item"
@@ -83,7 +81,7 @@ export const SaveButton = ({ save }) => {
   return (
     <TouchableOpacity onPress={save}>
       <View style={styles.saveButton}>
-        <Text style={styles.text}>Save Data</Text>
+        <Text style={styles.saveButtonText}>Save Data</Text>
       </View>
     </TouchableOpacity>
   );
@@ -101,10 +99,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  list:{
+    backgroundColor: "#F0F0F0",
+    borderRadius: '15'
+  },
   inputContainer: {
     flexDirection: "column",
     alignItems: "flex-start", // Align input and label to the start of the container
-    marginVertical: 10,
+    marginVertical: 0,
     borderRadius: 10,
     backgroundColor: "#F0F0F0",
     padding: 10,
@@ -146,22 +148,24 @@ const styles = StyleSheet.create({
   },
   dropdownSelectedText: {
     color: "#333", // Customize selected text color
+
   },
   dropdownInputSearch: {
     color: "#333", // Customize search input text color
   },
-  dropdownIcon: {
-    color: "#333", // Customize dropdown icon color
-  },
+
   switchContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
-    marginVertical: 10,
-    borderRadius: 10,
+    margin: 20,
+    marginHorizontal: 28,
+    borderRadius: 15,
     padding: 10,
+    borderColor: "#A0A0A0", // Set border color to black
+    borderWidth: 1, // Set border width
   },
+  
   subViews: {
     width: "90%",
     alignItems: "center",
@@ -180,9 +184,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   saveButton: {
-    backgroundColor: "#F6EB14",
+    backgroundColor: "#333", // Green color for the button
     borderRadius: 10,
     padding: 15,
     alignItems: "center",
+    margin: 20, // Add some margin at the top
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  saveButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#F6EB14", // White text color for better contrast
   },
 });

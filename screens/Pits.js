@@ -121,15 +121,6 @@ function Pits({ route }) {
     { key: "RobQuest4", value: newPitData.RobQuest4 },
     { key: "RobQuest5", value: newPitData.RobQuest5 },
     { key: "RobQuest6", value: newPitData.RobQuest6 },
-    { key: "RobQuest7", value: newPitData.RobQuest7 },
-    { key: "RobQuest8", value: newPitData.RobQuest8 },
-    { key: "RobQuest9", value: newPitData.RobQuest9 },
-    { key: "RobQuest11", value: newPitData.RobQuest11 },
-    { key: "RobQuest10", value: newPitData.RobQuest10 },
-    { key: "RobQuest13", value: newPitData.RobQuest13 },
-    { key: "RobQuest12", value: newPitData.RobQuest12 },
-    { key: "RobQuest14", value: newPitData.RobQuest14},
-    { key: "RobQuest15", value: newPitData.RobQuest15 },
     { key: "Comments", value: newPitData.RobComm1 },
     // Add more data items as needed
   ];
