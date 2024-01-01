@@ -19,13 +19,17 @@ import {
   saveMatchCount,
 } from "../logic/TeamLogic";
 import { useIsFocused } from "@react-navigation/native";
-import { loadMatchData } from "../logic/MatchLogic";
+import {
+  loadMatchData,
+  saveMatchScanned,
+  isMatchScanned,
+} from "../logic/MatchLogic";
+import { isPitScanned, savePitScanned } from "../logic/PitLogic";
 import Swiper from "react-native-swiper";
 import * as Haptics from "expo-haptics";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Modal from "react-native-modal";
-import { initialMatchData } from "../Models/MatchModel";
 import { initialPitData } from "../Models/PitModel";
 
 function CodeGenerator({ route }) {
@@ -46,7 +50,7 @@ function CodeGenerator({ route }) {
       try {
         const pitData = await loadPitData(currentTeamNumber);
         const currentMatchCount = await loadMatchCount(currentTeamNumber);
-
+        const PitScanState = await isPitScanned(currentTeamNumber);
         // Check if matchCount is a positive integer before proceeding
         if (Number.isInteger(currentMatchCount) && currentMatchCount > 0) {
           const loadedItems = {};
@@ -58,7 +62,8 @@ function CodeGenerator({ route }) {
             }
           );
           await Promise.all(matchDataPromises);
-
+          setIsClicked(!PitScanState);
+          console.log(PitScanState);
           setMatchCount(currentMatchCount);
           setCurrentPitData(pitData);
           setItems(loadedItems);
@@ -66,6 +71,7 @@ function CodeGenerator({ route }) {
           //console.log(items);
         } else {
           // Handle the case where matchCount is not a positive integer
+          setIsClicked(!PitScanState);
           setMatchCount(currentMatchCount);
           setCurrentPitData(pitData);
           setLoading(false);
@@ -115,44 +121,77 @@ function CodeGenerator({ route }) {
     );
   };
 
+  const handleMatchScanned = async (MatchNumber) => {
+    try {
+      await saveMatchScanned(currentTeamNumber, MatchNumber);
+
+      // Continue with the rest of your code
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle the error as needed
+    }
+  };
+
+  const handlePitScanned = async () => {
+    try {
+      await savePitScanned(currentTeamNumber, true);
+      setIsClicked(false);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const getMatchScanned = async (MatchNumber) => {
+    try {
+      const saveMatch1 = await isMatchScanned(currentTeamNumber, MatchNumber);
+      return saveMatch1;
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <View style={styles.topContainer}>
       <Text style={styles.tittleText}>
         Pit Data for team {currentTeamNumber}
       </Text>
-
       {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? (
         <Placeholder />
       ) : (
-        <QRCode
-          value={JSON.stringify(currentPitData, null, 2)}
-          size={300}
-          logo={logoFromFile}
-          logoSize={75}
-        />
-      )}
-
-      <TouchableOpacity onPress={() => setIsClicked(!isClicked)}>
-        <Text style={styles.scannedText}>
-          Was Scanned{" "}
-          {JSON.stringify(currentPitData) == JSON.stringify(initialPitData) ? (
-            ":"
-          ) : (
+        <View
+          style={{
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <QRCode
+            value={JSON.stringify(currentPitData, null, 2)}
+            size={300}
+            logo={logoFromFile}
+            logoSize={75}
+          />
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "baseline" }}
+            onPress={() => handlePitScanned()}
+          >
+            <Text style={styles.scannedText}>Was Scanned</Text>
             <Icon3
               color="#1E1E1E"
               name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
               size={30}
               style={styles.iconStyle}
             />
-          )}
-        </Text>
-      </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <TouchableOpacity
         onPress={() => setMatchModalState(true)}
         style={styles.openModal}
       >
-        <Text style={styles.buttonsText}>QR for Matches </Text>
+        <Text style={styles.buttonsText}>
+          Match Data for team {currentTeamNumber}
+        </Text>
         <Icon
           name={"arrow-forward"}
           color={"#1E1E1E"}
@@ -170,8 +209,9 @@ function CodeGenerator({ route }) {
         style={styles.modalScreen}
       >
         <View style={styles.tittleContainer}>
-          <Text style={styles.tittleText}>QR for Matches</Text>
-          <Text style={styles.boldText}>Team {currentTeamNumber}</Text>
+          <Text style={styles.tittleText}>
+            Match Data for team {currentTeamNumber}
+          </Text>
         </View>
         <View style={styles.modalContainer}>
           {matchCount == 0 ? (
@@ -179,7 +219,20 @@ function CodeGenerator({ route }) {
           ) : (
             <SliderBox items={items}></SliderBox>
           )}
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "baseline" }}
+            onPress={() => setIsClicked(!isClicked)}
+          >
+            <Text style={styles.scannedText}>Was Scanned</Text>
+            <Icon3
+              color="#1E1E1E"
+              name={isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
+              size={30}
+              style={styles.iconStyle}
+            />
+          </TouchableOpacity>
         </View>
+
         <View style={styles.returnContainer}>
           <TouchableOpacity onPress={closeModal} style={styles.closeModal}>
             <Icon
@@ -192,76 +245,6 @@ function CodeGenerator({ route }) {
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
-  );
-}
-
-function CodeGeneratorDebug({ route }) {
-  let logoFromFile = require("../assets/logo.png");
-  const { currentTeamNumber } = route.params;
-  const [currentTeamData, setCurrentTeamData] = useState([]);
-  const [currentMatchData, setCurrentMatchData] = useState([]);
-  const [displayQR, setDisplayQR] = useState(false);
-  const [handle3, setHandle3] = useState(0);
-  useEffect(() => {
-    loadDataForQR();
-  }, []);
-
-  const handle = async () => {
-    saveMatchCount(currentTeamNumber);
-    setHandle3(await loadMatchCount(currentTeamNumber));
-  };
-  const loadDataForQR = async () => {
-    setCurrentTeamData(await loadPitData(currentTeamNumber));
-    setCurrentMatchData(await loadMatchData(currentTeamNumber, 1));
-    setHandle3(await loadMatchCount(currentTeamNumber));
-    console.log(await loadTeams());
-  };
-
-  const LoadQR = () => {
-    setDisplayQR(true);
-  };
-
-  return (
-    <View>
-      {currentTeamData === undefined ? (
-        <Text>No data found for Team {currentTeamNumber} </Text>
-      ) : (
-        <ScrollView>
-          <View style={styles.topContainer}>
-            <TouchableOpacity onPress={LoadQR}>
-              <View style={styles.loadButton}>
-                <Text style={styles.buttonText}>Load QR</Text>
-                <Icon2 name={"qrcode"} color={"black"} size={30} />
-              </View>
-            </TouchableOpacity>
-            {displayQR ? (
-              <View style={styles.scrollStyle}>
-                <QRCode
-                  value={JSON.stringify(currentTeamData, null, 2)}
-                  size={300}
-                  logo={logoFromFile}
-                  logoSize={75}
-                />
-                <Text> </Text>
-                <QRCode
-                  value={JSON.stringify(currentMatchData, null, 2)}
-                  size={300}
-                  logo={logoFromFile}
-                  logoSize={75}
-                />
-                <Text>{JSON.stringify(currentTeamData)}</Text>
-                <Text>{JSON.stringify(currentMatchData)}</Text>
-                <Text> </Text>
-                <Text> {JSON.stringify(handle3)}</Text>
-                <Button title="addMatch" onPress={handle} />
-              </View>
-            ) : (
-              <View></View>
-            )}
-          </View>
-        </ScrollView>
-      )}
     </View>
   );
 }
@@ -424,6 +407,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 20,
     paddingTop: 30,
+    paddingBottom: 4,
   },
 
   placeholder: {
@@ -517,7 +501,7 @@ const styles = StyleSheet.create({
   },
 
   tittleText: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
     paddingBottom: 20,
   },
