@@ -90,7 +90,6 @@ export const savePitScanned = async (TeamNumber, state) => {
     if (targetTeamIndex !== -1) {
       teams[targetTeamIndex][matchDataKey].gotScanned = state;
       await AsyncStorage.setItem("teams", JSON.stringify(teams));
-      console.log(teams);
 
     } else {
       console.log("Team not found");
