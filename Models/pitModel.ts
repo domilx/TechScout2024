@@ -25,6 +25,7 @@ export interface PitModel {  RobScout: string;
   RobQuest14: boolean;
   RobQuest15: boolean;
   RobComm1: string;
+  gotScanned: boolean;
   matches?: MatchModel[];
 }
 
@@ -82,4 +83,6 @@ export const initialPitData: PitModel = {  RobScout: "",
   RobQuest14: false,
   RobQuest15: false,
   RobComm1: "",
+  gotScanned: false,
+
 };

@@ -89,6 +89,9 @@ const StackNavigator = () => {
           <Text style={styles.contentTitle}>
             &#x2022; Hold a team button to enter edit mode
           </Text>
+          <Text style={styles.contentTitle}>
+            &#x2022; Dont forget to tick the "Was Scanned"
+          </Text>
           <Button onPress={closeModal} title="Close" />
         </View>
       </Modal>

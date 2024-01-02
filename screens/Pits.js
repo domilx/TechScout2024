@@ -11,7 +11,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
 } from "react-native";
-import { savePitData } from "../logic/PitLogic";
+import { savePitData, savePitScanned } from "../logic/PitLogic";
 import {
   initialPitData,
   DriveBaseType,

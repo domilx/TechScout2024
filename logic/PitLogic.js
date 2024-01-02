@@ -31,7 +31,7 @@ export const savePitData = async (newPitData, TeamNumber) => {
 
               // Save the updated teams to AsyncStorage
               await AsyncStorage.setItem('teams', JSON.stringify(teams));
-
+              await savePitScanned(TeamNumber, false);
               // Notify the user that data has been saved
               alert('Data replaced in AsyncStorage');
             },
@@ -74,5 +74,50 @@ export const loadPitData = async (currentTeamNumber) => {
 
     // Return the initialPitData in case of an error
     return null;
+  }
+};
+
+export const savePitScanned = async (TeamNumber, state) => {
+  try {
+    const teamsJson = await AsyncStorage.getItem("teams");
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
+    const matchDataKey = 'pitData';
+    const targetTeamIndex = teams.findIndex(
+      (team) =>
+        team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber
+    );
+
+    if (targetTeamIndex !== -1) {
+      teams[targetTeamIndex][matchDataKey].gotScanned = state;
+      await AsyncStorage.setItem("teams", JSON.stringify(teams));
+
+    } else {
+      console.log("Team not found");
+    }
+  } catch (error) {
+    console.error("Error saving match scanned status:", error);
+  }
+};
+
+export const isPitScanned = async (teamNumber) => {
+  try {
+    const teamsJson = await AsyncStorage.getItem("teams");
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
+    const matchDataKey = `pitData`;
+
+    const targetTeam = teams.find(
+      (team) =>
+        team.teamNumber == teamNumber || team.teamNumber.toString() == teamNumber
+    );
+
+    if (targetTeam) {
+      return !!targetTeam[matchDataKey]?.gotScanned;
+    } else {
+      console.log("Team not found");
+      return false;
+    }
+  } catch (error) {
+    console.error("Error checking if match is scanned:", error);
+    return false;
   }
 };
