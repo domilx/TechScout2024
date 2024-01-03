@@ -12,18 +12,8 @@ import {
   Keyboard,
 } from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
-import {
-  loadMatchCount,
-  saveCurrentMatchCount,
-} from "../logic/TeamLogic.js";
-import {
-  initialMatchData,
-  Position,
-  ChargingStation,
-  TBD,
-  Speed,
-  Aware,
-} from "../Models/MatchModel";
+import { loadMatchCount, saveCurrentMatchCount } from "../logic/TeamLogic.js";
+import * as MatchModel from "../Models/MatchModel";
 import { Dropdown } from "react-native-element-dropdown";
 import { loadPitData } from "../logic/PitLogic";
 import {
@@ -35,17 +25,16 @@ import { validateEmptyField } from "../logic/ValidationLogic.js";
 
 function Matches({ route }) {
   const { currentTeamNumber } = route.params;
-  const [newMatchData, setNewMatchData] = useState(initialMatchData);
+  const [newMatchData, setNewMatchData] = useState(MatchModel.initialMatchData);
   const [matchCount, setMatchCount] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
 
-
   useEffect(() => {
     const loadMatchDataOnMount = async () => {
-       setMatchCount(await loadMatchCount(currentTeamNumber));
+      setMatchCount(await loadMatchCount(currentTeamNumber));
     };
     loadMatchDataOnMount();
-  },);
+  });
 
   const setField = (field, value) => {
     setNewMatchData((prevData) => ({
@@ -80,18 +69,6 @@ function Matches({ route }) {
     }));
   };
 
-  // async function handleSaveMatchData() {
-  //   console.log("test")
-  //   setField("TeamNumber", currentTeamNumber);
-  //     const saveSuccess = await SaveMatchData(newMatchData, currentTeamNumber, matchCount);
-  
-  //     if (saveSuccess) {
-  //       // Increment matchCount only if the Save operation was successful
-  //       setMatchCount(matchCount + 1);
-  //     }
-  
-  // }
-
   // save match data with validation steps
   async function handleSaveMatchData() {
     try {
@@ -101,22 +78,28 @@ function Matches({ route }) {
         { field: "Match Number", value: newMatchData.MatchNumber },
         { field: "Alliance Points", value: newMatchData.TotalPointsAlliance },
       ];
-  
+
       const validationResults = await Promise.all(
         validationFields.map(async ({ field, value }) => {
-          return { field, ...await validateEmptyField(field, value) };
+          return { field, ...(await validateEmptyField(field, value)) };
         })
       );
-  
-      const failedValidation = validationResults.find(result => !result.isValid);
-  
+
+      const failedValidation = validationResults.find(
+        (result) => !result.isValid
+      );
+
       if (failedValidation) {
         alert(failedValidation.errorMessage);
       } else {
         // If all validations pass, save match data
         setField("TeamNumber", currentTeamNumber);
-        const saveSuccess = await SaveMatchData(newMatchData, currentTeamNumber, matchCount);
-  
+        const saveSuccess = await SaveMatchData(
+          newMatchData,
+          currentTeamNumber,
+          matchCount
+        );
+
         if (saveSuccess) {
           // Increment matchCount only if the Save operation was successful
           setMatchCount(matchCount + 1);
@@ -126,79 +109,141 @@ function Matches({ route }) {
       console.error(validationFailed);
     }
   }
-  
-  
 
-  const PositionTypeItem = Object.keys(Position).map((key) => ({
-    label: Position[key],
-    value: Position[key],
+  const PositionTypeItem = Object.keys(MatchModel.Position).map((key) => ({
+    label: MatchModel.Position[key],
+    value: MatchModel.Position[key],
   }));
 
-  const ChargingStationTypeItem = Object.keys(ChargingStation).map((key) => ({
-    label: ChargingStation[key],
-    value: ChargingStation[key],
+  const ObjectiveTypeItem = Object.keys(MatchModel.Objective).map((key) => ({
+    label: MatchModel.Objective[key],
+    value: MatchModel.Objective[key],
   }));
 
-  const SpeedTypeItem = Object.keys(Speed).map((key) => ({
-    label: Speed[key],
-    value: Speed[key],
+  const SpeedTypeItem = Object.keys(MatchModel.Speed).map((key) => ({
+    label: MatchModel.Speed[key],
+    value: MatchModel.Speed[key],
   }));
 
-  const AwareTypeItem = Object.keys(Aware).map((key) => ({
-    label: Aware[key],
-    value: Aware[key],
+  const AwareTypeItem = Object.keys(MatchModel.Aware).map((key) => ({
+    label: MatchModel.Aware[key],
+    value: MatchModel.Aware[key],
   }));
 
-  const TBDItem = Object.keys(TBD).map((key) => ({
-    label: TBD[key],
-    value: TBD[key],
-  }));
+  const content = ({ data }) => {
+    return (
+      <FlatList
+        scrollEnabled={false}
+        style={styles.container} 
+        data={data}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => (
+          <View key={item.key}>
+            {item.type === 'text' && (
+              <InputField
+                label={item.label}
+                value={item.value}
+                onChange={(text) => setField(item.key, text)}
+                keyboardType="default"
+              />
+            )}
+            {item.type === 'number' && (
+              <InputField
+                label={item.label}
+                value={item.value.toString()}
+                onChange={(text) => setNumericField(item.key, text)}
+                keyboardType="numeric"
+              />
+            )}
+            {item.type === 'boolean' && (
+            
+              <ToggleSwitch
+              label={item.label}
+              value={item.value}
+              onToggle={(newValue) =>
+                setBooleanField(item.key, newValue)
+              }
+            />
+            )}
+            {item.type === 'dropdown' && (
+              <DropDownSelector
+              label={item.label}
+              value={item.value}
+              items={item.droptype}
+              setValue={(text) => setEnumField(item.key, text)}
+            />
+            )}
+          </View>
+        )}
+      />
+    )
+  };
 
   const InfoData = [
-    { key: "Scout Name", value: newMatchData.ScoutName },
-    { key: "Match Number", value: newMatchData.MatchNumber.toString() },
+    { label: 'Scout Name', key: 'Scout Name', value: newMatchData.ScoutName, type: 'text' },
+    { label: 'Match Number', key: 'Match Number', value: newMatchData.MatchNumber.toString(), type: 'number' },
   ];
-
+  
   const AutoData = [
-    { key: "AutoGamePiece1", value: newMatchData.AutoGamePiece1 },
-    { key: "AutoGamePiece2", value: newMatchData.AutoGamePiece2 },
-    { key: "AutoGamePiece3", value: newMatchData.AutoGamePiece3 },
-    { key: "AutoGamePiece4", value: newMatchData.AutoGamePiece4 },
-    { key: "AutoPosition", value: newMatchData.AutoPosition },
-    { key: "AutoMobility", value: newMatchData.AutoMobility },
-    { key: "AutoChargingStation", value: newMatchData.AutoChargingStation },
-    { key: "AutoObjective1", value: newMatchData.AutoObjective1 },
-    { key: "AutoObjective2", value: newMatchData.AutoObjective2 },
-    { key: "AutoRobotFalls", value: newMatchData.AutoRobotFalls },
+    { label: 'Auto Game Piece 1', key: 'AutoGamePiece1', value: newMatchData.AutoGamePiece1, type: 'number' },
+    { label: 'Auto Game Piece 2', key: 'AutoGamePiece2', value: newMatchData.AutoGamePiece2, type: 'number' },
+    { label: 'Auto Game Piece 3', key: 'AutoGamePiece3', value: newMatchData.AutoGamePiece3, type: 'number' },
+    { label: 'Auto Game Piece 4', key: 'AutoGamePiece4', value: newMatchData.AutoGamePiece4, type: 'number' },
+    { label: 'Auto Position', key: 'AutoPosition', value: newMatchData.AutoPosition, type: 'dropdown', droptype: PositionTypeItem },
+    { label: 'Auto Mobility', key: 'AutoMobility', value: newMatchData.AutoMobility, type: 'boolean' },
+    { label: 'Auto Objective 1', key: 'AutoObjective1', value: newMatchData.AutoObjective1, type: 'dropdown', droptype: ObjectiveTypeItem },
+    { label: 'Auto Objective 2', key: 'AutoObjective2', value: newMatchData.AutoObjective2, type: 'dropdown', droptype: ObjectiveTypeItem },
+    { label: 'Auto Robot Falls', key: 'AutoRobotFalls', value: newMatchData.AutoRobotFalls, type: 'boolean' },
   ];
+  
   const TeleopData = [
-    { key: "Cycle Time", value: newMatchData.CycleTime.toString() },
-    { key: "EndGameObjective1", value: newMatchData.EndGameObjective1 },
+    { label: "Average Cycle time", key: "Cycle Time", value: newMatchData.CycleTime.toString(), type: "timer" },
     {
+      label: "Number of dropped game pieces",
       key: "DroppedGamePiece",
       value: newMatchData.DroppedGamePiece.toString(),
+      type: "number",
     },
   ];
-  const PerformanceData = [
-    { key: "Comment", value: newMatchData.Comment },
-    { key: "TotalPointsAlliance", value: newMatchData.TotalPointsAlliance },
-    { key: "RankingPointsAlliance", value: newMatchData.RankingPointsAlliance },
-    { key: "AllianceObjective1", value: newMatchData.AllianceObjective1 },
-    { key: "AllianceObjective2", value: newMatchData.AllianceObjective2 },
-    { key: "WonMatch", value: newMatchData.WonMatch },
-    { key: "TeleopStatus1", value: newMatchData.TeleopStatus1 },
-    { key: "TeleopStatus2", value: newMatchData.TeleopStatus2 },
-    { key: "TeleopStatus3", value: newMatchData.TeleopStatus3 },
-    { key: "TeleopStatus4", value: newMatchData.TeleopStatus4 },
-    { key: "TeleopStatus5", value: newMatchData.TeleopStatus5 },
-    { key: "TeleopStatus6", value: newMatchData.TeleopStatus6 },
+
+  
+  const EndGameData = [
+    { label: "Objective 1", key: "EndGameObjective1", value: newMatchData.EndGameObjective1, type: "dropdown", droptype: ObjectiveTypeItem },
+    { label: "Objective 2", key: "EndGameObjective2", value: newMatchData.EndGameObjective2, type: "dropdown", droptype: ObjectiveTypeItem },
+
   ];
+
+  const PerformanceData = [
+    { label: "Comment", key: "Comment", value: newMatchData.Comment, type: "text" },
+    { label: "Total Points Alliance", key: "TotalPointsAlliance", value: newMatchData.TotalPointsAlliance, type: "number" },
+    { label: "Ranking Points Alliance", key: "RankingPointsAlliance", value: newMatchData.RankingPointsAlliance, type: "number" },
+    { label: "Links", key: "AllianceObjective1", value: newMatchData.AllianceObjective1, type: "number" },
+    { label: "Coopertition", key: "AllianceObjective2", value: newMatchData.AllianceObjective2, type: "boolean" },
+    { label: "Won Match", key: "WonMatch", value: newMatchData.WonMatch, type: "boolean" },
+    { label: "Teleop Status 1", key: "TeleopStatus1", value: newMatchData.TeleopStatus1, type: "boolean" },
+    { label: "Teleop Status 2", key: "TeleopStatus2", value: newMatchData.TeleopStatus2, type: "boolean" },
+    { label: "Teleop Status 3", key: "TeleopStatus3", value: newMatchData.TeleopStatus3, type: "boolean" },
+    { label: "Teleop Status 4", key: "TeleopStatus4", value: newMatchData.TeleopStatus4, type: "boolean" },
+    { label: "Teleop Status 5", key: "TeleopStatus5", value: newMatchData.TeleopStatus5, type: "dropdown" , droptype: SpeedTypeItem },
+    { label: "Teleop Status 6", key: "TeleopStatus6", value: newMatchData.TeleopStatus6, type: "dropdown", droptype: AwareTypeItem },
+    { label: "Cubes", key: "TeleopGamePiece1", value: newMatchData.TeleopGamePiece1, type: "number" },
+    { label: "Cones", key: "TeleopGamePiece2", value: newMatchData.TeleopGamePiece2, type: "number" },
+    { label: "N/A", key: "TeleopGamePiece3", value: newMatchData.TeleopGamePiece3, type: "number" },
+    { label: "N/A", key: "TeleopGamePiece4", value: newMatchData.TeleopGamePiece4, type: "number" },
+    { label: "Grid", key: "GamePiecesGrid", value: newMatchData.GamePiecesGrid, type: "grid" },
+  ];
+  
+  const buttonTextStyle = {
+    color: "#686868",
+    fontWeight: "bold",
+  };
 
   const handleScroll = () => {
     Keyboard.dismiss();
   };
+
   return (
-    <View style={{ flex: 1 }}  onStartShouldSetResponderCapture={handleScroll}>
+    <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleScroll}>
       <ProgressSteps
         completedProgressBarColor="#1E1E1E"
         activeStepIconBorderColor="#1E1E1E"
@@ -206,316 +251,64 @@ function Matches({ route }) {
         activeStepIconColor="#F6EB14"
         activeLabelColor="#1E1E1E"
         completedCheckColor="#F6EB14"
-        activeStep={currentStep} 
+        activeStep={currentStep}
       >
         <ProgressStep
           label="Info"
-          onNext={this.onPaymentStepComplete}
+          onNext={this.onNextStep}
           onPrevious={this.onPrevStep}
           scrollViewProps={this.defaultScrollViewProps}
+          nextBtnTextStyle={buttonTextStyle}
+          previousBtnTextStyle={buttonTextStyle}
         >
-          <View style={{}}>
-            <FlatList
-              scrollEnabled={false}
-              style={styles.container}
-              data={InfoData}
-              keyExtractor={(item) => item.key}
-              renderItem={({ item }) => (
-                <View>
-                  {item.key === "Scout Name" && (
-                    <InputField
-                      label={item.key}
-                      value={item.value}
-                      onChange={(text) => setField("ScoutName", text)}
-
-                    />
-                  )}
-                  {item.key === "Match Number" && (
-                    <InputField
-                      label={item.key}
-                      value={item.value}
-                      onChange={(text) => setNumericField("MatchNumber", text)}
-                      keyboardType="numeric"
-                      maxLength={2}
-                    />
-                  )}
-                </View>
-              )}
-            />
-          </View>
+          <View>{content({ data: InfoData })}</View>
         </ProgressStep>
         <ProgressStep
           label="Auto"
           onNext={this.onNextStep}
           onPrevious={this.onPrevStep}
           scrollViewProps={this.defaultScrollViewProps}
+          nextBtnTextStyle={buttonTextStyle}
+          previousBtnTextStyle={buttonTextStyle}
         >
-          <FlatList
-            scrollEnabled={false}
-            style={styles.container}
-            data={AutoData}
-            keyExtractor={(item) => item.key}
-            renderItem={({ item }) => (
-              <View>
-                {item.key === "AutoGamePiece1" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={TBDItem}
-                    setValue={(value) => setEnumField("AutoGamePiece1", value)}
-                    
-                  />
-                )}
-                {item.key === "AutoGamePiece2" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value}
-                    onChange={(text) => setField("AutoGamePiece2", text)}
-                  />
-                )}
-                {item.key === "AutoGamePiece3" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value}
-                    onChange={(text) => setField("AutoGamePiece2", text)}
-                  />
-                )}
-                {item.key === "AutoGamePiece4" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value}
-                    onChange={(text) => setField("AutoGamePiece2", text)}
-                  />
-                )}
-                {item.key === "AutoPosition" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={PositionTypeItem}
-                    setValue={(text) => setEnumField("AutoPosition", text)}
-                  />
-                )}
-                {item.key === "AutoMobility" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={newMatchData.RobQuest1}
-                    onToggle={(newValue) =>
-                      setBooleanField("AutoMobility", newValue)
-                    }
-                  />
-                )}
-                {item.key === "AutoChargingStation" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={ChargingStationTypeItem}
-                    setValue={(value) =>
-                      setEnumField("AutoChargingStation", value)
-                    }
-                  />
-                )}
-                {item.key === "AutoObjective1" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={TBDItem}
-                    setValue={(value) => setEnumField("AutoObjective1", value)}
-                  />
-                )}
-                {item.key === "AutoObjective2" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={TBDItem}
-                    onChange={(value) => setEnumField("AutoObjective2", value)}
-                  />
-                )}
-                {item.key === "AutoRobotFalls" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={newMatchData.RobQuest1}
-                    onToggle={(newValue) =>
-                      setBooleanField("AutoRobotFalls", newValue)
-                    }
-                  />
-                )}
-              </View>
-            )}
-          />
+          <View style={{ }}>
+          <View>{content({ data: AutoData })}</View>
+          </View>
         </ProgressStep>
         <ProgressStep
           label="Teleop"
           onNext={this.onNextStep}
           onPrevious={this.onPrevStep}
           scrollViewProps={this.defaultScrollViewProps}
+          nextBtnTextStyle={buttonTextStyle}
+          previousBtnTextStyle={buttonTextStyle}
         >
-          <FlatList
-            scrollEnabled={false}
-            style={styles.container}
-            data={TeleopData}
-            keyExtractor={(item) => item.key}
-            renderItem={({ item }) => (
-              <View>
-                {item.key === "Cycle Time" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    onChange={(text) => setNumericField("CycleTime", text)}
-                  />
-                )}
-                {item.key === "EndGameObjective1" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={newMatchData.EndGameObjective1}
-                    onToggle={(newValue) =>
-                      setBooleanField("EndGameObjective1", newValue)
-                    }
-                  />
-                )}
-                {item.key === "DroppedGamePiece" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    onChange={(text) =>
-                      setNumericField("DroppedGamePiece", text)
-                    }
-                  />
-                )}
-              </View>
-            )}
-          />
+          <View style={{}}>
+          <View>{content({ data: TeleopData })}</View>
+          </View>
+        </ProgressStep>
+        <ProgressStep
+          label="EndGame"
+          onNext={this.onNextStep}
+          onPrevious={this.onPrevStep}
+          scrollViewProps={this.defaultScrollViewProps}
+          nextBtnTextStyle={buttonTextStyle}
+          previousBtnTextStyle={buttonTextStyle}
+        >
+          <View style={{ }}>
+          <View>{content({ data: EndGameData })}</View>
+          </View>
         </ProgressStep>
         <ProgressStep
           label="Performance"
           onPrevious={this.onPrevStep}
-          
-          onSubmit={() => {
-            handleSaveMatchData();
-            setCurrentStep(0);
-           }}
+          onSubmit={this.onSubmitSteps}
           scrollViewProps={this.defaultScrollViewProps}
+          nextBtnTextStyle={buttonTextStyle}
+          previousBtnTextStyle={buttonTextStyle}
         >
-          <FlatList
-            style={styles.container}
-            data={PerformanceData}
-            scrollEnabled={false}
-            keyExtractor={(item) => item.key}
-            renderItem={({ item }) => (
-              <View>
-                {item.key === "Comment" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value}
-                    onChange={(text) => setField("Comment", text)}
-                  />
-                )}
-                {item.key === "TotalPointsAlliance" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value.toString()}
-                    keyboardType="numeric"
-                    onChange={(text) =>
-                      setNumericField("TotalPointsAlliance", text)
-                    }
-                  />
-                )}
-                {item.key === "RankingPointsAlliance" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value.toString()}
-                    keyboardType="numeric"
-                    onChange={(text) =>
-                      setNumericField("RankingPointsAlliance", text)
-                    }
-                  />
-                )}
-                {item.key === "AllianceObjective1" && (
-                  <InputField
-                    label={item.key}
-                    value={item.value.toString()}
-                    keyboardType="numeric"
-                    onChange={(text) =>
-                      setNumericField("AllianceObjective1", text)
-                    }
-                  />
-                )}
-                {item.key === "AllianceObjective2" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={item.value}
-                    onToggle={(newValue) =>
-                      setBooleanField("AllianceObjective2", newValue)
-                    }
-                  />
-                )}
-                {item.key === "WonMatch" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={item.value}
-                    onToggle={(newValue) =>
-                      setBooleanField("WonMatch", newValue)
-                    }
-                  />
-                )}
-                {item.key === "TeleopStatus1" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={item.value}
-                    onToggle={(newValue) =>
-                      setBooleanField("TeleopStatus1", newValue)
-                    }
-                  />
-                )}
-                {item.key === "TeleopStatus2" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={item.value}
-                    onToggle={(newValue) =>
-                      setBooleanField("TeleopStatus2", newValue)
-                    }
-                  />
-                )}
-                {item.key === "TeleopStatus3" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={item.value}
-                    onToggle={(newValue) =>
-                      setBooleanField("TeleopStatus3", newValue)
-                    }
-                  />
-                )}
-                {item.key === "TeleopStatus4" && (
-                  <ToggleSwitch
-                    label={item.key}
-                    value={item.value}
-                    onToggle={(newValue) =>
-                      setBooleanField("TeleopStatus4", newValue)
-                    }
-                  />
-                )}
-                {item.key === "TeleopStatus5" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={SpeedTypeItem}
-                    setValue={(value) => setEnumField("TeleopStatus5", value)}
-                  />
-                )}
-                {item.key === "TeleopStatus6" && (
-                  <DropDownSelector
-                    label={item.key}
-                    value={item.value}
-                    items={AwareTypeItem}
-                    setValue={(value) => setEnumField("TeleopStatus6", value)}
-                  />
-                )}
-              </View>
-            )}
-          />
+          <View style={{ }}>
+          <View>{content({ data: PerformanceData })}</View></View>
         </ProgressStep>
       </ProgressSteps>
     </View>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
 import TeamScreen from "./Teams";
@@ -8,7 +8,7 @@ import { TouchableOpacity, View, Text, Button } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import Modal from "react-native-modal";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const Settings = ({ onSettingsPress }) => (
   <TouchableOpacity onPress={onSettingsPress}>

@@ -211,8 +211,8 @@ function CodeGenerator({ route }) {
       <Modal
         animationIn="slideInRight"
         animationOut="slideOutRight"
-        animationInTiming={300}
-        animationOutTiming={300}
+        animationInTiming={250}
+        animationOutTiming={250}
         isVisible={MatchModalState}
         onBackdropPress={closeModal}
         style={styles.modalScreen}

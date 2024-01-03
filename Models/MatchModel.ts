@@ -3,27 +3,27 @@ export interface MatchModel {
   ScoutName: string;
   TeamNumber: number;
   MatchNumber: number;
-  //Auto 
-  AutoGamePiece1: TBD; //to be determined
-  AutoGamePiece2: string; //to be determined
-  AutoGamePiece3: string; //to be determined
-  AutoGamePiece4: string; //to be determined
-  AutoPosition: Position;
-  AutoMobility: boolean;
-  AutoChargingStation: ChargingStation;
-  AutoObjective1: TBD; //to be determined
-  AutoObjective2: TBD; //to be determined
-  AutoRobotFalls: boolean;
+  //Auto
+  AutoGamePiece1: number; //amount of cubes
+  AutoGamePiece2: number; // amount of cones
+  AutoGamePiece3: number; // N/A
+  AutoGamePiece4: number; // N/A
+  AutoPosition: Position; //Left, Middle, Right
+  AutoMobility: boolean; //Yes or No
+  AutoObjective1: Objective; //Stage 1, 2, 3, 4
+  AutoObjective2: Objective; //Stage 1, 2, 3, 4
+  AutoRobotFalls: boolean; //Yes or No
   //Teleop + Endgame
-  CycleTime: number;
-  EndGameObjective1: boolean;
+  CycleTime: number[]; //array of cycle times
+  EndGameObjective1: Objective; //Stage 1, 2, 3, 4
+  EndGameObjective2: Objective; //Stage 1, 2, 3, 4
   DroppedGamePiece: number;
   // Robot Performance + match results
-  Comment: string;
-  TotalPointsAlliance: number;
-  RankingPointsAlliance: number;
-  AllianceObjective1: number;
-  AllianceObjective2: boolean;
+  Comment: string; //comment
+  TotalPointsAlliance: number; //total points
+  RankingPointsAlliance: number; //ranking points
+  AllianceObjective1: number; //Links
+  AllianceObjective2: boolean; //Coopertition
   WonMatch: boolean;
   TeleopStatus1: boolean; //Robot falls
   TeleopStatus2: boolean; //Incapacitated? --> if more than 8 seconds then considered YES
@@ -31,25 +31,42 @@ export interface MatchModel {
   TeleopStatus4: boolean; //Robot Tippy
   TeleopStatus5: Speed; //Robot Quickness
   TeleopStatus6: Aware; //Field Awareness
-  gotScanned: boolean;
+  TeleopGamePiece1: number; //Cubes
+  TeleopGamePiece2: number; //Cones
+  TeleopGamePiece3: number; //N/A
+  TeleopGamePiece4: number; //n/A
+  GamePiecesGrid: GamePieceCell[];
+  gotScanned?: boolean;
 }
+
+export type GamePieceCell = {
+  rowIndex: number;
+  columnIndex: number;
+  autoScored: number;
+  GamePieceType: GamePieceType;
+  count: number;
+};
+
+export enum GamePieceType {
+  GamePiece1 = "Cone",
+  GamePiece2 = "Cube",
+  GamePiece3 = "3",
+  GamePiece4 = "4",
+}
+
+export enum Objective {
+  Stage1 = "Stage 1", // 2pts
+  Stage2 = "Stage 2", // 4pts
+  Stage3 = "Stage 3", // 6pts
+  Stage4 = "Stage 4", // 8pts
+}
+
+export const AutoMobilityPoints = 6;
 
 export enum Position {
   Left = "Left",
   Middle = "Middle",
   Right = "Right",
-}
-
-export enum ChargingStation {
-  Failed = "Failed",
-  Docked = "Docked",
-  Engaged = "Engaged",
-}
-
-export enum TBD {
-  Option1 = "Option 1",
-  Option2 = "Option 2",
-  Option3 = "Option 3",
 }
 
 export enum Speed {
@@ -68,18 +85,18 @@ export const initialMatchData: MatchModel = {
   ScoutName: "",
   TeamNumber: 0,
   MatchNumber: 0,
-  AutoGamePiece1: TBD.Option1, 
-  AutoGamePiece2: "",
-  AutoGamePiece3: "",
-  AutoGamePiece4: "",
+  AutoGamePiece1: 0,
+  AutoGamePiece2: 0,
+  AutoGamePiece3: 0,
+  AutoGamePiece4: 0,
   AutoPosition: Position.Middle,
   AutoMobility: false,
-  AutoChargingStation: ChargingStation.Failed,
-  AutoObjective1: TBD.Option1,
-  AutoObjective2: TBD.Option1,
+  AutoObjective1: Objective.Stage1,
+  AutoObjective2: Objective.Stage1,
   AutoRobotFalls: false,
-  CycleTime: 0,
-  EndGameObjective1: false,
+  CycleTime: [0],
+  EndGameObjective1: Objective.Stage1,
+  EndGameObjective2: Objective.Stage1,
   DroppedGamePiece: 0,
   Comment: "",
   TotalPointsAlliance: 0,
@@ -93,5 +110,22 @@ export const initialMatchData: MatchModel = {
   TeleopStatus4: false,
   TeleopStatus5: Speed.Average,
   TeleopStatus6: Aware.Normal,
-  gotScanned: false,
+  TeleopGamePiece1: 0,
+  TeleopGamePiece2: 0,
+  TeleopGamePiece3: 0,
+  TeleopGamePiece4: 0,
+  GamePiecesGrid: Array.from({ length: 3 * 3 }, (_, index) => {
+    const rowIndex = Math.floor(index / 3);
+    const columnIndex = index % 3;
+
+    return {
+      rowIndex,
+      columnIndex,
+      autoScored: 0,
+      GamePieceType: GamePieceType.GamePiece1,
+      count: 0
+    };
+  }),
+
+
 };
