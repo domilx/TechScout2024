@@ -87,8 +87,8 @@ function Matches({ route }) {
     try {
       // on peut ajouter des fields si necessaire
       const validationFields = [
-        { field: "Scout Name", value: newMatchData.ScoutName },
-        { field: "Match Number", value: newMatchData.MatchNumber },
+        { field: "ScoutName", value: newMatchData.ScoutName },
+        { field: "MatchNumber", value: newMatchData.MatchNumber },
         { field: "Alliance Points", value: newMatchData.TotalPointsAlliance },
       ];
 
@@ -203,8 +203,8 @@ function Matches({ route }) {
   };
 
   const InfoData = [
-    { label: 'Scout Name', key: 'Scout Name', value: newMatchData.ScoutName, type: 'text' },
-    { label: 'Match Number', key: 'Match Number', value: newMatchData.MatchNumber.toString(), type: 'number' },
+    { label: 'Scout Name', key: 'ScoutName', value: newMatchData.ScoutName, type: 'text' },
+    { label: 'Match Number', key: 'MatchNumber', value: newMatchData.MatchNumber.toString(), type: 'number' },
   ];
   
   const AutoData = [
