@@ -94,7 +94,7 @@ export const initialMatchData: MatchModel = {
   AutoObjective1: Objective.Stage1,
   AutoObjective2: Objective.Stage1,
   AutoRobotFalls: false,
-  CycleTime: [0],
+  CycleTime: [],
   EndGameObjective1: Objective.Stage1,
   EndGameObjective2: Objective.Stage1,
   DroppedGamePiece: 0,

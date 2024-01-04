@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,7 +19,8 @@ import {
 } from "../Models/PitModel";
 import { Dropdown } from "react-native-element-dropdown";
 import { loadPitData } from "../logic/PitLogic";
-import * as Animatable from 'react-native-animatable'; // Import the library
+import * as Animatable from "react-native-animatable"; // Import the library
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export const InputField = ({
   label,
@@ -87,6 +88,104 @@ export const SaveButton = ({ save }) => {
   );
 };
 
+export const Grid = ({ rows, columns }) => {
+  const generateGrid = () => {
+    const grid = [];
+
+    for (let row = 1; row <= rows; row++) {
+      const rowCells = [];
+      for (let col = 1; col <= columns; col++) {
+        rowCells.push(
+          <TouchableOpacity key={col} style={styles.gridCell}>
+            <Text>{`${row}-${col}`}</Text>
+          </TouchableOpacity>
+        );
+      }
+      grid.push(
+        <View key={row} style={styles.rowContainer}>
+          {rowCells}
+        </View>
+      );
+    }
+
+    return grid;
+  };
+
+  return <View style={styles.gridContainer}>{generateGrid()}</View>;
+};
+
+export const Timer = ({setValue}) => {
+  const [selectedShape, setSelectedShape] = useState(null);
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    let interval;
+
+    const resetTimer = () => {
+      clearInterval(interval);
+      setTimer(0);
+    };
+
+    if (selectedShape === "square" || selectedShape === "triangle") {
+      resetTimer();
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 1);
+      }, 1000);
+    } else {
+      resetTimer();
+    }
+
+    return () => clearInterval(interval);
+  }, [selectedShape]);
+
+  const handleShapePress = (shape) => {
+    if (selectedShape == !null) {
+      setValue(timer);
+    }
+    setSelectedShape(shape);
+
+  };
+  
+  const handleStopPress = () => {
+    setValue(timer);
+    setSelectedShape(null);
+
+  };
+  
+
+  return (
+    <View style={styles.container1}>
+      <TouchableOpacity
+        style={[
+          styles.shape,
+          selectedShape === "square" && styles.selectedShape,
+        ]}
+        onPress={() => handleShapePress("square")}
+      >
+        <Icon name="cube-outline" size={64} color={"purple"} />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.shape,
+          selectedShape === "triangle" && styles.selectedShape,
+        ]}
+        onPress={() => handleShapePress("triangle")}
+      >
+        <Icon name="traffic-cone" size={64} color={"#FF0000"} />
+      </TouchableOpacity>
+
+
+      <View style={styles.timerContainer}>
+        <Text style={styles.timerText}>{timer} sec</Text>
+        <TouchableOpacity style={styles.stopButton} onPress={handleStopPress}>
+          <Text style={styles.stopButtonText}>Dropped</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -99,9 +198,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  list:{
+  list: {
     backgroundColor: "#F0F0F0",
-    borderRadius: '15'
+    borderRadius: "15",
   },
   inputContainer: {
     flexDirection: "column",
@@ -148,7 +247,6 @@ const styles = StyleSheet.create({
   },
   dropdownSelectedText: {
     color: "#333", // Customize selected text color
-
   },
   dropdownInputSearch: {
     color: "#333", // Customize search input text color
@@ -165,7 +263,7 @@ const styles = StyleSheet.create({
     borderColor: "#A0A0A0", // Set border color to black
     borderWidth: 1, // Set border width
   },
-  
+
   subViews: {
     width: "90%",
     alignItems: "center",
@@ -184,11 +282,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   saveButton: {
-    backgroundColor: "#333", // Green color for the button
+    backgroundColor: "#333",
     borderRadius: 10,
     padding: 15,
     alignItems: "center",
-    margin: 20, // Add some margin at the top
+    margin: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -201,6 +299,81 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#F6EB14", // White text color for better contrast
+    color: "#F6EB14",
+  },
+  container1: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    padding: 20,
+  },
+  shape: {
+    width: 80,
+    height: 80,
+    backgroundColor: "#F0F0F0",
+    margin: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    borderColor: "#A0A0A0",
+    borderWidth: 1,
+  },
+  selectedShape: {
+    backgroundColor: "lightgreen",
+  },
+  timer: {
+    marginLeft: 55,
+    width: 80,
+    height: 80,
+    backgroundColor: "#F0F0F0",
+    margin: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 50,
+    borderColor: "#A0A0A0",
+    borderWidth: 1,
+  },
+  gridContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  rowContainer: {
+    flexDirection: "row",
+    marginBottom: 10,
+  },
+  gridCell: {
+    width: 80,
+    height: 80,
+    backgroundColor: "#F0F0F0",
+    margin: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    borderColor: "#A0A0A0",
+    borderWidth: 1,
+  },
+  timerText: {
+    fontSize: 18,
+    color: "#333",
+  },
+
+  stopButton: {
+    backgroundColor: "#333", // The color from the provided image
+    padding: 15,
+    borderRadius: 50,
+    width: 100,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  stopButtonText: {
+    color: "#F6EB14",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  timerContainer: {
+    marginLeft: 55,
+    alignItems: "center",
   },
 });

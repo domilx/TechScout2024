@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
 import TeamScreen from "./Teams";
@@ -16,7 +16,6 @@ const Settings = ({ onSettingsPress }) => (
       name={"help"}
       color={"#F6EB14"}
       size={32}
-      style={{ marginRight: 12 }}
     />
   </TouchableOpacity>
 );

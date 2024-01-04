@@ -10,6 +10,8 @@ import {
   Switch,
   Platform,
   Keyboard,
+  Button,
+  TouchableOpacityComponent,
 } from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount, saveCurrentMatchCount } from "../logic/TeamLogic.js";
@@ -20,7 +22,9 @@ import {
   InputField,
   ToggleSwitch,
   DropDownSelector,
-} from "../assets/ReusableStuff";
+  Timer,
+  Grid,
+} from "./ReusableStuff.js";
 import { validateEmptyField } from "../logic/ValidationLogic.js";
 
 function Matches({ route }) {
@@ -68,6 +72,15 @@ function Matches({ route }) {
       [field]: value,
     }));
   };
+
+  const setArrayField = (key, item) => {
+    setNewMatchData((prevData) => ({
+      ...prevData,
+      [key]: [...(prevData?.[key] ?? []), item],
+    }));
+  };
+  
+    
 
   // save match data with validation steps
   async function handleSaveMatchData() {
@@ -173,6 +186,16 @@ function Matches({ route }) {
               setValue={(text) => setEnumField(item.key, text)}
             />
             )}
+             {item.type === 'timer' && (
+              <Timer
+              setValue={(text) => setArrayField(item.key, text)}
+              />
+            )}
+            {item.type === 'grid' && (
+              <Grid
+              
+               rows={3} columns={3} />
+            )}  
           </View>
         )}
       />
@@ -197,11 +220,12 @@ function Matches({ route }) {
   ];
   
   const TeleopData = [
-    { label: "Average Cycle time", key: "Cycle Time", value: newMatchData.CycleTime.toString(), type: "timer" },
+    { label: "Average Cycle time", key: "CycleTime", value: newMatchData.CycleTime.toString(), type: "timer" },
+    { label: "Grid", key: "GamePiecesGrid", value: newMatchData.GamePiecesGrid, type: "grid" },
     {
       label: "Number of dropped game pieces",
       key: "DroppedGamePiece",
-      value: newMatchData.DroppedGamePiece.toString(),
+      value: newMatchData.DroppedGamePiece,
       type: "number",
     },
   ];
@@ -230,7 +254,6 @@ function Matches({ route }) {
     { label: "Cones", key: "TeleopGamePiece2", value: newMatchData.TeleopGamePiece2, type: "number" },
     { label: "N/A", key: "TeleopGamePiece3", value: newMatchData.TeleopGamePiece3, type: "number" },
     { label: "N/A", key: "TeleopGamePiece4", value: newMatchData.TeleopGamePiece4, type: "number" },
-    { label: "Grid", key: "GamePiecesGrid", value: newMatchData.GamePiecesGrid, type: "grid" },
   ];
   
   const buttonTextStyle = {
@@ -284,7 +307,13 @@ function Matches({ route }) {
           previousBtnTextStyle={buttonTextStyle}
         >
           <View style={{}}>
-          <View>{content({ data: TeleopData })}</View>
+          <View>{content({ data: TeleopData })}
+          </View>
+         
+
+
+
+
           </View>
         </ProgressStep>
         <ProgressStep
@@ -300,9 +329,9 @@ function Matches({ route }) {
           </View>
         </ProgressStep>
         <ProgressStep
-          label="Performance"
+          label="Results"
           onPrevious={this.onPrevStep}
-          onSubmit={this.onSubmitSteps}
+          onSubmit={handleSaveMatchData}
           scrollViewProps={this.defaultScrollViewProps}
           nextBtnTextStyle={buttonTextStyle}
           previousBtnTextStyle={buttonTextStyle}

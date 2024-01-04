@@ -19,7 +19,7 @@ import {
   DriverExperience,
   Stability,
 } from "../Models/PitModel";
-import { DropDownSelector, ToggleSwitch, InputField, SaveButton } from "../assets/ReusableStuff";
+import { DropDownSelector, ToggleSwitch, InputField, SaveButton } from "./ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
 import { validateEmptyField } from "../logic/ValidationLogic";
 
