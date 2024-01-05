@@ -189,6 +189,7 @@ function Matches({ route }) {
              {item.type === 'timer' && (
               <Timer
               setValue={(text) => setArrayField(item.key, text)}
+              dropPiece={()=> setNumericField('DroppedGamePiece', newMatchData.DroppedGamePiece + 1)}
               />
             )}
             {item.type === 'grid' && (

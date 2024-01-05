@@ -114,7 +114,7 @@ export const Grid = ({ rows, columns }) => {
   return <View style={styles.gridContainer}>{generateGrid()}</View>;
 };
 
-export const Timer = ({setValue}) => {
+export const Timer = ({setValue, dropPiece}) => {
   const [selectedShape, setSelectedShape] = useState(null);
   const [timer, setTimer] = useState(0);
 
@@ -148,6 +148,7 @@ export const Timer = ({setValue}) => {
   
   const handleStopPress = () => {
     setValue(timer);
+    dropPiece();
     setSelectedShape(null);
 
   };

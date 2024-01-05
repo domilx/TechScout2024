@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Button } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Button,
+} from "react-native";
+import Overlay from "react-native-loading-spinner-overlay";
 import QRCode from "react-native-qrcode-svg";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon2 from "react-native-vector-icons/AntDesign";
@@ -11,8 +18,17 @@ import * as Haptics from "expo-haptics";
 import { useIsFocused } from "@react-navigation/native";
 import { encodePitData } from "../logic/EncodingLogic";
 import { loadPitData, isPitScanned, savePitScanned } from "../logic/PitLogic";
-import { loadMatchCount, loadTeamData, loadTeams, saveMatchCount } from "../logic/TeamLogic";
-import { loadMatchData, saveMatchScanned, isMatchScanned } from "../logic/MatchLogic";
+import {
+  loadMatchCount,
+  loadTeamData,
+  loadTeams,
+  saveMatchCount,
+} from "../logic/TeamLogic";
+import {
+  loadMatchData,
+  saveMatchScanned,
+  isMatchScanned,
+} from "../logic/MatchLogic";
 import { initialPitData } from "../Models/PitModel";
 
 function CodeGenerator({ route }) {
@@ -24,7 +40,6 @@ function CodeGenerator({ route }) {
   const [matchCount, setMatchCount] = useState(0);
   const isFocused = useIsFocused();
   const [isClickedArray, setIsClickedArray] = useState([]);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -32,13 +47,20 @@ function CodeGenerator({ route }) {
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(route.params.currentTeamNumber);
-        const currentMatchCount = await loadMatchCount(route.params.currentTeamNumber);
+        const currentMatchCount = await loadMatchCount(
+          route.params.currentTeamNumber
+        );
         const PitScanState = await isPitScanned(route.params.currentTeamNumber);
         const initialIsClickedArray = await Promise.all(
-          Array(currentMatchCount).fill(0).map(async (_, i) => {
-            const matchNumber = i;
-            return await isMatchScanned(route.params.currentTeamNumber, matchNumber);
-          })
+          Array(currentMatchCount)
+            .fill(0)
+            .map(async (_, i) => {
+              const matchNumber = i;
+              return await isMatchScanned(
+                route.params.currentTeamNumber,
+                matchNumber
+              );
+            })
         );
 
         if (Number.isInteger(currentMatchCount) && currentMatchCount > 0) {
@@ -46,11 +68,14 @@ function CodeGenerator({ route }) {
           const matchDataPromises = Array.from(
             { length: currentMatchCount },
             async (_, i) => {
-              const matchData = await loadMatchData(route.params.currentTeamNumber, i + 1);
+              const matchData = await loadMatchData(
+                route.params.currentTeamNumber,
+                i 
+              );
               loadedItems[`MatchData${i + 1}`] = matchData;
             }
           );
-          await Promise.all(matchDataPromises);
+          await Promise.allSettled(matchDataPromises);
           setIsClicked(!PitScanState);
           setMatchCount(currentMatchCount);
           setCurrentPitData(pitData);
@@ -113,8 +138,6 @@ function CodeGenerator({ route }) {
       <Swiper
         style={styles.wrapper}
         loop={false}
-        index={currentSlideIndex}
-        onIndexChanged={(index) => setCurrentSlideIndex(index)}
       >
         {Object.keys(items).map((matchKey, index) => (
           <MatchItem
@@ -157,6 +180,11 @@ function CodeGenerator({ route }) {
     }
   };
 
+  const handleGoToMatch = () => {
+    setMatchModalState(true);
+    Haptics.impactAsync(Haptics.NotificationFeedbackType.Medium);
+  };
+
   return (
     <View style={styles.topContainer}>
       <Text style={styles.tittleText}>
@@ -194,7 +222,7 @@ function CodeGenerator({ route }) {
       )}
 
       <TouchableOpacity
-        onPress={() => setMatchModalState(true)}
+        onPress={() => handleGoToMatch()}
         style={styles.openModal}
       >
         <Text style={styles.buttonsText}>
@@ -241,6 +269,8 @@ function CodeGenerator({ route }) {
     </View>
   );
 }
+
+
 
 export default CodeGenerator;
 

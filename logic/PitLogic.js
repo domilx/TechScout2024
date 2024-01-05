@@ -33,7 +33,7 @@ export const savePitData = async (newPitData, TeamNumber) => {
               await AsyncStorage.setItem('teams', JSON.stringify(teams));
               await savePitScanned(TeamNumber, false);
               // Notify the user that data has been saved
-              alert('Data replaced in AsyncStorage');
+              alert('Saved!');
             },
           },
         ],

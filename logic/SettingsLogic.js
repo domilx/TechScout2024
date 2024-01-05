@@ -11,23 +11,27 @@ export async function clearTeamsStorage() {
 
   export const clearModelsStorage = async (teamNumber) => {
     try {
-      // Load existing teams from AsyncStorage
+  
       const teamsJson = await AsyncStorage.getItem('teams');
       const teams = teamsJson ? JSON.parse(teamsJson) : [];
   
-      // Find the target team based on TeamNumber
+    
       const targetTeamIndex = teams.findIndex(team => team.teamNumber == teamNumber || team.teamNumber.toString() == teamNumber);
   
       if (targetTeamIndex !== -1) {
-        // Remove pitData from the target team
+      
         delete teams[targetTeamIndex].pitData;
-        
-        // Save the updated teams to AsyncStorage
+        for (let i = 0; teams[targetTeamIndex].hasOwnProperty(`MatchData${i}`); i++) {
+          delete teams[targetTeamIndex][`MatchData${i}`];
+        }
+        delete teams[targetTeamIndex].matchNumber;
+       
+        console.log(teams);
         await AsyncStorage.setItem('teams', JSON.stringify(teams));
   
-        // Notify the user that pitData has been removed
+       
       } else {
-        // Handle the case where the target team is not found
+        
         alert(`Team with number ${teamNumber} not found`);
       }
     } catch (error) {
