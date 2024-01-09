@@ -3,26 +3,23 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
-  Button,
+  Alert,
 } from "react-native";
-import Overlay from "react-native-loading-spinner-overlay";
 import QRCode from "react-native-qrcode-svg";
 import Icon from "react-native-vector-icons/Ionicons";
-import Icon2 from "react-native-vector-icons/AntDesign";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Modal from "react-native-modal";
 import Swiper from "react-native-swiper";
 import * as Haptics from "expo-haptics";
 import { useIsFocused } from "@react-navigation/native";
-import { encodePitData } from "../logic/EncodingLogic";
-import { loadPitData, isPitScanned, savePitScanned } from "../logic/PitLogic";
+import {
+  loadPitData,
+  isPitScanned,
+  savePitScanned,
+} from "../logic/PitLogic";
 import {
   loadMatchCount,
-  loadTeamData,
-  loadTeams,
-  saveMatchCount,
 } from "../logic/TeamLogic";
 import {
   loadMatchData,
@@ -100,64 +97,55 @@ function CodeGenerator({ route }) {
     return <Text>LOADING ...</Text>;
   }
 
-  const MatchItem = ({ matchData, isClicked, onWasScanned }) => {
-    return (
-      <View style={styles.slide}>
-        <Text style={styles.boldText}>
-          Match {JSON.stringify(matchData.MatchNumber)}
-        </Text>
-        <QRCode
-          value={JSON.stringify(matchData, null, 2)}
-          size={300}
-          logo={require("../assets/logo.png")}
-          logoSize={75}
+  const MatchItem = ({ matchData, isClicked, onWasScanned }) => (
+    <View style={styles.slide}>
+      <Text style={styles.boldText}>
+        Match {JSON.stringify(matchData.MatchNumber)}
+      </Text>
+      <QRCode
+        value={JSON.stringify(matchData, null, 2)}
+        size={300}
+        logo={require("../assets/logo.png")}
+        logoSize={75}
+      />
+      <TouchableOpacity
+        style={{ flexDirection: "row", alignItems: "baseline" }}
+        onPress={onWasScanned}
+      >
+        <Text style={styles.scannedText}>Was Scanned</Text>
+        <Icon3
+          color="#1E1E1E"
+          name={!isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
+          size={30}
+          style={styles.iconStyle}
         />
-        <TouchableOpacity
-          style={{ flexDirection: "row", alignItems: "baseline" }}
-          onPress={onWasScanned}
-        >
-          <Text style={styles.scannedText}>Was Scanned</Text>
-          <Icon3
-            color="#1E1E1E"
-            name={!isClicked ? "checkbox-blank-outline" : "checkbox-marked"}
-            size={30}
-            style={styles.iconStyle}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
+      </TouchableOpacity>
+    </View>
+  );
 
   const closeModal = () => {
     setMatchModalState(false);
     Haptics.impactAsync(Haptics.NotificationFeedbackType.Medium);
   };
 
-  const SliderBox = ({ items }) => {
-    return (
-      <Swiper
-        style={styles.wrapper}
-        loop={false}
-      >
-        {Object.keys(items).map((matchKey, index) => (
-          <MatchItem
-            key={index}
-            matchData={items[matchKey]}
-            isClicked={isClickedArray[index]}
-            onWasScanned={() => handleMatchScanned(index)}
-          />
-        ))}
-      </Swiper>
-    );
-  };
+  const SliderBox = ({ items }) => (
+    <Swiper style={styles.wrapper} loop={false}>
+      {Object.keys(items).map((matchKey, index) => (
+        <MatchItem
+          key={index}
+          matchData={items[matchKey]}
+          isClicked={isClickedArray[index]}
+          onWasScanned={() => handleMatchScanned(index)}
+        />
+      ))}
+    </Swiper>
+  );
 
-  const Placeholder = () => {
-    return (
-      <View style={styles.placeholder}>
-        <Text style={styles.boldText}>Nothing Saved</Text>
-      </View>
-    );
-  };
+  const Placeholder = () => (
+    <View style={styles.placeholder}>
+      <Text style={styles.boldText}>Nothing Saved</Text>
+    </View>
+  );
 
   const handleMatchScanned = async (matchNumber) => {
     try {
@@ -172,12 +160,35 @@ function CodeGenerator({ route }) {
   };
 
   const handlePitScanned = async () => {
+    if (!isClicked) {
+      try{
+        Alert.alert(
+          "Are you sure?",
+          "You are removing the was scanned status for this team.",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            },
+            { text: "OK", onPress: async () => {
+              await savePitScanned(route.params.currentTeamNumber, false);
+              setIsClicked(true);
+            }}
+          ],
+          { cancelable: false }
+        );
+      }
+      catch (error) {
+        console.error("Error:", error);
+      }
+    }else{
     try {
       await savePitScanned(route.params.currentTeamNumber, true);
       setIsClicked(false);
     } catch (error) {
       console.error("Error:", error);
-    }
+    }}
   };
 
   const handleGoToMatch = () => {
@@ -244,6 +255,7 @@ function CodeGenerator({ route }) {
         isVisible={MatchModalState}
         onBackdropPress={closeModal}
         style={styles.modalScreen}
+        
       >
         <View style={styles.tittleContainer}>
           <Text style={styles.tittleText}>
@@ -269,8 +281,6 @@ function CodeGenerator({ route }) {
     </View>
   );
 }
-
-
 
 export default CodeGenerator;
 

@@ -42,7 +42,6 @@ function Pits({ route }) {
     loadPitDataOnMount();
   }, [currentTeamNumber]);
 
-  // Setter for text and number fields
   const setField = (field, value) => {
     setNewPitData((prevData) => ({
       ...prevData,
@@ -51,7 +50,6 @@ function Pits({ route }) {
   };
 
   const setNumericField = (field, value) => {
-    // Check if the value is an empty string
     const numericValue = value === "" ? "" : parseInt(value, 10);
 
     setNewPitData((prevData) => ({
@@ -60,7 +58,6 @@ function Pits({ route }) {
     }));
   };
 
-  // Setter for enum fields
   const setEnumField = (field, value) => {
     setNewPitData((prevData) => ({
       ...prevData,
@@ -68,20 +65,12 @@ function Pits({ route }) {
     }));
   };
 
-  // Setter for boolean fields
   const setBooleanField = (field, value) => {
     setNewPitData((prevData) => ({
       ...prevData,
       [field]: value,
     }));
   };
-
-  // // Save function
-  // const handleSavePitData = async () => {
-  //   console.log(newPitData.RobWidth)
-
-  //   await savePitData(newPitData, currentTeamNumber);
-  // };
 
   const handleSavePitData = async () => {
     try {
@@ -104,7 +93,6 @@ function Pits({ route }) {
       if (failedValidation) {
         alert(failedValidation.errorMessage);
       } else {
-        // If all validations pass, save pit data
         await savePitData(newPitData, currentTeamNumber);
       }
     } catch (validationFailed) {
@@ -118,7 +106,6 @@ function Pits({ route }) {
     Keyboard.dismiss();
   };
 
-  // Dropdown selector for DriveBaseType enum
   const driveBaseTypeItems = Object.keys(DriveBaseType).map((key) => ({
     label: DriveBaseType[key],
     value: DriveBaseType[key],
@@ -157,7 +144,6 @@ function Pits({ route }) {
     { key: "RobQuest5", value: newPitData.RobQuest5 },
     { key: "RobQuest6", value: newPitData.RobQuest6 },
     { key: "Comments", value: newPitData.RobComm1 },
-    // Add more data items as needed
   ];
   
 

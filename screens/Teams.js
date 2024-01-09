@@ -136,7 +136,7 @@ const TeamScreen = ({ route, navigation }) => {
   const Placeholder = () => {
     return (
       <View style={styles.placeholder}>
-        <Text style={styles.boldText}>Welcome to Scout!</Text>
+        <Text style={styles.boldText}>Welcome to TechScout!</Text>
         <Text style={styles.boldText}>Add a team to get started!</Text>
       </View>
     );
@@ -190,7 +190,7 @@ const TeamScreen = ({ route, navigation }) => {
       <ScrollView>
         {teams.map((team) => (
           <TouchableOpacity
-            key={team.teamNumber} // Add a unique key for each team
+            key={team.teamNumber}
             onPress={() => navigateToTeam(team.teamNumber)}
             onLongPress={() => {
               setModalVisible(!isModalVisible);
@@ -223,6 +223,7 @@ const TeamScreen = ({ route, navigation }) => {
         isVisible={isModalVisible}
         onBackdropPress={closeModal}
         style={styles.modalScreen}
+        hideModalContentWhileAnimating={true}
       >
         <View style={styles.tittleContainer}>
           <Text style={styles.tittleText}>Settings</Text>
@@ -296,7 +297,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
   },
-
   floatingButton: {
     position: "absolute",
     right: 20,

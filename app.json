@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "TechScout",
-    "slug": "TechScout",
+    "slug": "techscout",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,16 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.drizzy208.techscout"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.drizzy208.techscout"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4484680d-e5e3-4621-9175-d49bea580f03"
+      }
+    },
+    "owner": "drizzy208"
   }
 }

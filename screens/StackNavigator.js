@@ -10,8 +10,8 @@ import Modal from "react-native-modal";
 
 const Stack = createNativeStackNavigator();
 
-const Settings = ({ onSettingsPress }) => (
-  <TouchableOpacity onPress={onSettingsPress}>
+const Help = ({ onHelpPress }) => (
+  <TouchableOpacity style={styles.help} onPress={onHelpPress}>
     <Icon
       name={"help"}
       color={"#F6EB14"}
@@ -44,8 +44,8 @@ const StackNavigator = () => {
             },
             headerTintColor: "#F6EB14",
             headerRight: () => (
-              <Settings
-                onSettingsPress={() => {
+              <Help
+                onHelpPress={() => {
                   onSettingPressed();
                 }}
               />
@@ -63,8 +63,8 @@ const StackNavigator = () => {
             },
             headerTintColor: "#F6EB14",
             headerRight: () => (
-              <Settings
-                onSettingsPress={() => {
+              <Help
+                onHelpPress={() => {
                   onSettingPressed();
                 }}
               />
@@ -79,6 +79,8 @@ const StackNavigator = () => {
         onSwipeComplete={closeModal}
         swipeDirection={["down"]}
         style={styles.modalit}
+        hideModalContentWhileAnimating={true}
+        useNativeDriver={true}
       >
         <View style={styles.content}>
           <Text style={styles.tittleText}>Help</Text>
@@ -121,5 +123,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 12,
+  },
+  help: {
+    width: 32,
   },
 });

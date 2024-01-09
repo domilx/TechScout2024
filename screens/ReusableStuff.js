@@ -5,21 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
   Switch,
   Platform,
 } from "react-native";
-import { savePitData } from "../logic/PitLogic";
-import {
-  initialPitData,
-  DriveBaseType,
-  DriveBaseMotor,
-  DriverExperience,
-  Stability,
-} from "../Models/PitModel";
 import { Dropdown } from "react-native-element-dropdown";
-import { loadPitData } from "../logic/PitLogic";
-import * as Animatable from "react-native-animatable"; // Import the library
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export const InputField = ({
@@ -205,7 +194,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: "column",
-    alignItems: "flex-start", // Align input and label to the start of the container
+    alignItems: "flex-start",
     marginVertical: 0,
     borderRadius: 10,
     backgroundColor: "#F0F0F0",
@@ -213,17 +202,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   label: {
-    marginBottom: 5, // Add margin below the label
-    color: "#555", // Customize label text color
+    marginBottom: 5, 
+    color: "#555", 
   },
   input: {
     borderWidth: 1,
-    borderColor: "#A0A0A0", // Customize input border color
+    borderColor: "#A0A0A0", 
     borderRadius: 15,
     padding: 10,
-    width: "100%", // Take up the full width of the container
-    fontSize: 16, // Customize input font size
-    color: "#333", // Customize input text color
+    width: "100%",
+    fontSize: 16, 
+    color: "#333", 
   },
   headerContainer: {
     alignItems: "center",
@@ -236,21 +225,21 @@ const styles = StyleSheet.create({
   dropdown: {
     margin: 0,
     height: 50,
-    width: "100%", // Take up the full width of the container
-    backgroundColor: "#F0F0F0", // Match the background color
+    width: "100%", 
+    backgroundColor: "#F0F0F0",
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "#A0A0A0", // Customize border color
+    borderColor: "#A0A0A0",
     padding: 10,
   },
   dropdownPlaceholder: {
-    color: "#A0A0A0", // Customize placeholder text color
+    color: "#A0A0A0",
   },
   dropdownSelectedText: {
-    color: "#333", // Customize selected text color
+    color: "#333",
   },
   dropdownInputSearch: {
-    color: "#333", // Customize search input text color
+    color: "#333",
   },
 
   switchContainer: {
@@ -261,8 +250,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 28,
     borderRadius: 15,
     padding: 10,
-    borderColor: "#A0A0A0", // Set border color to black
-    borderWidth: 1, // Set border width
+    borderColor: "#A0A0A0",
+    borderWidth: 1, 
   },
 
   subViews: {
@@ -275,7 +264,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
 
     flexDirection: "column",
-    alignItems: "flex-start", // Align input and label to the start of the container
+    alignItems: "flex-start", 
     marginVertical: 10,
     borderRadius: 10,
     backgroundColor: "#F0F0F0",
@@ -360,7 +349,7 @@ const styles = StyleSheet.create({
   },
 
   stopButton: {
-    backgroundColor: "#333", // The color from the provided image
+    backgroundColor: "#333", 
     padding: 15,
     borderRadius: 50,
     width: 100,
