@@ -11,6 +11,7 @@ import {
 import { Dropdown } from "react-native-element-dropdown";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon1 from "react-native-vector-icons/Ionicons";
+
 export const InputField = ({
   label,
   value,
@@ -138,74 +139,6 @@ export const CustomComponent = ({ label, items, value, setValue }) => {
   );
 };
 
-export const Timer = ({ setValue, dropPiece }) => {
-  const [selectedShape, setSelectedShape] = useState(null);
-  const [timer, setTimer] = useState(0);
-
-  useEffect(() => {
-    let interval;
-
-    const resetTimer = () => {
-      clearInterval(interval);
-      setTimer(0);
-    };
-
-    if (selectedShape === "square" || selectedShape === "triangle") {
-      resetTimer();
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer + 1);
-      }, 1000);
-    } else {
-      resetTimer();
-    }
-
-    return () => clearInterval(interval);
-  }, [selectedShape]);
-
-  const handleShapePress = (shape) => {
-    if (selectedShape == !null) {
-      setValue(timer);
-    }
-    setSelectedShape(shape);
-  };
-
-  const handleStopPress = () => {
-    setValue(timer);
-    dropPiece();
-    setSelectedShape(null);
-  };
-
-  return (
-    <View style={styles.container1}>
-      <TouchableOpacity
-        style={[
-          styles.shape,
-          selectedShape === "square" && styles.selectedShape,
-        ]}
-        onPress={() => handleShapePress("square")}
-      >
-        <Icon name="cube-outline" size={64} color={"purple"} />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.shape,
-          selectedShape === "triangle" && styles.selectedShape,
-        ]}
-        onPress={() => handleShapePress("triangle")}
-      >
-        <Icon name="traffic-cone" size={64} color={"#FF0000"} />
-      </TouchableOpacity>
-
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{timer} sec</Text>
-        <TouchableOpacity style={styles.stopButton} onPress={handleStopPress}>
-          <Text style={styles.stopButtonText}>Dropped</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -322,12 +255,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#F6EB14",
   },
-  container1: {
+  container: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   shape: {
     width: 80,
@@ -374,9 +305,10 @@ const styles = StyleSheet.create({
     borderColor: "#A0A0A0",
     borderWidth: 1,
   },
+
   timerText: {
     fontSize: 18,
-    color: "#333",
+    marginBottom: 10,
   },
 
   stopButton: {
@@ -394,8 +326,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   timerContainer: {
-    marginLeft: 55,
-    alignItems: "center",
+    alignItems: 'center',
+    marginTop: 20,
   },
   counterContainer: {
     flexDirection: "row",

@@ -9,10 +9,10 @@ import {
   InputField,
   ToggleSwitch,
   DropDownSelector,
-  Timer,
   Grid,
   Counter,
 } from "./ReusableStuff.js";
+import Timer from "./Timer.js";
 import { validateEmptyField } from "../logic/ValidationLogic.js";
 
 function Matches({ route }) {
@@ -108,13 +108,32 @@ function Matches({ route }) {
             )}
             {item.type === "timer" && (
               <Timer
-                setValue={(text) => setArrayField(item.key, text)}
-                dropPiece={() =>
+                addCycleTime={(text) => setArrayField(item.key, text)}
+                addDropPiece={() =>
                   setNumericField(
-                    "DroppedGamePiece",
-                    newMatchData.DroppedGamePiece + 1
+                    "TeleopDropped",
+                    newMatchData.TeleopDropped + 1
                   )
                 }
+                addAmpPiece={() =>
+                  setNumericField(
+                    "TeleopAmplifier",
+                    newMatchData.TeleopAmplifier + 1
+                  )
+                }
+                addSpeakPiece={() =>
+                  setNumericField(
+                    "TeleopSpeaker",
+                    newMatchData.TeleopSpeaker + 1
+                  )
+                }
+                addAmpSpeakPiece={() =>
+                  setNumericField(
+                    "TeleopSpeakerAmplified",
+                    newMatchData.TeleopSpeakerAmplified + 1
+                  )
+                }
+                
               />
             )}
             {item.type === "counter" && (
@@ -228,19 +247,18 @@ function Matches({ route }) {
       value: newMatchData.AutoSpeaker,
       type: "counter",
     },
-   
+    {
+      label: "Dropped Game Pieces",
+      key: "AutoDropped",
+      value: newMatchData.AutoDropped,
+      type: "counter",
+    },
     {
       label: "Extra Notes",
       key: "AutoExtraNotes", //TODO CUSTOM RADIO BUTTON
       value: newMatchData.AutoExtraNotes,
       type: "dropdown",
       droptype: extraNotesItem,
-    },
-    {
-      label: "Dropped Game Pieces",
-      key: "AutoDropped",
-      value: newMatchData.AutoDropped,
-      type: "number",
     },
     {
       label: "A-StopPressed?",
@@ -270,52 +288,28 @@ function Matches({ route }) {
 
   const TeleopData = [
     {
-      label: "Speaker Amplified",
-      key: "TeleopSpeakerAmplified",
-      value: newMatchData.AutoRobotDidNotPlay,
-      type: "number",
-    },
-    {
-      label: "Teleop Speaker",
-      key: "TeleopSpeaker",
-      value: newMatchData.AutoRobotDidNotPlay,
-      type: "number",
-    },
-    {
-      label: "Teleop Amplifier",
-      key: "TeleopAmplifier",
-      value: newMatchData.AutoRobotDidNotPlay,
-      type: "number",
-    },
-    {
       label: "Teleop Cycle Time",
       key: "TeleopCycleTime",
-      value: newMatchData.AutoRobotDidNotPlay,
+      value: newMatchData.TeleopCycleTime,
       type: "timer",
-    },
-    {
-      label: "Teleop Dropped",
-      key: "TeleopDropped",
-      value: newMatchData.AutoRobotDidNotPlay,
-      type: "number",
     },
     {
       label: "Teleop Trap",
       key: "TeleopTrap",
-      value: newMatchData.AutoRobotDidNotPlay,
+      value: newMatchData.TeleopTrap,
       type: "dropdown",
       droptype: TrapTypeItem,
     },
     {
       label: "Fell in teleop?",
       key: "TeleopFell",
-      value: newMatchData.AutoRobotDidNotPlay,
+      value: newMatchData.TeleopFell,
       type: "boolean",
     },
     {
       label: "Incapacitated in Teleop",
       key: "TeleopIncapacitated",
-      value: newMatchData.AutoRobotDidNotPlay,
+      value: newMatchData.TeleopIncapacitated,
       type: "boolean",
     },
     {
