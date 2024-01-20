@@ -85,16 +85,4 @@ function TabNavigator() {
   );
 }
 
-style = StyleSheet.create({
-  tabNavigator: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#1E1E1E",
-    borderTopWidth: 1,
-    borderColor: "transparent", 
-    height: 90,
-  },
-});
-
 export default TabNavigator

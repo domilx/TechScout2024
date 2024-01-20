@@ -16,13 +16,23 @@ import {
   initialPitData,
   DriveBaseType,
   DriveBaseMotor,
-  DriverExperience,
+  Gravity,
+  HumanPlayerSpotlight,
+  PickupSpots,
+  ScoreSpots,
+  ShootSpots,
+  WellMade,
   Stability,
+  Years,
 } from "../Models/PitModel";
-import { DropDownSelector, ToggleSwitch, InputField, SaveButton } from "./ReusableStuff";
+import {
+  DropDownSelector,
+  ToggleSwitch,
+  InputField,
+  SaveButton,
+} from "./ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
 import { validateEmptyField } from "../logic/ValidationLogic";
-
 
 function Pits({ route }) {
   const { currentTeamNumber } = route.params;
@@ -32,11 +42,10 @@ function Pits({ route }) {
     const loadPitDataOnMount = async () => {
       const loadedPitData = await loadPitData(currentTeamNumber);
       setNewPitData(loadedPitData);
-      setField("TeamNb", currentTeamNumber)
+      setField("TeamNb", currentTeamNumber);
       if (loadedPitData === null) {
         setNewPitData(initialPitData);
       }
-      
     };
 
     loadPitDataOnMount();
@@ -75,21 +84,20 @@ function Pits({ route }) {
   const handleSavePitData = async () => {
     try {
       const validationFields = [
-        { field: "Robot Scout", value: newPitData.RobScout },
-        { field: "Team Name", value: newPitData.RobTeamNm },
-        { field: "Robot Weight", value: newPitData.RobWtlbs},
-        { field: "Robot Width", value: newPitData.RobWidth},
-        { field: "Robot Lenght", value: newPitData.RobLength},
+        { field: "Robot Scout", value: newPitData.ScoutName },
+        
       ];
-  
+
       const validationResults = await Promise.all(
         validationFields.map(async ({ field, value }) => {
-          return { field, ...await validateEmptyField(field, value) };
+          return { field, ...(await validateEmptyField(field, value)) };
         })
       );
-  
-      const failedValidation = validationResults.find(result => !result.isValid);
-  
+
+      const failedValidation = validationResults.find(
+        (result) => !result.isValid
+      );
+
       if (failedValidation) {
         alert(failedValidation.errorMessage);
       } else {
@@ -99,191 +107,289 @@ function Pits({ route }) {
       console.error(validationFailed);
     }
   };
-  
-  
+
+  function generateEnumItems(enumObject) {
+    return Object.keys(enumObject).map((key) => ({
+      label: enumObject[key],
+      value: enumObject[key],
+    }));
+  }
+
+  const driveBaseTypeItems = generateEnumItems(DriveBaseType);
+  const driveBaseMotorItems = generateEnumItems(DriveBaseMotor);
+  const years = generateEnumItems(Years);
+  const stabilityItems = generateEnumItems(Stability);
+  const wellMadeItems = generateEnumItems(WellMade);
+  const pickupSpotsItems = generateEnumItems(PickupSpots);
+  const scoreSpotsItems = generateEnumItems(ScoreSpots);
+  const gravityItems = generateEnumItems(Gravity);
+  const shootSpotsItems = generateEnumItems(ShootSpots);
+  const humanPlayerSpotlightItems = generateEnumItems(HumanPlayerSpotlight);
 
   const handleScroll = () => {
     Keyboard.dismiss();
   };
 
-  const driveBaseTypeItems = Object.keys(DriveBaseType).map((key) => ({
-    label: DriveBaseType[key],
-    value: DriveBaseType[key],
-  }));
-
-  const driveBaseMotorItems = Object.keys(DriveBaseMotor).map((key) => ({
-    label: DriveBaseMotor[key],
-    value: DriveBaseMotor[key],
-  }));
-
-  const driveBaseExperienceItems = Object.keys(DriverExperience).map((key) => ({
-    label: DriverExperience[key],
-    value: DriverExperience[key],
-  }));
-
-  const stabilityItems = Object.keys(Stability).map((key) => ({
-    label: Stability[key],
-    value: Stability[key],
-  }));
-
   // FlatList data
   const data = [
-    { key: "Robot Scout", value: newPitData.RobScout },
-    { key: "Team Name", value: newPitData.RobTeamNm },
-    { key: "Robot Weight (lbs)", value: newPitData.RobWtlbs.toString() },
-    { key: "Robot Width", value: newPitData.RobWidth.toString() },
-    { key: "Robot Length", value: newPitData.RobLength.toString() },
-    { key: "Drivebase Type", value: newPitData.RobDrive },
-    { key: "Drivebase Motor", value: newPitData.RobMotor },
-    { key: "Drivebase Experience", value: newPitData.RobDriveExp },
-    { key: "Stability", value: newPitData.RobStble },
-    { key: "Has Autonomy?", value: newPitData.RobQuest1 },
-    { key: "RobQuest1", value: newPitData.RobQuest2 },
-    { key: "RobQuest2", value: newPitData.RobQuest3 },
-    { key: "RobQuest4", value: newPitData.RobQuest4 },
-    { key: "RobQuest5", value: newPitData.RobQuest5 },
-    { key: "RobQuest6", value: newPitData.RobQuest6 },
-    { key: "Comments", value: newPitData.RobComm1 },
+    {
+      label: "Team Name",
+      key: "TeamName",
+      value: newPitData.TeamName,
+      type: "text",
+    },
+    {
+      label: "Drivebase Type",
+      key: "DriveBaseType",
+      value: newPitData.DriveBaseType,
+      type: "dropdown",
+      droptype: driveBaseTypeItems,
+    },
+    {
+      label: "Drivebase Motor",
+      key: "DriveBaseMotor",
+      value: newPitData.DriveBaseMotor,
+      type: "dropdown",
+      droptype: driveBaseMotorItems,
+    },
+    {
+      label: "Drivebase Experience",
+      key: "DriverExperience",
+      value: newPitData.DriverExperience,
+      type: "dropdown",
+      droptype: years,
+    },
+    {
+      label: "Robot Weight (lbs)",
+      key: "WeightLbs",
+      value: newPitData.WeightLbs.toString(),
+      type: "number",
+    },
+    {
+      label: "Robot Width (in)",
+      key: "WidthInches",
+      value: newPitData.WidthInches.toString(),
+      type: "number",
+    },
+    {
+      label: "Robot Length (in)",
+      key: "LengthInches",
+      value: newPitData.LengthInches.toString(),
+      type: "number",
+    },
+    {
+      label: "Height (in)",
+      key: "HeightInches",
+      value: newPitData.HeightInches.toString(),
+      type: "number",
+    },
+    {
+      label: "Frame Clearance (in)",
+      key: "FrameClearanceInches",
+      value: newPitData.FrameClearanceInches.toString(),
+      type: "number",
+    },
+    {
+      label: "Stability",
+      key: "Stability",
+      value: newPitData.Stability,
+      type: "dropdown",
+      droptype: stabilityItems,
+    },
+    {
+      label: "Well Made",
+      key: "WellMade",
+      value: newPitData.WellMade,
+      type: "dropdown",
+      droptype: wellMadeItems,
+    },
+    {
+      label: "Single Intake Shooter",
+      key: "SingleIntakeShooter",
+      value: newPitData.SingleIntakeShooter,
+      type: "boolean",
+    },
+    {
+      label: "Pickup Spots",
+      key: "PickupSpots",
+      value: newPitData.PickupSpots,
+      type: "dropdown",
+      droptype: pickupSpotsItems,
+    },
+    {
+      label: "Score Spots",
+      key: "ScoreSpots",
+      value: newPitData.ScoreSpots,
+      type: "dropdown",
+      droptype: scoreSpotsItems,
+    },
+    {
+      label: "Center of Gravity",
+      key: "CenterOfGravity",
+      value: newPitData.CenterOfGravity,
+      type: "dropdown",
+      droptype: gravityItems,
+    },
+    {
+      label: "Years Using Swerve",
+      key: "YearsUsingSwerve",
+      value: newPitData.YearsUsingSwerve,
+      type: "dropdown",
+      droptype: years,
+    },
+    {
+      label: "Shoots From",
+      key: "ShootsFrom",
+      value: newPitData.ShootsFrom,
+      type: "dropdown",
+      droptype: shootSpotsItems,
+    },
+    {
+      label: "Object Recognition",
+      key: "ObjectRecognition",
+      value: newPitData.ObjectRecognition,
+      type: "boolean",
+    },
+    {
+      label: "Read April Tags",
+      key: "ReadAprilTags",
+      value: newPitData.ReadAprilTags,
+      type: "boolean",
+    },
+    {
+      label: "Autonomous Program to leave",
+      key: "AutonomousProgram",
+      value: newPitData.AutonomousProgram,
+      type: "boolean",
+    },
+    //{ label: "Auto Programs for Speaker", key: "AutoProgramsForSpeaker", value: newPitData.AutoProgramsForSpeaker, type: "custom" },
+    {
+      label: "Can Get on Stage",
+      key: "CanGetOnStage",
+      value: newPitData.CanGetOnStage,
+      type: "boolean",
+    },
+    {
+      label: "Can Score Notes in Trap",
+      key: "CanScoreNotesInTrap",
+      value: newPitData.CanScoreNotesInTrap,
+      type: "boolean",
+    },
+    {
+      label: "Human Player Spotlight",
+      key: "HumanPlayerSpotlight",
+      value: newPitData.HumanPlayerSpotlight,
+      type: "dropdown",
+      droptype: humanPlayerSpotlightItems,
+    },
+    {
+      label: "Can Cheesecake or lift robot",
+      key: "CheesecakeAbility",
+      value: newPitData.CheesecakeAbility,
+      type: "boolean",
+    },
+    {
+      label: "Comments",
+      key: "Comments",
+      value: newPitData.Comments,
+      type: "text",
+    },
   ];
-  
 
   return (
-   <View  style={styles.container} onStartShouldSetResponderCapture={handleScroll}>
+    <View
+      style={styles.container}
+      onStartShouldSetResponderCapture={handleScroll}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 90} // Adjust this offset as needed
-
       >
-    <FlatList
-    style={styles.container}
-    data={data}
-    keyExtractor={(item) => item.key}
-    renderItem={({ item }) => (
-      <View >
-        {item.key === "Robot Scout" && (
-          <InputField
-            label={item.key}
-            value={item.value}
-            onChange={(text) => setField("RobScout", text)}
-          />
-        )}
-        {item.key === "Team Name" && (
-          <InputField
-            label={item.key}
-            value={item.value}
-            onChange={(text) => setField("RobTeamNm", text)}
-          />
-        )}
-        {item.key === "Robot Weight (lbs)" && (
-          <InputField
-            label={item.key}
-            value={item.value.toString()}
-            onChange={(text) => setNumericField("RobWtlbs", text)}
-            keyboardType="numeric"
-          />
-        )}
-        {item.key === "Drivebase Type" && (
-          <DropDownSelector
-            label={item.key}
-            items={driveBaseTypeItems}
-            value={item.value}
-            setValue={(value) => setEnumField("RobDrive", value)}
-          />
-        )}
-        {item.key === "Drivebase Motor" && (
-          <DropDownSelector
-            label={item.key}
-            items={driveBaseMotorItems}
-            value={item.value}
-            setValue={(value) => setEnumField("RobMotor", value)}
-          />
-        )}
-        {item.key === "Drivebase Experience" && (
-          <DropDownSelector
-            label={item.key}
-            items={driveBaseExperienceItems}
-            value={item.value}
-            setValue={(value) => setEnumField("RobDriveExp", value)}
-          />
-        )}
-        {item.key === "Robot Width" && (
-          <InputField
-            label={item.key}
-            value={item.value.toString()}
-            onChange={(text) => setNumericField("RobWidth", text)}
-            keyboardType="numeric"
-          />
-        )}
-        {item.key === "Robot Length" && (
-          <InputField
-            label={item.key}
-            value={item.value.toString()}
-            onChange={(text) => setNumericField("RobLength", text)}
-            keyboardType="numeric"
-          />
-        )}
-        {item.key === "Stability" && (
-          <DropDownSelector
-            label={item.key}
-            items={stabilityItems}
-            value={item.value}
-            setValue={(value) => setEnumField("RobStble", value)}
-          />
-        )}
-        {item.key.startsWith("RobQuest") && (
-          <ToggleSwitch
-            label={item.key}
-            value={newPitData[item.key]}
-            onToggle={(newValue) => setBooleanField(item.key, newValue)}
-          />
-        )}
-        {item.key === "Comments" && (
-          <InputField
-            label={item.key}
-            value={item.value}
-            onChange={(text) => setField("RobComm1", text)}
-          />
-        )}
-        {/* Add conditions and components for other properties as needed */}
-      </View>
-    )}
-    ListHeaderComponent={() => (
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>
-          Pit Scouting for Team {currentTeamNumber}
-        </Text>
-        {/* Add other components outside of the list header */}
-      </View>
-    )}
-    ListFooterComponent={() => (
-      <SaveButton save={handleSavePitData} />
-      
-    )}
-  />
-  </KeyboardAvoidingView>
-  </View>
-   ) }  
-   
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>
+            Pit Scouting for Team {currentTeamNumber}
+          </Text>
+        </View>
+        <FlatList
+          scrollEnabled={true}
+          style={styles.container}
+          data={data}
+          keyExtractor={(item) => item.key}
+          renderItem={({ item }) => (
+            <View>
+              {item.type === "text" && (
+                <InputField
+                  label={item.label}
+                  value={item.value}
+                  onChange={(text) => setField(item.key, text)}
+                  keyboardType="default"
+                />
+              )}
+              {item.type === "number" && (
+                <InputField
+                  label={item.label}
+                  value={item.value.toString()}
+                  onChange={(text) => setNumericField(item.key, text)}
+                  keyboardType="numeric"
+                />
+              )}
+              {item.type === "boolean" && (
+                <ToggleSwitch
+                  label={item.label}
+                  value={item.value}
+                  onToggle={(newValue) => setBooleanField(item.key, newValue)}
+                />
+              )}
+              {item.type === "dropdown" && (
+                <DropDownSelector
+                  label={item.label}
+                  value={item.value}
+                  items={item.droptype}
+                  setValue={(text) => setEnumField(item.key, text)}
+                />
+              )}
+              {item.type === "timer" && (
+                <Timer
+                  setValue={(text) => setArrayField(item.key, text)}
+                  dropPiece={() =>
+                    setNumericField(
+                      "DroppedGamePiece",
+                      newMatchData.DroppedGamePiece + 1
+                    )
+                  }
+                />
+              )}
+              {item.type === "grid" && <Grid rows={3} columns={3} />}
+              {item.type === "custom" && <CustomComponent />}
+            </View>
+          )}
+        />
 
-   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    headerContainer: {
-      alignItems: "center",
-      marginVertical: 10,
-    },
-    headerText: {
-      fontSize: 20,
-      fontWeight: "bold",
-    },
-    saveButton: {
-      backgroundColor: "#F6EB14",
-      borderRadius: 10,
-      padding: 15,
-      alignItems: "center",
-    },
-  });
+        <SaveButton save={handleSavePitData} />
+      </KeyboardAvoidingView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  saveButton: {
+    backgroundColor: "#F6EB14",
+    borderRadius: 10,
+    padding: 15,
+    alignItems: "center",
+  },
+});
 
 export default Pits;

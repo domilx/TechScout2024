@@ -2,7 +2,7 @@ import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList, Keyboard } from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
-import { loadMatchCount, saveCurrentMatchCount } from "../logic/TeamLogic.js";
+import { loadMatchCount } from "../logic/TeamLogic.js";
 import * as MatchModel from "../Models/MatchModel";
 
 import {
@@ -11,6 +11,7 @@ import {
   DropDownSelector,
   Timer,
   Grid,
+  Counter,
 } from "./ReusableStuff.js";
 import { validateEmptyField } from "../logic/ValidationLogic.js";
 
@@ -23,10 +24,10 @@ function Matches({ route }) {
   useEffect(() => {
     const loadMatchDataOnMount = async () => {
       setMatchCount(await loadMatchCount(currentTeamNumber));
-
     };
     loadMatchDataOnMount();
-  });
+    console.log(newMatchData);
+  }, []);
 
   const setField = (field, value) => {
     setNewMatchData((prevData) => ({
@@ -116,6 +117,14 @@ function Matches({ route }) {
                 }
               />
             )}
+            {item.type === "counter" && (
+              <Counter
+                label={item.label}
+                value={item.value}
+                onToggle={() => setNumericField(item.key, item.value + 1)}
+                OnNegToggle={() => setNumericField(item.key, item.value - 1)}
+              />
+            )}
             {item.type === "grid" && <Grid rows={3} columns={3} />}
           </View>
         )}
@@ -125,11 +134,10 @@ function Matches({ route }) {
 
   async function handleSaveMatchData() {
     try {
+      setCurrentStep(0);
       // on peut ajouter des fields si necessaire
       const validationFields = [
         { field: "ScoutName", value: newMatchData.ScoutName },
-        { field: "MatchNumber", value: newMatchData.MatchNumber },
-        { field: "Alliance Points", value: newMatchData.TotalPointsAlliance },
       ];
 
       const validationResults = await Promise.all(
@@ -160,27 +168,25 @@ function Matches({ route }) {
       console.error(validationFailed);
     }
   }
+  function generateEnumItems(enumObject) {
+    return Object.keys(enumObject).map((key) => ({
+      label: enumObject[key],
+      value: enumObject[key],
+    }));
+  }
 
-  const PositionTypeItem = Object.keys(MatchModel.Position).map((key) => ({
-    label: MatchModel.Position[key],
-    value: MatchModel.Position[key],
-  }));
-
-  const ObjectiveTypeItem = Object.keys(MatchModel.Objective).map((key) => ({
-    label: MatchModel.Objective[key],
-    value: MatchModel.Objective[key],
-  }));
-
-  const SpeedTypeItem = Object.keys(MatchModel.Speed).map((key) => ({
-    label: MatchModel.Speed[key],
-    value: MatchModel.Speed[key],
-  }));
-
-  const AwareTypeItem = Object.keys(MatchModel.Aware).map((key) => ({
-    label: MatchModel.Aware[key],
-    value: MatchModel.Aware[key],
-  }));
-
+  const PositionTypeItem = generateEnumItems(MatchModel.Position);
+  const extraNotesItem = generateEnumItems(MatchModel.ExtraNotes);
+  const ShootSpotsItem = generateEnumItems(MatchModel.ShootSpots);
+  const EndGameOnStageItem = generateEnumItems(MatchModel.EndGameOnStage);
+  const EndGameHarmonyItem = generateEnumItems(MatchModel.EndGameHarmony);
+  const TrapTypeItem = generateEnumItems(MatchModel.Trap);
+  const RankingPointsItem = generateEnumItems(MatchModel.RankingPoints);
+  const DefenseLevelItem = generateEnumItems(MatchModel.DefenseLevel);
+  const TippinessItem = generateEnumItems(MatchModel.Tippiness);
+  const SpeedItem = generateEnumItems(MatchModel.Speed);
+  const AwareTypeItem = generateEnumItems(MatchModel.Awareness);
+  const EndGameTrapITem = generateEnumItems(MatchModel.TrapEndGame);
   const InfoData = [
     {
       label: "Scout Name",
@@ -198,200 +204,248 @@ function Matches({ route }) {
 
   const AutoData = [
     {
-      label: "Auto Game Piece 1",
-      key: "AutoGamePiece1",
-      value: newMatchData.AutoGamePiece1,
-      type: "number",
-    },
-    {
-      label: "Auto Game Piece 2",
-      key: "AutoGamePiece2",
-      value: newMatchData.AutoGamePiece2,
-      type: "number",
-    },
-    {
-      label: "Auto Game Piece 3",
-      key: "AutoGamePiece3",
-      value: newMatchData.AutoGamePiece3,
-      type: "number",
-    },
-    {
-      label: "Auto Game Piece 4",
-      key: "AutoGamePiece4",
-      value: newMatchData.AutoGamePiece4,
-      type: "number",
-    },
-    {
-      label: "Auto Position",
-      key: "AutoPosition",
-      value: newMatchData.AutoPosition,
+      label: "Starting Position",
+      key: "AutoStartingPosition",
+      value: newMatchData.AutoStartingPosition,
       type: "dropdown",
       droptype: PositionTypeItem,
     },
     {
-      label: "Auto Mobility",
-      key: "AutoMobility",
-      value: newMatchData.AutoMobility,
+      label: "Auto Leave",
+      key: "AutoLeave",
+      value: newMatchData.AutoLeave,
       type: "boolean",
     },
     {
-      label: "Auto Objective 1",
-      key: "AutoObjective1",
-      value: newMatchData.AutoObjective1,
-      type: "dropdown",
-      droptype: ObjectiveTypeItem,
+      label: "Amplifier",
+      key: "AutoAmp",
+      value: newMatchData.AutoAmp,
+      type: "counter",
     },
     {
-      label: "Auto Objective 2",
-      key: "AutoObjective2",
-      value: newMatchData.AutoObjective2,
+      label: "Speaker",
+      key: "AutoSpeaker",
+      value: newMatchData.AutoSpeaker,
+      type: "counter",
+    },
+   
+    {
+      label: "Extra Notes",
+      key: "AutoExtraNotes", //TODO CUSTOM RADIO BUTTON
+      value: newMatchData.AutoExtraNotes,
       type: "dropdown",
-      droptype: ObjectiveTypeItem,
+      droptype: extraNotesItem,
     },
     {
-      label: "Auto Robot Falls",
+      label: "Dropped Game Pieces",
+      key: "AutoDropped",
+      value: newMatchData.AutoDropped,
+      type: "number",
+    },
+    {
+      label: "A-StopPressed?",
+      key: "AutoAStopPressed",
+      value: newMatchData.AutoAStopPressed,
+      type: "boolean",
+    },
+    {
+      label: "Incapacitated in auto?",
+      key: "AutoIncapacitated",
+      value: newMatchData.AutoIncapacitated,
+      type: "boolean",
+    },
+    {
+      label: "Fell in auto?",
       key: "AutoRobotFalls",
       value: newMatchData.AutoRobotFalls,
+      type: "boolean",
+    },
+    {
+      label: "Robot Did Not Play",
+      key: "AutoRobotDidNotPlay",
+      value: newMatchData.AutoRobotDidNotPlay,
       type: "boolean",
     },
   ];
 
   const TeleopData = [
     {
-      label: "Average Cycle time",
-      key: "CycleTime",
-      value: newMatchData.CycleTime.toString(),
+      label: "Speaker Amplified",
+      key: "TeleopSpeakerAmplified",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "number",
+    },
+    {
+      label: "Teleop Speaker",
+      key: "TeleopSpeaker",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "number",
+    },
+    {
+      label: "Teleop Amplifier",
+      key: "TeleopAmplifier",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "number",
+    },
+    {
+      label: "Teleop Cycle Time",
+      key: "TeleopCycleTime",
+      value: newMatchData.AutoRobotDidNotPlay,
       type: "timer",
     },
     {
-      label: "Grid",
-      key: "GamePiecesGrid",
-      value: newMatchData.GamePiecesGrid,
-      type: "grid",
+      label: "Teleop Dropped",
+      key: "TeleopDropped",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "number",
     },
     {
-      label: "Number of dropped game pieces",
-      key: "DroppedGamePiece",
-      value: newMatchData.DroppedGamePiece,
-      type: "number",
+      label: "Teleop Trap",
+      key: "TeleopTrap",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "dropdown",
+      droptype: TrapTypeItem,
+    },
+    {
+      label: "Fell in teleop?",
+      key: "TeleopFell",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "boolean",
+    },
+    {
+      label: "Incapacitated in Teleop",
+      key: "TeleopIncapacitated",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "boolean",
+    },
+    {
+      label: "Teleop Game Piece Stuck",
+      key: "TeleopGamePieceStuck",
+      value: newMatchData.TeleopGamePieceStuck,
+      type: "counter",
+    },
+    {
+      label: "Teleop Shoots From",
+      key: "TeleopShootsFrom",
+      value: newMatchData.AutoRobotDidNotPlay,
+      type: "dropdown",
+      droptype: ShootSpotsItem,
+    },
+    {
+      label: "Teleop Under Stage",
+      key: "TeleopUnderStage",
+      value: newMatchData.TeleopUnderStage,
+      type: "boolean",
     },
   ];
 
   const EndGameData = [
     {
-      label: "Objective 1",
-      key: "EndGameObjective1",
-      value: newMatchData.EndGameObjective1,
+      label: "End Game On Stage",
+      key: "EndGameOnStage",
+      value: newMatchData.EndGameOnStage,
       type: "dropdown",
-      droptype: ObjectiveTypeItem,
+      droptype: EndGameOnStageItem,
     },
     {
-      label: "Objective 2",
-      key: "EndGameObjective2",
-      value: newMatchData.EndGameObjective2,
+      label: "End Game Harmony", //TODO not put in verif
+      key: "EndGameHarmony",
+      value: newMatchData.EndGameHarmony,
       type: "dropdown",
-      droptype: ObjectiveTypeItem,
+      droptype: EndGameHarmonyItem,
+    },
+    {
+      label: "End Game Trap", //TODO not put in verif
+      key: "EndGameTrap",
+      value: newMatchData.EndGameTrap,
+      type: "dropdown",
+      droptype: EndGameTrapITem,
+    },
+    {
+      label: "End Game Robot Fell",
+      key: "EndGameRobotFell",
+      value: newMatchData.EndGameRobotFell,
+      type: "boolean",
+    },
+    {
+      label: "End Game Robot Incapacitated",
+      key: "EndGameRobotIncapacitated",
+      value: newMatchData.EndGameRobotIncapacitated,
+      type: "boolean",
+    },
+    {
+      label: "End Game Spotlit",
+      key: "EndGameSpotLighted",
+      value: newMatchData.EndGameSpotLighted,
+      type: "boolean",
     },
   ];
 
   const PerformanceData = [
     {
-      label: "Comment",
-      key: "Comment",
-      value: newMatchData.Comment,
-      type: "text",
-    },
-    {
       label: "Total Points Alliance",
-      key: "TotalPointsAlliance",
-      value: newMatchData.TotalPointsAlliance,
+      key: "AllianceTotalPoints",
+      value: newMatchData.AllianceTotalPoints,
       type: "number",
     },
     {
-      label: "Ranking Points Alliance",
-      key: "RankingPointsAlliance",
-      value: newMatchData.RankingPointsAlliance,
-      type: "number",
-    },
-    {
-      label: "Links",
-      key: "AllianceObjective1",
-      value: newMatchData.AllianceObjective1,
-      type: "number",
-    },
-    {
-      label: "Coopertition",
-      key: "AllianceObjective2",
-      value: newMatchData.AllianceObjective2,
-      type: "boolean",
-    },
-    {
-      label: "Won Match",
-      key: "WonMatch",
-      value: newMatchData.WonMatch,
-      type: "boolean",
-    },
-    {
-      label: "Teleop Status 1",
-      key: "TeleopStatus1",
-      value: newMatchData.TeleopStatus1,
-      type: "boolean",
-    },
-    {
-      label: "Teleop Status 2",
-      key: "TeleopStatus2",
-      value: newMatchData.TeleopStatus2,
-      type: "boolean",
-    },
-    {
-      label: "Teleop Status 3",
-      key: "TeleopStatus3",
-      value: newMatchData.TeleopStatus3,
-      type: "boolean",
-    },
-    {
-      label: "Teleop Status 4",
-      key: "TeleopStatus4",
-      value: newMatchData.TeleopStatus4,
-      type: "boolean",
-    },
-    {
-      label: "Teleop Status 5",
-      key: "TeleopStatus5",
-      value: newMatchData.TeleopStatus5,
+      label: "Alliance Game Status",
+      key: "AllianceRankingPoints",
+      value: newMatchData.AllianceRankingPoints,
       type: "dropdown",
-      droptype: SpeedTypeItem,
+      droptype: RankingPointsItem,
     },
     {
-      label: "Teleop Status 6",
-      key: "TeleopStatus6",
-      value: newMatchData.TeleopStatus6,
+      label: "Alliance Melody",
+      key: "AllianceMelody",
+      value: newMatchData.AllianceMelody,
+      type: "boolean",
+    },
+    {
+      label: "Alliance Coopertition",
+      key: "AllianceCoopertition",
+      value: newMatchData.AllianceCoopertition,
+      type: "boolean",
+    },
+    {
+      label: "Alliance Ensemble",
+      key: "AllianceEnsemble",
+      value: newMatchData.AllianceEnsemble,
+      type: "boolean",
+    },
+    {
+      label: "Plays Defense?",
+      key: "PlaysDefense",
+      value: newMatchData.PlaysDefense,
+      type: "dropdown",
+      droptype: DefenseLevelItem,
+    },
+    {
+      label: "Is robot tippy?",
+      key: "RobotTippy",
+      value: newMatchData.RobotTippy,
+      type: "dropdown",
+      droptype: TippinessItem,
+    },
+    {
+      label: "Is robot fast?",
+      key: "RobotSpeed",
+      value: newMatchData.RobotSpeed,
+      type: "dropdown",
+      droptype: SpeedItem,
+    },
+    {
+      label: "Field Awareness",
+      key: "FieldAwareness",
+      value: newMatchData.FieldAwareness,
       type: "dropdown",
       droptype: AwareTypeItem,
     },
     {
-      label: "Cubes",
-      key: "TeleopGamePiece1",
-      value: newMatchData.TeleopGamePiece1,
-      type: "number",
-    },
-    {
-      label: "Cones",
-      key: "TeleopGamePiece2",
-      value: newMatchData.TeleopGamePiece2,
-      type: "number",
-    },
-    {
-      label: "N/A",
-      key: "TeleopGamePiece3",
-      value: newMatchData.TeleopGamePiece3,
-      type: "number",
-    },
-    {
-      label: "N/A",
-      key: "TeleopGamePiece4",
-      value: newMatchData.TeleopGamePiece4,
-      type: "number",
+      label: "Comment",
+      key: "Comment",
+      value: newMatchData.TotalPointsAlliance,
+      type: "text",
     },
   ];
 
@@ -413,13 +467,9 @@ function Matches({ route }) {
         activeStepIconColor="#F6EB14"
         activeLabelColor="#1E1E1E"
         completedCheckColor="#F6EB14"
-        activeStep={currentStep}
       >
         <ProgressStep
           label="Info"
-          onNext={this.onNextStep}
-          onPrevious={this.onPrevStep}
-          scrollViewProps={this.defaultScrollViewProps}
           nextBtnTextStyle={buttonTextStyle}
           previousBtnTextStyle={buttonTextStyle}
         >
@@ -427,9 +477,6 @@ function Matches({ route }) {
         </ProgressStep>
         <ProgressStep
           label="Auto"
-          onNext={this.onNextStep}
-          onPrevious={this.onPrevStep}
-          scrollViewProps={this.defaultScrollViewProps}
           nextBtnTextStyle={buttonTextStyle}
           previousBtnTextStyle={buttonTextStyle}
         >
@@ -439,9 +486,6 @@ function Matches({ route }) {
         </ProgressStep>
         <ProgressStep
           label="Teleop"
-          onNext={this.onNextStep}
-          onPrevious={this.onPrevStep}
-          scrollViewProps={this.defaultScrollViewProps}
           nextBtnTextStyle={buttonTextStyle}
           previousBtnTextStyle={buttonTextStyle}
         >
@@ -451,8 +495,6 @@ function Matches({ route }) {
         </ProgressStep>
         <ProgressStep
           label="EndGame"
-          onNext={this.onNextStep}
-          onPrevious={this.onPrevStep}
           scrollViewProps={this.defaultScrollViewProps}
           nextBtnTextStyle={buttonTextStyle}
           previousBtnTextStyle={buttonTextStyle}
@@ -463,9 +505,7 @@ function Matches({ route }) {
         </ProgressStep>
         <ProgressStep
           label="Results"
-          onPrevious={this.onPrevStep}
           onSubmit={handleSaveMatchData}
-          scrollViewProps={this.defaultScrollViewProps}
           nextBtnTextStyle={buttonTextStyle}
           previousBtnTextStyle={buttonTextStyle}
         >

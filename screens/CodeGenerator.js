@@ -10,7 +10,6 @@ import QRCode from "react-native-qrcode-svg";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Modal from "react-native-modal";
-import Swiper from "react-native-swiper";
 import * as Haptics from "expo-haptics";
 import { useIsFocused } from "@react-navigation/native";
 import {
@@ -37,6 +36,7 @@ function CodeGenerator({ route }) {
   const [matchCount, setMatchCount] = useState(0);
   const isFocused = useIsFocused();
   const [isClickedArray, setIsClickedArray] = useState([]);
+  const Swiper = require('react-native-swiper');
 
   useEffect(() => {
     setLoading(true);
@@ -254,6 +254,8 @@ function CodeGenerator({ route }) {
         animationOutTiming={250}
         isVisible={MatchModalState}
         onBackdropPress={closeModal}
+        useNativeDriver={true}
+        hideModalContentWhileAnimating={true}
         style={styles.modalScreen}
         
       >

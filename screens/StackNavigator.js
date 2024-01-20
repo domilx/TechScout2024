@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 const Help = ({ onHelpPress }) => (
   <TouchableOpacity style={styles.help} onPress={onHelpPress}>
     <Icon
-      name={"help"}
+      name={"information-circle-outline"}
       color={"#F6EB14"}
       size={32}
     />

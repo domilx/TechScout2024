@@ -1,72 +1,119 @@
 export interface MatchModel {
-  // Robot Information
+  //General
   ScoutName: string;
   TeamNumber: number;
   MatchNumber: number;
   //Auto
-  AutoGamePiece1: number; //amount of cubes
-  AutoGamePiece2: number; // amount of cones
-  AutoGamePiece3: number; // N/A
-  AutoGamePiece4: number; // N/A
-  AutoPosition: Position; //Left, Middle, Right
-  AutoMobility: boolean; //Yes or No
-  AutoObjective1: Objective; //Stage 1, 2, 3, 4
-  AutoObjective2: Objective; //Stage 1, 2, 3, 4
-  AutoRobotFalls: boolean; //Yes or No
-  //Teleop + Endgame
-  CycleTime: number[]; //array of cycle times
-  EndGameObjective1: Objective; //Stage 1, 2, 3, 4
-  EndGameObjective2: Objective; //Stage 1, 2, 3, 4
-  DroppedGamePiece: number;
-  // Robot Performance + match results
-  Comment: string; //comment
-  TotalPointsAlliance: number; //total points
-  RankingPointsAlliance: number; //ranking points
-  AllianceObjective1: number; //Links
-  AllianceObjective2: boolean; //Coopertition
-  WonMatch: boolean;
-  TeleopStatus1: boolean; //Robot falls
-  TeleopStatus2: boolean; //Incapacitated? --> if more than 8 seconds then considered YES
-  TeleopStatus3: boolean; //plays defense
-  TeleopStatus4: boolean; //Robot Tippy
-  TeleopStatus5: Speed; //Robot Quickness
-  TeleopStatus6: Aware; //Field Awareness
-  TeleopGamePiece1: number; //Cubes
-  TeleopGamePiece2: number; //Cones
-  TeleopGamePiece3: number; //N/A
-  TeleopGamePiece4: number; //n/A
-  GamePiecesGrid: GamePieceCell[];
+  AutoAmp: number;
+  AutoSpeaker: number;
+  AutoStartingPosition: Position;
+  AutoLeave: boolean;
+  AutoExtraNotes: ExtraNotes;
+  AutoDropped: number;
+  AutoAStopPressed: boolean;
+  AutoIncapacitated: boolean;
+  AutoFell: boolean;
+  AutoRobotDidNotPlay: boolean;
+  //Teleop
+  TeleopSpeakerAmplified: number;
+  TeleopSpeaker: number;
+  TeleopAmplifier: number;
+  TeleopCycleTime: number[];
+  TeleopDropped: number;
+  TeleopTrap: Trap;
+  TeleopFell: boolean;
+  TeleopIncapacitated: boolean;
+  TeleopGamePieceStuck: number;
+  TeleopShootsFrom: ShootSpots;
+  TeleopUnderStage: boolean;
+  //EndGame
+  EndGameOnStage: EndGameOnStage; // None=0; Park=2; OnStage=3; points
+  EndGameHarmony: EndGameHarmony; // 0=0; 1=2; 2=3; points
+  EndGameTrap: TrapEndGame; // 0=0; 1=2; 2=0; points
+  EndGameRobotFell: boolean;
+  EndGameRobotIncapacitated: boolean;
+  EndGameSpotLighted: boolean;// 0=0; 1=1; points
+  //Alliance
+  AllianceTotalPoints: number;
+  AllianceRankingPoints: RankingPoints;
+  AllianceMelody: boolean;
+  AllianceCoopertition: boolean;
+  AllianceEnsemble: boolean;
+  //Performance
+  PlaysDefense: DefenseLevel;
+  RobotTippy: Tippiness;
+  RobotSpeed: Speed;
+  FieldAwareness: Awareness;
+  Comment?: string;
   gotScanned?: boolean;
 }
-
-export type GamePieceCell = {
-  rowIndex: number;
-  columnIndex: number;
-  autoScored: number;
-  GamePieceType: GamePieceType;
-  count: number;
-};
-
-export enum GamePieceType {
-  GamePiece1 = "Cone",
-  GamePiece2 = "Cube",
-  GamePiece3 = "3",
-  GamePiece4 = "4",
-}
-
-export enum Objective {
-  Stage1 = "Stage 1", // 2pts
-  Stage2 = "Stage 2", // 4pts
-  Stage3 = "Stage 3", // 6pts
-  Stage4 = "Stage 4", // 8pts
-}
-
-export const AutoMobilityPoints = 6;
 
 export enum Position {
   Left = "Left",
   Middle = "Middle",
   Right = "Right",
+}
+
+export enum ExtraNotes {
+  LeftWing = "Left Wing",
+  CentreWing = "Centre Wing",
+  RightWing = "Right Wing",
+  FarLeftCentre = "Far Left Centre",
+  LeftCentre = "Left Centre",
+  CentreCentre = "Centre Centre",
+  RightCentre = "Right Centre",
+  FarRight = "Far Right",
+}
+
+export enum ShootSpots {
+  StartingZone = "Starting Zone",
+  Podium = "Podium",
+  ElsewhereInWing = "Elsewhere in Wing",
+  NearCentreLine = "Near Centre Line",
+}
+
+export enum EndGameOnStage {
+  None = "None",
+  Park = "Park",
+  OnStage = "OnStage",
+}
+
+export enum EndGameHarmony {
+  ZeroPoints = "0 Points",
+  TwoPoints = "2 Points",
+  HarmonyFailed = "Harmony Failed",
+}
+
+export enum Trap {
+  FivePoints = "5 Points",
+  TenPoints = "10 Points",
+  FifteenPoints = "15 Points",
+  TrapFailed = "Trap Failed",
+}
+
+export enum TrapEndGame {
+  ZeroPoints = "0 Points",
+  FivePoints = "5 Points",
+  TrapFailed = "Trap Failed",
+}
+
+export enum RankingPoints {
+  Lose = "Lose",
+  Tie = "Tie",
+  Win = "Win",
+}
+
+export enum DefenseLevel {
+  No = "No",
+  A_Little = "A Little",
+  Average = "Average",
+  A_Lot = "A Lot",
+}
+
+export enum Tippiness {
+  Not = "Not",
+  A_Little = "A Little",
+  Very = "Very",
 }
 
 export enum Speed {
@@ -75,57 +122,53 @@ export enum Speed {
   Fast = "Fast",
 }
 
-export enum Aware {
-  Minus = "Less aware",
-  Normal = "Average",
-  More = "Very aware",
+export enum Awareness {
+  LessAware = "Less Aware",
+  Average = "Average",
+  VeryAware = "Very Aware",
 }
 
+// Initialize with default values
 export const initialMatchData: MatchModel = {
   ScoutName: "",
   TeamNumber: 0,
   MatchNumber: 0,
-  AutoGamePiece1: 0,
-  AutoGamePiece2: 0,
-  AutoGamePiece3: 0,
-  AutoGamePiece4: 0,
-  AutoPosition: Position.Middle,
-  AutoMobility: false,
-  AutoObjective1: Objective.Stage1,
-  AutoObjective2: Objective.Stage1,
-  AutoRobotFalls: false,
-  CycleTime: [],
-  EndGameObjective1: Objective.Stage1,
-  EndGameObjective2: Objective.Stage1,
-  DroppedGamePiece: 0,
+  AutoAmp: 0,
+  AutoSpeaker: 0,
+  AutoStartingPosition: Position.Middle,
+  AutoLeave: false,
+  AutoExtraNotes: ExtraNotes.LeftWing,
+  AutoDropped: 0,
+  AutoAStopPressed: false,
+  AutoIncapacitated: false,
+  AutoFell: false,
+  AutoRobotDidNotPlay: false,
+  TeleopSpeakerAmplified: 5,
+  TeleopSpeaker: 2,
+  TeleopAmplifier: 1,
+  TeleopCycleTime: [0],
+  TeleopDropped: 0,
+  TeleopTrap: Trap.TrapFailed,
+  TeleopFell: false,
+  TeleopIncapacitated: false,
+  TeleopGamePieceStuck: 0,
+  TeleopShootsFrom: ShootSpots.StartingZone,
+  TeleopUnderStage: false,
+  EndGameOnStage: EndGameOnStage.None,
+  EndGameHarmony: EndGameHarmony.ZeroPoints,
+  EndGameTrap: TrapEndGame.ZeroPoints,
+  EndGameRobotFell: false,
+  EndGameRobotIncapacitated: false,
+  EndGameSpotLighted: false,
+  AllianceTotalPoints: 0,
+  AllianceRankingPoints: RankingPoints.Lose,
+  AllianceMelody: false,
+  AllianceCoopertition: false,
+  AllianceEnsemble: false,
+  PlaysDefense: DefenseLevel.No,
+  RobotTippy: Tippiness.Not,
+  RobotSpeed: Speed.Average,
+  FieldAwareness: Awareness.Average,
   Comment: "",
-  TotalPointsAlliance: 0,
-  RankingPointsAlliance: 0,
-  AllianceObjective1: 0,
-  AllianceObjective2: false,
-  WonMatch: false,
-  TeleopStatus1: false,
-  TeleopStatus2: false,
-  TeleopStatus3: false,
-  TeleopStatus4: false,
-  TeleopStatus5: Speed.Average,
-  TeleopStatus6: Aware.Normal,
-  TeleopGamePiece1: 0,
-  TeleopGamePiece2: 0,
-  TeleopGamePiece3: 0,
-  TeleopGamePiece4: 0,
-  GamePiecesGrid: Array.from({ length: 3 * 3 }, (_, index) => {
-    const rowIndex = Math.floor(index / 3);
-    const columnIndex = index % 3;
-
-    return {
-      rowIndex,
-      columnIndex,
-      autoScored: 0,
-      GamePieceType: GamePieceType.GamePiece1,
-      count: 0
-    };
-  }),
-
-
+  gotScanned: false,
 };
