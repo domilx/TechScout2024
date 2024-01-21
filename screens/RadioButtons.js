@@ -7,12 +7,15 @@ const RadioButtonGrid = ({
   verticalAmount,
   columnTitles,
   rowTitles,
+  label,
+  onPress,
 }) => {
   const [selectedButtons, setSelectedButtons] = useState([]);
 
   const toggleRadioButton = (index) => {
     setSelectedButtons((prevSelected) => {
       if (prevSelected.includes(index)) {
+        onPress(index);
         return prevSelected.filter((selected) => selected !== index);
       } else {
         return [...prevSelected, index];
@@ -27,7 +30,8 @@ const RadioButtonGrid = ({
       for (let j = 0; j < horizontalAmount; j++) {
         const index = i * horizontalAmount + j;
         row.push(
-          <View key={index} style={{ marginRight: 10 }}>
+          
+          <View key={index} style={{ marginRight: '20%' }}>
             <TouchableOpacity onPress={() => toggleRadioButton(index)}>
               <Icon
                 name={
@@ -67,10 +71,14 @@ const RadioButtonGrid = ({
   };
 
   return (
-    <View style={styles.container}>
-      {renderColumnTitles()}
-      {generateButtons()}
+    <View style={styles.subViews}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.counterContainer}>
+        {renderColumnTitles()}
+        {generateButtons()}
+      </View>
     </View>
+
   );
 };
 
@@ -81,21 +89,52 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 20,
   },
+  counterContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 20,
+    marginHorizontal: 28,
+    borderRadius: 15,
+    padding: 10,
+    borderColor: "#A0A0A0",
+    borderWidth: 1,
+
+  },
   columnTitleContainer: {
     flexDirection: "row",
     marginBottom: 10,
+    marginRight:' 12%',
   },
   columnTitle: {
+    justifyContent: "flex-end", // Add this line
     marginRight: 10,
     marginLeft: 10,
+
   },
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 5,
+
+  },
+  label: {
+    color: "#555",
+    marginRight: '70%',
+    marginBottom: 0,
   },
   rowTitle: {
-    marginRight: 10,
+    marginRight: '12%',
+  },
+  subViews: {
+    width: "90%",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#F0F0F0",
+    marginVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#F0F0F0",
+    marginHorizontal: 20
   },
 });
 

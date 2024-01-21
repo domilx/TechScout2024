@@ -84,7 +84,12 @@ function Pits({ route }) {
   const handleSavePitData = async () => {
     try {
       const validationFields = [
-        { field: "Robot Scout", value: newPitData.ScoutName },
+        { field: "Team Name", value: newPitData.TeamName },
+        { field: "Robot Weight (lbs)", value: newPitData.WeightLbs },
+        { field: "Robot Width (in)", value: newPitData.WidthInches },
+        { field: "Robot Length (in)", value: newPitData.LengthInches },
+        { field: "Height (in)", value: newPitData.HeightInches },
+        { field: "Frame Clearance (in)", value: newPitData.FrameClearanceInches },
         
       ];
 

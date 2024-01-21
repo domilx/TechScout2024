@@ -1,6 +1,11 @@
 import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, Keyboard,   KeyboardAvoidingView,
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount } from "../logic/TeamLogic.js";
@@ -134,7 +139,6 @@ function Matches({ route }) {
                     newMatchData.TeleopSpeakerAmplified + 1
                   )
                 }
-                
               />
             )}
             {item.type === "counter" && (
@@ -145,13 +149,17 @@ function Matches({ route }) {
                 OnNegToggle={() => setNumericField(item.key, item.value - 1)}
               />
             )}
-            {item.type === "radio" && <RadioButtonGrid
-  horizontalAmount={3}
-  verticalAmount={2}
-  columnTitles={["Column 1", "Column 2", "Column 3"]}
-  rowTitles={["Blue Alliance", "Red Alliance"]}
-/>
-}
+            {item.type === "radio" && (
+              <RadioButtonGrid
+                horizontalAmount={item.horizontal}
+                verticalAmount={item.vertical}
+                columnTitles={item.titles}
+                rowTitles={["", ""]}
+                label={item.label}
+                onPress={(boolValue, boolToChange) => setBooleanField(item.key[boolToChange], boolValue)}
+                values={item.droptype}
+              />
+            )}
           </View>
         )}
       />
@@ -265,6 +273,8 @@ function Matches({ route }) {
       key: "AutoExtraNotes", //TODO CUSTOM RADIO BUTTON
       value: newMatchData.AutoExtraNotes,
       type: "radio",
+      titles: ["Stage Left", "Center Stage", "Stage Right"],
+      fields: extraNotesItem
     },
     {
       label: "A-StopPressed?",
@@ -300,11 +310,21 @@ function Matches({ route }) {
       type: "timer",
     },
     {
+      label: "Teleop Game Piece Stuck",
+      key: "TeleopGamePieceStuck",
+      value: newMatchData.TeleopGamePieceStuck,
+      type: "counter",
+    },
+    {
       label: "Teleop Trap",
-      key: "TeleopTrap",
-      value: newMatchData.TeleopTrap,
-      type: "dropdown",
-      droptype: TrapTypeItem,
+      key: ["TeleopTrapZero", "TeleopTrapFive", "TeleopTrapTen", "TeleopTrapFifteen"],
+      values: ["newMatchData.TeleopTrapZero", "newMatchData.TeleopTrapFive", "newMatchData.TeleopTrapTen", "newMatchData.TeleopTrapFifteen"],
+      type: "radio",
+      vertical: 1,
+      horizontal: 3,
+      titles: ["Stage Left", "Center Stage", "Stage Right"],
+      values: ["newmatchdata", "stageleft", "stageright"],
+     
     },
     {
       label: "Fell in teleop?",
@@ -318,21 +338,20 @@ function Matches({ route }) {
       value: newMatchData.TeleopIncapacitated,
       type: "boolean",
     },
-    {
-      label: "Teleop Game Piece Stuck",
-      key: "TeleopGamePieceStuck",
-      value: newMatchData.TeleopGamePieceStuck,
-      type: "counter",
-    },
+   
     {
       label: "Teleop Shoots From",
       key: "TeleopShootsFrom",
       value: newMatchData.AutoRobotDidNotPlay,
-      type: "dropdown",
-      droptype: ShootSpotsItem,
+      type: "radio",
+      vertical: 1,
+      horizontal: 3,
+      titles: ["Starting Zone", "Podium", "Wing"],
+      values: ["newmatchdata", "stageleft", "stageright"],
+     
     },
     {
-      label: "Teleop Under Stage",
+      label: "Can PassUnder Stage",
       key: "TeleopUnderStage",
       value: newMatchData.TeleopUnderStage,
       type: "boolean",
@@ -465,63 +484,62 @@ function Matches({ route }) {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 90} // Adjust this offset as needed
       >
-      <ProgressSteps
-        completedProgressBarColor="#1E1E1E"
-        activeStepIconBorderColor="#1E1E1E"
-        completedStepIconColor="#1E1E1E"
-        activeStepIconColor="#F6EB14"
-        activeLabelColor="#1E1E1E"
-        completedCheckColor="#F6EB14"
-      >
-        <ProgressStep
-          label="Info"
-          nextBtnTextStyle={buttonTextStyle}
-          previousBtnTextStyle={buttonTextStyle}
+        <ProgressSteps
+          completedProgressBarColor="#1E1E1E"
+          activeStepIconBorderColor="#1E1E1E"
+          completedStepIconColor="#1E1E1E"
+          activeStepIconColor="#F6EB14"
+          activeLabelColor="#1E1E1E"
+          completedCheckColor="#F6EB14"
         >
-          <View>{content({ data: InfoData })}</View>
-        </ProgressStep>
-        <ProgressStep
-          label="Auto"
-          nextBtnTextStyle={buttonTextStyle}
-          previousBtnTextStyle={buttonTextStyle}
-        >
-          <View style={{}}>
-            <View>{content({ data: AutoData })}</View>
-          </View>
-        </ProgressStep>
-        <ProgressStep
-          label="Teleop"
-          nextBtnTextStyle={buttonTextStyle}
-          previousBtnTextStyle={buttonTextStyle}
-        >
-          <View style={{}}>
-            <View>{content({ data: TeleopData })}</View>
-          </View>
-        </ProgressStep>
-        <ProgressStep
-          label="EndGame"
-          scrollViewProps={this.defaultScrollViewProps}
-          nextBtnTextStyle={buttonTextStyle}
-          previousBtnTextStyle={buttonTextStyle}
-        >
-          <View style={{}}>
-            <View>{content({ data: EndGameData })}</View>
-          </View>
-        </ProgressStep>
-        <ProgressStep
-          label="Results"
-          onSubmit={handleSaveMatchData}
-          nextBtnTextStyle={buttonTextStyle}
-          previousBtnTextStyle={buttonTextStyle}
-        >
-          <View style={{}}>
-            <View>{content({ data: PerformanceData })}</View>
-          </View>
-        </ProgressStep>
-      </ProgressSteps>
+          <ProgressStep
+            label="Info"
+            nextBtnTextStyle={buttonTextStyle}
+            previousBtnTextStyle={buttonTextStyle}
+          >
+            <View>{content({ data: InfoData })}</View>
+          </ProgressStep>
+          <ProgressStep
+            label="Auto"
+            nextBtnTextStyle={buttonTextStyle}
+            previousBtnTextStyle={buttonTextStyle}
+          >
+            <View style={{}}>
+              <View>{content({ data: AutoData })}</View>
+            </View>
+          </ProgressStep>
+          <ProgressStep
+            label="Teleop"
+            nextBtnTextStyle={buttonTextStyle}
+            previousBtnTextStyle={buttonTextStyle}
+          >
+            <View style={{}}>
+              <View>{content({ data: TeleopData })}</View>
+            </View>
+          </ProgressStep>
+          <ProgressStep
+            label="EndGame"
+            scrollViewProps={this.defaultScrollViewProps}
+            nextBtnTextStyle={buttonTextStyle}
+            previousBtnTextStyle={buttonTextStyle}
+          >
+            <View style={{}}>
+              <View>{content({ data: EndGameData })}</View>
+            </View>
+          </ProgressStep>
+          <ProgressStep
+            label="Results"
+            onSubmit={handleSaveMatchData}
+            nextBtnTextStyle={buttonTextStyle}
+            previousBtnTextStyle={buttonTextStyle}
+          >
+            <View style={{}}>
+              <View>{content({ data: PerformanceData })}</View>
+            </View>
+          </ProgressStep>
+        </ProgressSteps>
       </KeyboardAvoidingView>
     </View>
-    
   );
 }
 

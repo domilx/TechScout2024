@@ -20,7 +20,10 @@ export interface MatchModel {
   TeleopAmplifier: number;
   TeleopCycleTime: number[];
   TeleopDropped: number;
-  TeleopTrap: Trap;
+  TeleopTrapZero: boolean,
+  TeleopTrapFive: boolean,
+  TeleopTrapTen: boolean,
+  TeleopTrapFifteen: boolean,
   TeleopFell: boolean;
   TeleopIncapacitated: boolean;
   TeleopGamePieceStuck: number;
@@ -148,7 +151,10 @@ export const initialMatchData: MatchModel = {
   TeleopAmplifier: 0,
   TeleopCycleTime: [0],
   TeleopDropped: 0,
-  TeleopTrap: Trap.TrapFailed,
+  TeleopTrapZero: true,
+  TeleopTrapFive: false,
+  TeleopTrapTen: false,
+  TeleopTrapFifteen: false,
   TeleopFell: false,
   TeleopIncapacitated: false,
   TeleopGamePieceStuck: 0,
