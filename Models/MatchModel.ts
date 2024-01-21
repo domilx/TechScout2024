@@ -8,7 +8,7 @@ export interface MatchModel {
   AutoSpeaker: number;
   AutoStartingPosition: Position;
   AutoLeave: boolean;
-  AutoExtraNotes: ExtraNotes;
+  AutoExtraNotes: ExtraNotes[];
   AutoDropped: number;
   AutoAStopPressed: boolean;
   AutoIncapacitated: boolean;
@@ -20,14 +20,11 @@ export interface MatchModel {
   TeleopAmplifier: number;
   TeleopCycleTime: number[];
   TeleopDropped: number;
-  TeleopTrapZero: boolean,
-  TeleopTrapFive: boolean,
-  TeleopTrapTen: boolean,
-  TeleopTrapFifteen: boolean,
+  TeleopTrap: Trap;
   TeleopFell: boolean;
   TeleopIncapacitated: boolean;
   TeleopGamePieceStuck: number;
-  TeleopShootsFrom: ShootSpots;
+  TeleopShootsFrom: ShootSpots[];
   TeleopUnderStage: boolean;
   //EndGame
   EndGameOnStage: EndGameOnStage; // None=0; Park=2; OnStage=3; points
@@ -140,7 +137,7 @@ export const initialMatchData: MatchModel = {
   AutoSpeaker: 0,
   AutoStartingPosition: Position.Middle,
   AutoLeave: false,
-  AutoExtraNotes: ExtraNotes.LeftWing,
+  AutoExtraNotes:[ExtraNotes.LeftWing],
   AutoDropped: 0,
   AutoAStopPressed: false,
   AutoIncapacitated: false,
@@ -151,14 +148,11 @@ export const initialMatchData: MatchModel = {
   TeleopAmplifier: 0,
   TeleopCycleTime: [0],
   TeleopDropped: 0,
-  TeleopTrapZero: true,
-  TeleopTrapFive: false,
-  TeleopTrapTen: false,
-  TeleopTrapFifteen: false,
+  TeleopTrap: Trap.FivePoints,
   TeleopFell: false,
   TeleopIncapacitated: false,
   TeleopGamePieceStuck: 0,
-  TeleopShootsFrom: ShootSpots.StartingZone,
+  TeleopShootsFrom: [ShootSpots.StartingZone],
   TeleopUnderStage: false,
   EndGameOnStage: EndGameOnStage.None,
   EndGameHarmony: EndGameHarmony.ZeroPoints,

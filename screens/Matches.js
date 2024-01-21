@@ -171,7 +171,7 @@ function Matches({ route }) {
       setCurrentStep(0);
       // on peut ajouter des fields si necessaire
       const validationFields = [
-        { field: "ScoutName", value: newMatchData.ScoutName },
+        //{ field: "ScoutName", value: newMatchData.ScoutName },
       ];
 
       const validationResults = await Promise.all(
@@ -274,6 +274,8 @@ function Matches({ route }) {
       value: newMatchData.AutoExtraNotes,
       type: "radio",
       titles: ["Stage Left", "Center Stage", "Stage Right"],
+      horizontalAmount:3,
+      verticalAmount:"2",
       fields: extraNotesItem
     },
     {

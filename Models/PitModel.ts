@@ -19,10 +19,10 @@ export interface PitModel {
   ScoreSpots: ScoreSpots;
   CenterOfGravity: Gravity;
   YearsUsingSwerve: Years;
-  ShootsFrom: ShootSpots; // Adding ShootsFrom as an enum
+  ShootsFrom: ShootSpots[]; // Adding ShootsFrom as an enum
   ObjectRecognition: boolean;
   ReadAprilTags: boolean;
-  AutonomousProgram: boolean;
+  AutonomousProgram: AutoPositions[];
   AutoProgramsForSpeaker: boolean;
   CanGetOnStage: boolean;
   CanScoreNotesInTrap: boolean;
@@ -102,6 +102,14 @@ export enum HumanPlayerSpotlight {
   AllHighNotes = "3 of 3 High Notes",
 }
 
+export enum AutoPositions {
+  RedLeft = "Red Left",
+  RedCenter = "Red Center",
+  RedRight = "Red Right",
+  BlueLeft = "Blue Left",
+  BlueCenter = "Blue Center",
+  BlueRight = "Blue Right",
+}
 
 
 // Create an initial state object that matches the PitModel interface
@@ -122,10 +130,10 @@ export const initialPitData: PitModel = {
   ScoreSpots: ScoreSpots.Neither,
   CenterOfGravity: Gravity.Low,
   YearsUsingSwerve: Years.Zero,
-  ShootsFrom: ShootSpots.None,
+  ShootsFrom: [ShootSpots.None],
   ObjectRecognition: false,
   ReadAprilTags: false,
-  AutonomousProgram: false,
+  AutonomousProgram: [AutoPositions.RedLeft],
   AutoProgramsForSpeaker: false,
   CanGetOnStage: false,
   CanScoreNotesInTrap: false,
