@@ -1,10 +1,11 @@
 import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, Keyboard } from "react-native";
+import { View, StyleSheet, FlatList, Keyboard,   KeyboardAvoidingView,
+} from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount } from "../logic/TeamLogic.js";
 import * as MatchModel from "../Models/MatchModel";
-
+import RadioButtonGrid from "./RadioButtons.js";
 import {
   InputField,
   ToggleSwitch,
@@ -144,7 +145,13 @@ function Matches({ route }) {
                 OnNegToggle={() => setNumericField(item.key, item.value - 1)}
               />
             )}
-            {item.type === "grid" && <Grid rows={3} columns={3} />}
+            {item.type === "radio" && <RadioButtonGrid
+  horizontalAmount={3}
+  verticalAmount={2}
+  columnTitles={["Column 1", "Column 2", "Column 3"]}
+  rowTitles={["Blue Alliance", "Red Alliance"]}
+/>
+}
           </View>
         )}
       />
@@ -257,8 +264,7 @@ function Matches({ route }) {
       label: "Extra Notes",
       key: "AutoExtraNotes", //TODO CUSTOM RADIO BUTTON
       value: newMatchData.AutoExtraNotes,
-      type: "dropdown",
-      droptype: extraNotesItem,
+      type: "radio",
     },
     {
       label: "A-StopPressed?",
@@ -454,6 +460,11 @@ function Matches({ route }) {
 
   return (
     <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleScroll}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 90} // Adjust this offset as needed
+      >
       <ProgressSteps
         completedProgressBarColor="#1E1E1E"
         activeStepIconBorderColor="#1E1E1E"
@@ -508,7 +519,9 @@ function Matches({ route }) {
           </View>
         </ProgressStep>
       </ProgressSteps>
+      </KeyboardAvoidingView>
     </View>
+    
   );
 }
 

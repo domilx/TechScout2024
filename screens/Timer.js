@@ -111,7 +111,7 @@ const AmpSpeaker = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginTop: 20,
   },
   timerContainer: {
