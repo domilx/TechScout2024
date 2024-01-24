@@ -9,30 +9,47 @@ const RadioButtonGrid = ({
   rowTitles,
   label,
   onPress,
+  saveButtons,
+  value,
 }) => {
-  const [selectedButtons, setSelectedButtons] = useState([]);
-
-  const toggleRadioButton = (index) => {
-    setSelectedButtons((prevSelected) => {
-      if (prevSelected.includes(index)) {
-        onPress(index);
-        return prevSelected.filter((selected) => selected !== index);
-      } else {
-        return [...prevSelected, index];
-      }
-    });
-  };
-
-  const generateButtons = () => {
+  const [selectedButtons, setSelectedButtons] = useState(value);
+  
+const generateButtons = () => {
     const buttons = [];
     for (let i = 0; i < verticalAmount; i++) {
       const row = [];
       for (let j = 0; j < horizontalAmount; j++) {
         const index = i * horizontalAmount + j;
         row.push(
-          
-          <View key={index} style={{ marginRight: '20%' }}>
-            <TouchableOpacity onPress={() => toggleRadioButton(index)}>
+          <View key={index} style={{ marginRight: "20%" }}>
+            <TouchableOpacity
+             onPress={() => {
+              const index = i * horizontalAmount + j;
+              const isSelected = selectedButtons.includes(index);
+              let newSelectedButtons;
+            
+              if (isSelected) {
+                newSelectedButtons = selectedButtons.filter((item) => item !== index);
+              } else {
+                newSelectedButtons = [...selectedButtons, index];
+              }
+            
+              setSelectedButtons(newSelectedButtons);
+              saveButtons(newSelectedButtons); // Save the selected buttons
+
+              const selectedCount = newSelectedButtons.length;
+            
+              if (selectedCount === 0) {
+                onPress('TrapFailed');
+              } else if (selectedCount === 1) {
+                onPress('FivePoints');
+              } else if (selectedCount === 2) {
+                onPress('TenPoints');
+              } else if (selectedCount === 3) {
+                onPress('FifteenPoints');
+              }
+            }}
+            >
               <Icon
                 name={
                   selectedButtons.includes(index)
@@ -78,7 +95,6 @@ const RadioButtonGrid = ({
         {generateButtons()}
       </View>
     </View>
-
   );
 };
 
@@ -99,32 +115,29 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: "#A0A0A0",
     borderWidth: 1,
-
   },
   columnTitleContainer: {
     flexDirection: "row",
     marginBottom: 10,
-    marginRight:' 12%',
+    marginRight: " 12%",
   },
   columnTitle: {
     justifyContent: "flex-end", // Add this line
     marginRight: 10,
     marginLeft: 10,
-
   },
   rowContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 5,
-
   },
   label: {
     color: "#555",
-    marginRight: '70%',
+    marginRight: "70%",
     marginBottom: 0,
   },
   rowTitle: {
-    marginRight: '12%',
+    marginRight: "12%",
   },
   subViews: {
     width: "90%",
@@ -134,7 +147,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
     backgroundColor: "#F0F0F0",
-    marginHorizontal: 20
+    marginHorizontal: 20,
   },
 });
 

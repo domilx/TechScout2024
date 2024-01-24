@@ -1,11 +1,13 @@
 import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
+  ScrollView,
   StyleSheet,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
+  Dimensions,
 } from "react-native";
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount } from "../logic/TeamLogic.js";
@@ -21,18 +23,23 @@ import {
 import Timer from "./Timer.js";
 import { validateEmptyField } from "../logic/ValidationLogic.js";
 
-function Matches({ route }) {
+const Matches = ({ route }) => {
   const { currentTeamNumber } = route.params;
   const [newMatchData, setNewMatchData] = useState(MatchModel.initialMatchData);
   const [matchCount, setMatchCount] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
 
+  const [currentStep, setCurrentStep] = useState(0);
+  const scrollViewRef = useRef(null);
+  const scrollToTop = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+    }else{console.log("no ref")}
+  };
   useEffect(() => {
     const loadMatchDataOnMount = async () => {
       setMatchCount(await loadMatchCount(currentTeamNumber));
     };
     loadMatchDataOnMount();
-    console.log(newMatchData);
   }, []);
 
   const setField = (field, value) => {
@@ -156,8 +163,13 @@ function Matches({ route }) {
                 columnTitles={item.titles}
                 rowTitles={["", ""]}
                 label={item.label}
-                onPress={(boolValue, boolToChange) => setBooleanField(item.key[boolToChange], boolValue)}
-                values={item.droptype}
+                onPress={(selectedValue) =>
+                  setEnumField(item.key, selectedValue)
+                }
+                saveButtons={(selectedValue) =>
+                  setField(item.saveButton, selectedValue)
+                }
+                value={newMatchData.TeleopTrapButtons}
               />
             )}
           </View>
@@ -214,7 +226,6 @@ function Matches({ route }) {
   const ShootSpotsItem = generateEnumItems(MatchModel.ShootSpots);
   const EndGameOnStageItem = generateEnumItems(MatchModel.EndGameOnStage);
   const EndGameHarmonyItem = generateEnumItems(MatchModel.EndGameHarmony);
-  const TrapTypeItem = generateEnumItems(MatchModel.Trap);
   const RankingPointsItem = generateEnumItems(MatchModel.RankingPoints);
   const DefenseLevelItem = generateEnumItems(MatchModel.DefenseLevel);
   const TippinessItem = generateEnumItems(MatchModel.Tippiness);
@@ -274,9 +285,9 @@ function Matches({ route }) {
       value: newMatchData.AutoExtraNotes,
       type: "radio",
       titles: ["Stage Left", "Center Stage", "Stage Right"],
-      horizontalAmount:3,
-      verticalAmount:"2",
-      fields: extraNotesItem
+      horizontalAmount: 3,
+      verticalAmount: "2",
+      fields: extraNotesItem,
     },
     {
       label: "A-StopPressed?",
@@ -319,14 +330,13 @@ function Matches({ route }) {
     },
     {
       label: "Teleop Trap",
-      key: ["TeleopTrapZero", "TeleopTrapFive", "TeleopTrapTen", "TeleopTrapFifteen"],
-      values: ["newMatchData.TeleopTrapZero", "newMatchData.TeleopTrapFive", "newMatchData.TeleopTrapTen", "newMatchData.TeleopTrapFifteen"],
+      key: "TeleopTrap",
+      value: newMatchData.TeleopTrap,
       type: "radio",
       vertical: 1,
       horizontal: 3,
       titles: ["Stage Left", "Center Stage", "Stage Right"],
-      values: ["newmatchdata", "stageleft", "stageright"],
-     
+      saveButton: "TeleopTrapButtons",
     },
     {
       label: "Fell in teleop?",
@@ -340,7 +350,7 @@ function Matches({ route }) {
       value: newMatchData.TeleopIncapacitated,
       type: "boolean",
     },
-   
+
     {
       label: "Teleop Shoots From",
       key: "TeleopShootsFrom",
@@ -350,7 +360,6 @@ function Matches({ route }) {
       horizontal: 3,
       titles: ["Starting Zone", "Podium", "Wing"],
       values: ["newmatchdata", "stageleft", "stageright"],
-     
     },
     {
       label: "Can PassUnder Stage",
@@ -484,7 +493,7 @@ function Matches({ route }) {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 90} // Adjust this offset as needed
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 90}
       >
         <ProgressSteps
           completedProgressBarColor="#1E1E1E"
@@ -493,39 +502,61 @@ function Matches({ route }) {
           activeStepIconColor="#F6EB14"
           activeLabelColor="#1E1E1E"
           completedCheckColor="#F6EB14"
+          activeStep={currentStep}
         >
           <ProgressStep
             label="Info"
             nextBtnTextStyle={buttonTextStyle}
             previousBtnTextStyle={buttonTextStyle}
+            scrollEnabled={false}
           >
             <View>{content({ data: InfoData })}</View>
           </ProgressStep>
+
           <ProgressStep
             label="Auto"
             nextBtnTextStyle={buttonTextStyle}
             previousBtnTextStyle={buttonTextStyle}
+            scrollable={true}
+            scrollViewProps={{ ref: scrollViewRef }}
+            onNext={() => {
+              setCurrentStep(1);
+              scrollToTop();
+            }}
           >
-            <View style={{}}>
+            <View>
               <View>{content({ data: AutoData })}</View>
             </View>
           </ProgressStep>
+
           <ProgressStep
             label="Teleop"
             nextBtnTextStyle={buttonTextStyle}
             previousBtnTextStyle={buttonTextStyle}
+            scrollable={true}
+            scrollViewProps={{ ref: scrollViewRef }}
+            onNext={() => {
+              setCurrentStep(2);
+              scrollToTop();
+            }}
           >
-            <View style={{}}>
+            <View>
               <View>{content({ data: TeleopData })}</View>
+              {console.log(newMatchData.TeleopTrap)}
             </View>
           </ProgressStep>
           <ProgressStep
             label="EndGame"
-            scrollViewProps={this.defaultScrollViewProps}
             nextBtnTextStyle={buttonTextStyle}
             previousBtnTextStyle={buttonTextStyle}
+            scrollable={true}
+            scrollViewProps={{ ref: scrollViewRef }}
+            onNext={() => {
+              setCurrentStep(3);
+              scrollToTop();
+            }}
           >
-            <View style={{}}>
+            <View>
               <View>{content({ data: EndGameData })}</View>
             </View>
           </ProgressStep>
@@ -535,15 +566,13 @@ function Matches({ route }) {
             nextBtnTextStyle={buttonTextStyle}
             previousBtnTextStyle={buttonTextStyle}
           >
-            <View style={{}}>
-              <View>{content({ data: PerformanceData })}</View>
-            </View>
+            <View>{content({ data: PerformanceData })}</View>
           </ProgressStep>
         </ProgressSteps>
       </KeyboardAvoidingView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
