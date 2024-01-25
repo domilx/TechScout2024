@@ -26,6 +26,7 @@ export interface MatchModel {
   TeleopIncapacitated: boolean;
   TeleopGamePieceStuck: number;
   TeleopShootsFrom: ShootSpots[];
+  TeleopShootsFromButtons:number[];
   TeleopUnderStage: boolean;
   //EndGame
   EndGameOnStage: EndGameOnStage; // None=0; Park=2; OnStage=3; points
@@ -155,6 +156,7 @@ export const initialMatchData: MatchModel = {
   TeleopIncapacitated: false,
   TeleopGamePieceStuck: 0,
   TeleopShootsFrom: [ShootSpots.StartingZone],
+  TeleopShootsFromButtons:[0],
   TeleopUnderStage: false,
   EndGameOnStage: EndGameOnStage.None,
   EndGameHarmony: EndGameHarmony.ZeroPoints,

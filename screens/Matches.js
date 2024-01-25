@@ -12,7 +12,7 @@ import {
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount } from "../logic/TeamLogic.js";
 import * as MatchModel from "../Models/MatchModel";
-import RadioButtonGrid from "./RadioButtons.js";
+import {RadioButtonGrid, RadioButtonGrid1} from "./RadioButtons.js";
 import {
   InputField,
   ToggleSwitch,
@@ -22,7 +22,6 @@ import {
 } from "./ReusableStuff.js";
 import Timer from "./Timer.js";
 import { validateEmptyField } from "../logic/ValidationLogic.js";
-
 const Matches = ({ route }) => {
   const { currentTeamNumber } = route.params;
   const [newMatchData, setNewMatchData] = useState(MatchModel.initialMatchData);
@@ -170,6 +169,22 @@ const Matches = ({ route }) => {
                   setField(item.saveButton, selectedValue)
                 }
                 value={newMatchData.TeleopTrapButtons}
+              />
+            )}
+             {item.type === "radio1" && (
+              <RadioButtonGrid1
+                horizontalAmount={item.horizontal}
+                verticalAmount={item.vertical}
+                columnTitles={item.titles}
+                rowTitles={["", ""]}
+                label={item.label}
+                onPress={(selectedValue) =>
+                  setEnumField(item.key, selectedValue)
+                }
+                saveButtons={(selectedValue) =>
+                  setField(item.saveButton, selectedValue)
+                }
+                value={newMatchData.TeleopShootsFromButtons}
               />
             )}
           </View>
@@ -352,14 +367,14 @@ const Matches = ({ route }) => {
     },
 
     {
-      label: "Teleop Shoots From",
+      label: "Shoots From",
       key: "TeleopShootsFrom",
-      value: newMatchData.AutoRobotDidNotPlay,
-      type: "radio",
+      value: newMatchData.TeleopShootsFrom,
+      type: "radio1",
       vertical: 1,
-      horizontal: 3,
-      titles: ["Starting Zone", "Podium", "Wing"],
-      values: ["newmatchdata", "stageleft", "stageright"],
+      horizontal: 4,
+      titles: ["Starting Zone", "Podium", "Wing", "Center Line"],
+      saveButton: "TeleopShootsFromButtons",
     },
     {
       label: "Can PassUnder Stage",
