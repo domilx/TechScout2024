@@ -12,7 +12,7 @@ import {
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount } from "../logic/TeamLogic.js";
 import * as MatchModel from "../Models/MatchModel";
-import {RadioButtonGrid, RadioButtonGrid1} from "./RadioButtons.js";
+import {RadioButtonGrid, RadioButtonGrid1, ExtraNotes} from "./RadioButtons.js";
 import {
   InputField,
   ToggleSwitch,
@@ -187,6 +187,19 @@ const Matches = ({ route }) => {
                 value={newMatchData.TeleopShootsFromButtons}
               />
             )}
+             {item.type === "extraNotes" && (
+              <ExtraNotes
+                columnTitles={item.titles}
+                label={item.label}
+                onPress={(selectedValue) =>
+                  setEnumField(item.key, selectedValue)
+                }
+                saveButtons={(selectedValue) =>
+                  setField(item.saveButton, selectedValue)
+                }
+                value={newMatchData.AutoExtraNotesButtons}
+              />
+            )}
           </View>
         )}
       />
@@ -237,8 +250,6 @@ const Matches = ({ route }) => {
   }
 
   const PositionTypeItem = generateEnumItems(MatchModel.Position);
-  const extraNotesItem = generateEnumItems(MatchModel.ExtraNotes);
-  const ShootSpotsItem = generateEnumItems(MatchModel.ShootSpots);
   const EndGameOnStageItem = generateEnumItems(MatchModel.EndGameOnStage);
   const EndGameHarmonyItem = generateEnumItems(MatchModel.EndGameHarmony);
   const RankingPointsItem = generateEnumItems(MatchModel.RankingPoints);
@@ -247,6 +258,7 @@ const Matches = ({ route }) => {
   const SpeedItem = generateEnumItems(MatchModel.Speed);
   const AwareTypeItem = generateEnumItems(MatchModel.Awareness);
   const EndGameTrapITem = generateEnumItems(MatchModel.TrapEndGame);
+  
   const InfoData = [
     {
       label: "Scout Name",
@@ -293,16 +305,15 @@ const Matches = ({ route }) => {
       key: "AutoDropped",
       value: newMatchData.AutoDropped,
       type: "counter",
+      saveButton: "AutoExtraNotesButtons",
     },
     {
       label: "Extra Notes",
-      key: "AutoExtraNotes", //TODO CUSTOM RADIO BUTTON
+      key: "AutoExtraNotes",
       value: newMatchData.AutoExtraNotes,
-      type: "radio",
-      titles: ["Stage Left", "Center Stage", "Stage Right"],
-      horizontalAmount: 3,
-      verticalAmount: "2",
-      fields: extraNotesItem,
+      type: "extraNotes",
+      titles: ["Extra Notes"],
+      saveButton: "AutoExtraNotesButtons",
     },
     {
       label: "A-StopPressed?",

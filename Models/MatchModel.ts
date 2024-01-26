@@ -9,6 +9,7 @@ export interface MatchModel {
   AutoStartingPosition: Position;
   AutoLeave: boolean;
   AutoExtraNotes: ExtraNotes[];
+  AutoExtraNotesButtons: number[];
   AutoDropped: number;
   AutoAStopPressed: boolean;
   AutoIncapacitated: boolean;
@@ -140,6 +141,7 @@ export const initialMatchData: MatchModel = {
   AutoStartingPosition: Position.Middle,
   AutoLeave: false,
   AutoExtraNotes:[ExtraNotes.LeftWing],
+  AutoExtraNotesButtons:[0],
   AutoDropped: 0,
   AutoAStopPressed: false,
   AutoIncapacitated: false,
