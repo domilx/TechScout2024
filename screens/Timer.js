@@ -46,28 +46,28 @@ const Timer = ({ addCycleTime, addDropPiece, addAmpPiece, addSpeakPiece, addAmpS
   };
 
   const DropPiece = () => {
-    if (selectedShape === "square") {
+    if (selectedShape === "square" && timer > 2) {
       addDropPiece();
       handleStopPress();
     }
   };
 
   const Amp = () => {
-    if (selectedShape === "square") {
+    if (selectedShape === "square" && timer > 2) {
     addAmpPiece();
     handleStopPress();
     }
 };
 
 const Speaker = () => {
-    if (selectedShape === "square") {
+    if (selectedShape === "square" && timer > 2) {
     addSpeakPiece();
     handleStopPress();
     }
 };
 
 const AmpSpeaker = () => {
-    if (selectedShape === "square") {
+    if (selectedShape === "square" && timer > 2) {
     addAmpSpeakPiece();
     handleStopPress();
     }

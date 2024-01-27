@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
   },
   list: {
     backgroundColor: "#F0F0F0",
-    borderRadius: "15",
-  },
+    borderRadius: Platform.OS === 'ios' ? 15 : 0,
+    },
   inputContainer: {
     flexDirection: "column",
     alignItems: "flex-start",

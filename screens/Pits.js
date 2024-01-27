@@ -33,6 +33,7 @@ import {
 } from "./ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
 import { validateEmptyField } from "../logic/ValidationLogic";
+import {RadioButtonGrid1} from "./RadioButtons.js";
 
 function Pits({ route }) {
   const { currentTeamNumber } = route.params;
@@ -158,7 +159,7 @@ function Pits({ route }) {
       droptype: driveBaseMotorItems,
     },
     {
-      label: "Drivebase Experience",
+      label: "Driver Experience",
       key: "DriverExperience",
       value: newPitData.DriverExperience,
       type: "dropdown",
@@ -209,7 +210,7 @@ function Pits({ route }) {
       droptype: wellMadeItems,
     },
     {
-      label: "Single Intake Shooter",
+      label: "Single Intake/Shooter",
       key: "SingleIntakeShooter",
       value: newPitData.SingleIntakeShooter,
       type: "boolean",
@@ -246,8 +247,11 @@ function Pits({ route }) {
       label: "Shoots From",
       key: "ShootsFrom",
       value: newPitData.ShootsFrom,
-      type: "dropdown",
-      droptype: shootSpotsItems,
+      type: "radio1",
+      vertical: 1,
+      horizontal: 4,
+      titles: ["Starting Zone", "Podium", "Wing", "Center Line"],
+      saveButton: "AutoExtraNotesButtons",
     },
     {
       label: "Object Recognition",
@@ -256,20 +260,20 @@ function Pits({ route }) {
       type: "boolean",
     },
     {
-      label: "Read April Tags",
+      label: "Reads April Tags",
       key: "ReadAprilTags",
       value: newPitData.ReadAprilTags,
       type: "boolean",
     },
     {
-      label: "Autonomous Program to leave",
+      label: "Autonomous Program to Leave",
       key: "AutonomousProgram",
       value: newPitData.AutonomousProgram,
       type: "boolean",
     },
     //{ label: "Auto Programs for Speaker", key: "AutoProgramsForSpeaker", value: newPitData.AutoProgramsForSpeaker, type: "custom" },
     {
-      label: "Can Get on Stage",
+      label: "Can Get OnStage",
       key: "CanGetOnStage",
       value: newPitData.CanGetOnStage,
       type: "boolean",
@@ -354,19 +358,22 @@ function Pits({ route }) {
                   setValue={(text) => setEnumField(item.key, text)}
                 />
               )}
-              {item.type === "timer" && (
-                <Timer
-                  setValue={(text) => setArrayField(item.key, text)}
-                  dropPiece={() =>
-                    setNumericField(
-                      "DroppedGamePiece",
-                      newMatchData.DroppedGamePiece + 1
-                    )
-                  }
-                />
-              )}
-              {item.type === "grid" && <Grid rows={3} columns={3} />}
-              {item.type === "custom" && <CustomComponent />}
+              {item.type === "radio1" && (
+              <RadioButtonGrid1
+              horizontalAmount={item.horizontal}
+              verticalAmount={item.vertical}
+              columnTitles={item.titles}
+              rowTitles={["", ""]}
+              label={item.label}
+              onPress={(selectedValue) =>
+                setEnumField(item.key, selectedValue)
+              }
+              saveButtons={(selectedValue) =>
+                setField(item.saveButton, selectedValue)
+              }
+                value={newPitData.AutoExtraNotesButtons}
+              />
+            )}
             </View>
           )}
         />

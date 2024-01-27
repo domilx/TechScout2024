@@ -208,10 +208,11 @@ const Matches = ({ route }) => {
 
   async function handleSaveMatchData() {
     try {
-      setCurrentStep(0);
       // on peut ajouter des fields si necessaire
       const validationFields = [
-        //{ field: "ScoutName", value: newMatchData.ScoutName },
+        { field: "Scout Name", value: newMatchData.ScoutName },
+        { field: "Match Number", value: newMatchData.MatchNumber },
+        { field: "Total Points Alliance", value: newMatchData.AllianceTotalPoints},
       ];
 
       const validationResults = await Promise.all(
@@ -236,6 +237,7 @@ const Matches = ({ route }) => {
 
         if (saveSuccess) {
           setMatchCount(matchCount + 1);
+          setCurrentStep(0);
         }
       }
     } catch (validationFailed) {
@@ -315,20 +317,26 @@ const Matches = ({ route }) => {
       titles: ["Extra Notes"],
       saveButton: "AutoExtraNotesButtons",
     },
+   // {
+    //  label: "drone debug",
+     // key: "AutoExtraNotesButtons",
+     // value: newMatchData.AutoExtraNotesButtons.toString(),
+     // type: "text",
+    //},
     {
-      label: "A-StopPressed?",
+      label: "A-Stop Pressed?",
       key: "AutoAStopPressed",
       value: newMatchData.AutoAStopPressed,
       type: "boolean",
     },
     {
-      label: "Incapacitated in auto?",
+      label: "Incapacitated in Auto?",
       key: "AutoIncapacitated",
       value: newMatchData.AutoIncapacitated,
       type: "boolean",
     },
     {
-      label: "Fell in auto?",
+      label: "Fell in Auto?",
       key: "AutoRobotFalls",
       value: newMatchData.AutoRobotFalls,
       type: "boolean",
@@ -365,7 +373,7 @@ const Matches = ({ route }) => {
       saveButton: "TeleopTrapButtons",
     },
     {
-      label: "Fell in teleop?",
+      label: "Fell in Feleop?",
       key: "TeleopFell",
       value: newMatchData.TeleopFell,
       type: "boolean",
@@ -388,7 +396,7 @@ const Matches = ({ route }) => {
       saveButton: "TeleopShootsFromButtons",
     },
     {
-      label: "Can PassUnder Stage",
+      label: "Can Pass Under Stage",
       key: "TeleopUnderStage",
       value: newMatchData.TeleopUnderStage,
       type: "boolean",
@@ -397,7 +405,7 @@ const Matches = ({ route }) => {
 
   const EndGameData = [
     {
-      label: "End Game On Stage",
+      label: "End Game OnStage",
       key: "EndGameOnStage",
       value: newMatchData.EndGameOnStage,
       type: "dropdown",
@@ -568,7 +576,6 @@ const Matches = ({ route }) => {
           >
             <View>
               <View>{content({ data: TeleopData })}</View>
-              {console.log(newMatchData.TeleopTrap)}
             </View>
           </ProgressStep>
           <ProgressStep

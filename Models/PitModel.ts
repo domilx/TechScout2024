@@ -19,7 +19,8 @@ export interface PitModel {
   ScoreSpots: ScoreSpots;
   CenterOfGravity: Gravity;
   YearsUsingSwerve: Years;
-  ShootsFrom: ShootSpots[]; // Adding ShootsFrom as an enum
+  ShootsFrom: ShootSpots[];
+  AutoExtraNotesButtons: number[];
   ObjectRecognition: boolean;
   ReadAprilTags: boolean;
   AutonomousProgram: AutoPositions[];
@@ -84,7 +85,6 @@ export enum ScoreSpots {
 
 export enum Gravity {
   Low = "Low",
-  Medium = "Medium",
   High = "High",
 }
 
@@ -131,6 +131,7 @@ export const initialPitData: PitModel = {
   CenterOfGravity: Gravity.Low,
   YearsUsingSwerve: Years.Zero,
   ShootsFrom: [ShootSpots.None],
+  AutoExtraNotesButtons: [],
   ObjectRecognition: false,
   ReadAprilTags: false,
   AutonomousProgram: [AutoPositions.RedLeft],
@@ -143,5 +144,4 @@ export const initialPitData: PitModel = {
   HeightInches: 0,
   FrameClearanceInches: 0,
   matches: [],
-
 };

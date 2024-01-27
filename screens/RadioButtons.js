@@ -110,7 +110,7 @@ export const RadioButtonGrid1 = ({
 }) => {
   const [selectedButtons, setSelectedButtons] = useState(value);
   
-const generateButtons = () => {
+  const generateButtons = () => {
     const buttons = [];
     for (let i = 0; i < verticalAmount; i++) {
       const row = [];
@@ -119,32 +119,39 @@ const generateButtons = () => {
         row.push(
           <View key={index} style={{ marginRight: 20, marginLeft: 20 }}>
             <TouchableOpacity
-             onPress={() => {
-              const index = i * horizontalAmount + j;
-              const isSelected = selectedButtons.includes(index);
-              let newSelectedButtons;
-            
-              if (isSelected) {
-                newSelectedButtons = selectedButtons.filter((item) => item !== index);
-              } else {
-                newSelectedButtons = [...selectedButtons, index];
-              }
-            
-              setSelectedButtons(newSelectedButtons);
-              saveButtons(newSelectedButtons); // Save the selected buttons
-              console.log(newSelectedButtons);
-              const selectedCount = newSelectedButtons.length;
-            
-              if (selectedCount === 0) {
-                onPress('TrapFailed');
-              } else if (selectedCount === 1) {
-                onPress('FivePoints');
-              } else if (selectedCount === 2) {
-                onPress('TenPoints');
-              } else if (selectedCount === 3) {
-                onPress('FifteenPoints');
-              }
-            }}
+              onPress={() => {
+                const index = i * horizontalAmount + j;
+                const isSelected = selectedButtons.includes(index);
+                let newSelectedButtons;
+  
+                if (isSelected) {
+                  newSelectedButtons = selectedButtons.filter((item) => item !== index);
+                } else {
+                  newSelectedButtons = [...selectedButtons, index];
+                }
+  
+                setSelectedButtons(newSelectedButtons);
+                saveButtons(newSelectedButtons); // Save the selected buttons
+                console.log(newSelectedButtons);
+  
+                let valuesToSave = [];
+                if (newSelectedButtons.includes(0)) {
+                  valuesToSave = [...valuesToSave, 'Starting Zone'];
+                }
+                if (newSelectedButtons.includes(1)) {
+                  valuesToSave = [...valuesToSave, 'Podium'];
+                }
+                if (newSelectedButtons.includes(2)) {
+                  valuesToSave = [...valuesToSave, 'Elsewhere in Wing'];
+                }
+                if (newSelectedButtons.includes(3)) {
+                  valuesToSave = [...valuesToSave, 'Near Centre Line'];
+                }
+                if (valuesToSave.length === 0) {
+                  valuesToSave = ['None'];
+                }
+                onPress(valuesToSave);
+              }}
             >
               <Icon
                 name={
@@ -169,6 +176,7 @@ const generateButtons = () => {
     }
     return buttons;
   };
+  
 
   const renderColumnTitles = () => {
     return (
@@ -192,134 +200,190 @@ const generateButtons = () => {
     </View>
   );
 };
+
+
+
 export const ExtraNotes = ({
   columnTitles,
+  label,
   onPress,
   saveButtons,
   value,
 }) => {
-  // Initialize state for each row separately
-  const [selectedButtonsRow1, setSelectedButtonsRow1] = useState(value.slice(0, 5));
-  const [selectedButtonsRow2, setSelectedButtonsRow2] = useState(value.slice(5));
-
+  const [selectedButtons, setSelectedButtons] = useState(value);
+  
   const generateButtons = () => {
     const buttons = [];
-
-    // Row with 5 columns
-    const row1 = [];
+    
+    // First row with 5 buttons
+    const firstRow = [];
     for (let j = 0; j < 5; j++) {
       const index = j;
-      row1.push(
-        <TouchableOpacity
-          key={index}
-          style={styles.button}
-          onPress={() => handleButtonPressRow1(index)}
-        >
-          <Icon
-            name={
-              selectedButtonsRow1.includes(index)
-                ? "radio-button-on"
-                : "radio-button-off"
-            }
-            size={32}
-            color={"#333"}
-          />
-        </TouchableOpacity>
+      firstRow.push(
+        <View key={index} style={{ marginRight: 20, marginLeft: 20 }}>
+           <TouchableOpacity
+              onPress={() => {
+                const index = j;
+                const isSelected = selectedButtons.includes(index);
+                let newSelectedButtons;
+  
+                if (isSelected) {
+                  newSelectedButtons = selectedButtons.filter((item) => item !== index);
+                } else {
+                  newSelectedButtons = [...selectedButtons, index];
+                }
+  
+                setSelectedButtons(newSelectedButtons);
+                saveButtons(newSelectedButtons); // Save the selected buttons
+                console.log(newSelectedButtons);
+  
+                let valuesToSave = [];
+                if (newSelectedButtons.includes(0)) {
+                  valuesToSave = [...valuesToSave, 'CenterN1'];
+                }
+                if (newSelectedButtons.includes(1)) {
+                  valuesToSave = [...valuesToSave, 'CenterN2'];
+                }
+                if (newSelectedButtons.includes(2)) {
+                  valuesToSave = [...valuesToSave, 'CenterN3'];
+                }
+                if (newSelectedButtons.includes(3)) {
+                  valuesToSave = [...valuesToSave, 'CenterN4'];
+                }
+                if (newSelectedButtons.includes(4)) {
+                  valuesToSave = [...valuesToSave, 'CenterN5'];
+                }
+                if (newSelectedButtons.includes(5)) {
+                  valuesToSave = [...valuesToSave, 'LeftNote'];
+                }
+                if (newSelectedButtons.includes(6)) {
+                  valuesToSave = [...valuesToSave, 'CenterNote'];
+                }
+                if (newSelectedButtons.includes(7)) {
+                  valuesToSave = [...valuesToSave, 'RightNote'];
+                }
+                if (valuesToSave.length === 0) {
+                  valuesToSave = ['None'];
+                }
+                onPress(valuesToSave);
+                console.log(valuesToSave);
+              }}
+            >
+              <Icon
+                name={
+                  selectedButtons.includes(index)
+                    ? "radio-button-on"
+                    : "radio-button-off"
+                }
+                size={32}
+                color={"#333"}
+              />
+            </TouchableOpacity>
+        </View>
       );
     }
     buttons.push(
       <View key={0} style={styles.rowContainer}>
-        {row1}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {firstRow}
+        </View>
       </View>
     );
 
-    // Row with 3 columns
-    const row2 = [];
+    // Second row with 3 buttons
+    const secondRow = [];
     for (let j = 0; j < 3; j++) {
-      const index = j + 5;
-      row2.push(
-        <TouchableOpacity
-          key={index}
-          style={styles.button}
-          onPress={() => handleButtonPressRow2(index)}
-        >
-          <Icon
-            name={
-              selectedButtonsRow2.includes(index)
-                ? "radio-button-on"
-                : "radio-button-off"
-            }
-            size={32}
-            color={"#333"}
-          />
-        </TouchableOpacity>
+      const index = 5 + j; // Start index from 5 for the second row
+      secondRow.push(
+        <View key={index} style={{ marginRight: 20, marginLeft: 20 }}>
+           <TouchableOpacity
+              onPress={() => {
+                const index = 5 + j; // Start index from 5 for the second row
+                const isSelected = selectedButtons.includes(index);
+                let newSelectedButtons;
+  
+                if (isSelected) {
+                  newSelectedButtons = selectedButtons.filter((item) => item !== index);
+                } else {
+                  newSelectedButtons = [...selectedButtons, index];
+                }
+  
+                setSelectedButtons(newSelectedButtons);
+                saveButtons(newSelectedButtons); // Save the selected buttons
+  
+                let valuesToSave = [];
+                if (newSelectedButtons.includes(0)) {
+                  valuesToSave = [...valuesToSave, 'CenterN1'];
+                }
+                if (newSelectedButtons.includes(1)) {
+                  valuesToSave = [...valuesToSave, 'CenterN2'];
+                }
+                if (newSelectedButtons.includes(2)) {
+                  valuesToSave = [...valuesToSave, 'CenterN3'];
+                }
+                if (newSelectedButtons.includes(3)) {
+                  valuesToSave = [...valuesToSave, 'CenterN4'];
+                }
+                if (newSelectedButtons.includes(4)) {
+                  valuesToSave = [...valuesToSave, 'CenterN5'];
+                }
+                if (newSelectedButtons.includes(5)) {
+                  valuesToSave = [...valuesToSave, 'LeftNote'];
+                }
+                if (newSelectedButtons.includes(6)) {
+                  valuesToSave = [...valuesToSave, 'CenterNote'];
+                }
+                if (newSelectedButtons.includes(7)) {
+                  valuesToSave = [...valuesToSave, 'RightNote'];
+                }
+                if (valuesToSave.length === 0) {
+                  valuesToSave = ['None'];
+                }
+                onPress(valuesToSave);
+                console.log(valuesToSave);
+              }}
+            >
+              <Icon
+                name={
+                  selectedButtons.includes(index)
+                    ? "radio-button-on"
+                    : "radio-button-off"
+                }
+                size={32}
+                color={"#333"}
+              />
+            </TouchableOpacity>
+        </View>
       );
     }
     buttons.push(
       <View key={1} style={styles.rowContainer}>
-        {row2}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {secondRow}
+        </View>
       </View>
     );
 
     return buttons;
   };
+  
+  
 
-  const handleButtonPressRow1 = (index) => {
-    const isSelected = selectedButtonsRow1.includes(index);
-    let newSelectedButtons;
-
-    if (isSelected) {
-      newSelectedButtons = selectedButtonsRow1.filter((item) => item !== index);
-    } else {
-      newSelectedButtons = [...selectedButtonsRow1, index];
-    }
-
-    setSelectedButtonsRow1(newSelectedButtons);
-    handleButtonPress(newSelectedButtons); // Call the common handler
+  const renderColumnTitles = () => {
+    return (
+      <View style={styles.columnTitleContainer1}>
+        {columnTitles.map((title, index) => (
+          <Text key={index} style={styles.columnTitle}>
+            {title}
+          </Text>
+        ))}
+      </View>
+    );
   };
-
-  const handleButtonPressRow2 = (index) => {
-    const isSelected = selectedButtonsRow2.includes(index);
-    let newSelectedButtons;
-
-    if (isSelected) {
-      newSelectedButtons = selectedButtonsRow2.filter((item) => item !== index);
-    } else {
-      newSelectedButtons = [...selectedButtonsRow2, index];
-    }
-
-    setSelectedButtonsRow2(newSelectedButtons);
-    handleButtonPress(newSelectedButtons); // Call the common handler
-  };
-
-  const handleButtonPress = (newSelectedButtons) => {
-    saveButtons([...selectedButtonsRow1, ...selectedButtonsRow2]); // Save the combined selected buttons
-    console.log([...selectedButtonsRow1, ...selectedButtonsRow2]);
-
-    const selectedCount = newSelectedButtons.length;
-
-    if (selectedCount === 0) {
-      onPress('TrapFailed');
-    } else if (selectedCount === 1) {
-      onPress('FivePoints');
-    } else if (selectedCount === 2) {
-      onPress('TenPoints');
-    } else if (selectedCount === 3) {
-      onPress('FifteenPoints');
-    }
-  };
-
-  const renderColumnTitles = () => (
-    <View style={styles.columnTitleContainer2}>
-      <Text style={styles.columnTitle1}>
-        {columnTitles}
-      </Text>
-    </View>
-  );
-
+ 
   return (
     <View style={styles.subViews}>
-      <View style={styles.counterContainer}>
+      <View style={styles.counterContainer1}>
         {renderColumnTitles()}
         {generateButtons()}
       </View>
