@@ -210,6 +210,18 @@ const TeamScreen = ({ route, navigation }) => {
             </View>
           </TouchableOpacity>
         ))}
+        {teams.length === 0 ? null : <Text
+          style={{
+            fontSize: 14,
+            color: "#888",
+            textAlign: "center",
+            marginTop: "675" - (teams.length === 10 ? "0": (teams.length-1) * 75),
+          }}
+        >
+          Made with ❤️ by Noril and Raphael, with assistance from Tanya and
+          Domenico.
+        </Text>}
+        
       </ScrollView>
 
       <FloatingButton />
@@ -300,7 +312,7 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: "absolute",
     right: 20,
-    bottom: 25,
+    bottom: 50,
     backgroundColor: "#1E1E1E",
     borderRadius: 30,
     width: 60,
