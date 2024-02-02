@@ -43,7 +43,7 @@ function Pits({ route }) {
     const loadPitDataOnMount = async () => {
       const loadedPitData = await loadPitData(currentTeamNumber);
       setNewPitData(loadedPitData);
-      setField("TeamNb", currentTeamNumber);
+      setField("TeamNumber", currentTeamNumber);
       if (loadedPitData === null) {
         setNewPitData(initialPitData);
       }
