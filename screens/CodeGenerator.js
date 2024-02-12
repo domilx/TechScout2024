@@ -75,22 +75,14 @@ function CodeGenerator({ route }) {
           await Promise.allSettled(matchDataPromises);
           setIsClicked(!PitScanState);
           setMatchCount(currentMatchCount);
-          setCurrentPitData(() => {
-            const newData = {pitData};
-            //delete newData.pitData.AutoExtraNotesButtons;
-            return newData;
-          });
+          setCurrentPitData(pitData);
           setItems(loadedItems);
           setIsClickedArray(initialIsClickedArray);
           setLoading(false);
         } else {
           setIsClicked(!PitScanState);
           setMatchCount(currentMatchCount);
-          setCurrentPitData(() => {
-            const newData = {pitData};
-           // delete newData.pitData.AutoExtraNotesButtons;
-            return newData;
-          });
+          setCurrentPitData(pitData);
           setLoading(false);
         }
       } catch (error) {

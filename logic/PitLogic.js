@@ -8,7 +8,6 @@ export const savePitData = async (newPitData, TeamNumber) => {
     const teams = teamsJson ? JSON.parse(teamsJson) : [];
 
     const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
-    
     if (teams[targetTeamIndex].pitData !== undefined) {
       Alert.alert(
         'Data Exists',
@@ -51,6 +50,7 @@ export const loadPitData = async (currentTeamNumber) => {
     const teams = await loadTeams();
     
     const targetTeam = teams.find(team => team.teamNumber == currentTeamNumber || team.teamNumber.toString() == currentTeamNumber);
+    console.log('Pit Data:', targetTeam.pitData);
 
     return targetTeam ? targetTeam.pitData || initialPitData : initialPitData;
   } catch (error) {

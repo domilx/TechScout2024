@@ -44,9 +44,11 @@ function Pits({ route }) {
       const loadedPitData = await loadPitData(currentTeamNumber);
       setNewPitData(loadedPitData);
       setField("TeamNumber", currentTeamNumber);
+
       if (loadedPitData === null) {
         setNewPitData(initialPitData);
       }
+
     };
 
     loadPitDataOnMount();
