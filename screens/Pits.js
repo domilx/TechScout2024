@@ -2,16 +2,13 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   FlatList,
-  Switch,
   Platform,
   Keyboard,
   KeyboardAvoidingView,
 } from "react-native";
-import { savePitData, savePitScanned } from "../logic/PitLogic";
+import { savePitData } from "../logic/PitLogic";
 import {
   initialPitData,
   DriveBaseType,

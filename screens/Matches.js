@@ -338,7 +338,7 @@ const Matches = ({ route }) => {
     {
       label: "Fell in Auto?",
       key: "AutoRobotFalls",
-      value: newMatchData.AutoRobotFalls,
+      value: newMatchData.AutoFell,
       type: "boolean",
     },
     {
@@ -508,7 +508,7 @@ const Matches = ({ route }) => {
     {
       label: "Comment",
       key: "Comment",
-      value: newMatchData.TotalPointsAlliance,
+      value: newMatchData.Comment,
       type: "text",
     },
   ];
