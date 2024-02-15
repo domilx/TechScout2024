@@ -334,10 +334,10 @@ const Matches = ({ route }) => {
       key: "AutoIncapacitated",
       value: newMatchData.AutoIncapacitated,
       type: "boolean",
-    },
+    }, 
     {
       label: "Fell in Auto?",
-      key: "AutoRobotFalls",
+      key: "AutoFell",
       value: newMatchData.AutoFell,
       type: "boolean",
     },
