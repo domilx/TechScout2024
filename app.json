@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.drizzy208.techscout"
+      "bundleIdentifier": "com.team3990.scout"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.drizzy208.techscout"
+      "package": "com.team3990.scout"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,6 +33,6 @@
         "projectId": "24ff4fe1-4d4e-441e-a55e-af700c0ff99b"
       }
     },
-    "owner": "drizzy208"
+    "owner": "team3990"
   }
 }
