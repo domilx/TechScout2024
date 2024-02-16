@@ -237,6 +237,7 @@ const Matches = ({ route }) => {
 
         if (saveSuccess) {
           setMatchCount(matchCount + 1);
+          setNewMatchData(MatchModel.initialMatchData);
           setCurrentStep(0);
         }
       }

@@ -26,7 +26,7 @@ export async function clearTeamsStorage() {
         }
         delete teams[targetTeamIndex].matchNumber;
        
-        console.log(teams);
+       
         await AsyncStorage.setItem('teams', JSON.stringify(teams));
   
        

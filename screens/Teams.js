@@ -6,11 +6,11 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { saveTeam, loadTeams, removeTeam, editTeam } from "../logic/TeamLogic";
 import Dialog from "react-native-dialog";
-import Modal from "react-native-modal";
 import { clearTeamsStorage, clearModelsStorage } from "../logic/SettingsLogic";
 import * as Haptics from "expo-haptics";
 
@@ -31,7 +31,6 @@ const TeamScreen = ({ route, navigation }) => {
       await clearTeamsStorage();
       await reloadTeams();
       alert("Storage cleared and teams removed");
-      console.log("Teams cleared");
       setVisible1(false);
       closeModal();
     };
@@ -227,15 +226,12 @@ const TeamScreen = ({ route, navigation }) => {
       <FloatingButton />
       <AddTeamDialog />
 
-      <Modal
-        animationIn="slideInDown"
-        animationOut="slideOutUp"
-        animationInTiming={300}
-        animationOutTiming={300}
-        isVisible={isModalVisible}
-        onBackdropPress={closeModal}
+    
+        <Modal
+        animationType="slide"
+        visible={isModalVisible}
         style={styles.modalScreen}
-        hideModalContentWhileAnimating={true}
+        onRequestClose={() => {closeModal()}}
       >
         <View style={styles.tittleContainer}>
           <Text style={styles.tittleText}>Settings</Text>

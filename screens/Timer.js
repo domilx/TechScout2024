@@ -41,12 +41,11 @@ const Timer = ({ addCycleTime, addDropPiece, addAmpPiece, addSpeakPiece, addAmpS
 
   const handleStopPress = () => {
     addCycleTime(timer);
-  
     setSelectedShape(null);
   };
 
   const DropPiece = () => {
-    if (selectedShape === "square" && timer > 2) {
+    if (selectedShape === "square") {
       addDropPiece();
       handleStopPress();
     }

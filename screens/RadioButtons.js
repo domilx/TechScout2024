@@ -132,7 +132,6 @@ export const RadioButtonGrid1 = ({
   
                 setSelectedButtons(newSelectedButtons);
                 saveButtons(newSelectedButtons); // Save the selected buttons
-                console.log(newSelectedButtons);
   
                 let valuesToSave = [];
                 if (newSelectedButtons.includes(0)) {
@@ -235,7 +234,6 @@ export const ExtraNotes = ({
   
                 setSelectedButtons(newSelectedButtons);
                 saveButtons(newSelectedButtons); // Save the selected buttons
-                console.log(newSelectedButtons);
   
                 let valuesToSave = [];
                 if (newSelectedButtons.includes(0)) {
@@ -266,7 +264,6 @@ export const ExtraNotes = ({
                   valuesToSave = ['None'];
                 }
                 onPress(valuesToSave);
-                console.log(valuesToSave);
               }}
             >
               <Icon
@@ -340,7 +337,6 @@ export const ExtraNotes = ({
                   valuesToSave = ['None'];
                 }
                 onPress(valuesToSave);
-                console.log(valuesToSave);
               }}
             >
               <Icon

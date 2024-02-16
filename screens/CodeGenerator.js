@@ -105,7 +105,7 @@ function CodeGenerator({ route }) {
       <QRCode
         value={JSON.stringify(matchData, null, 2)}
         size={300}
-        logo={require("../assets/logo.png")}
+        logo={require("../assets/splash.png")}
         logoSize={75}
       />
       <TouchableOpacity
@@ -214,7 +214,7 @@ function CodeGenerator({ route }) {
           <QRCode
             value={JSON.stringify(currentPitData, null, 2)}
             size={300}
-            logo={require("../assets/logo.png")}
+            logo={require("../assets/splash.png")}
             logoSize={75}
           />
           <TouchableOpacity

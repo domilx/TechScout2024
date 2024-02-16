@@ -29,7 +29,6 @@ export const loadTeams = async () => {
     const teamsJSON = await AsyncStorage.getItem("teams");
     const teams = teamsJSON ? JSON.parse(teamsJSON) : [];
     teams.sort((a, b) => a.teamNumber - b.teamNumber);
-    //console.log('Teams loaded'+ JSON.stringify(teams));
     return teams;
   } catch (error) {
     console.error("Error loading teams:", error);

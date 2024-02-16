@@ -50,7 +50,6 @@ export const loadPitData = async (currentTeamNumber) => {
     const teams = await loadTeams();
     
     const targetTeam = teams.find(team => team.teamNumber == currentTeamNumber || team.teamNumber.toString() == currentTeamNumber);
-    console.log('Pit Data:', targetTeam.pitData);
 
     return targetTeam ? targetTeam.pitData || initialPitData : initialPitData;
   } catch (error) {
