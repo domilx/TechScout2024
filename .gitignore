@@ -52,6 +52,11 @@ buck-out
 /packages/react-native/ReactAndroid/src/main/gen
 /.cpplsp.buckd
 
+# Build
+*.aab
+*.apk
+*.ipa
+
 # Android Studio
 .project
 .settings

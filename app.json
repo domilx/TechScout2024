@@ -2,7 +2,7 @@
   "expo": {
     "name": "TechScout",
     "slug": "techscout",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -28,11 +28,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "team3990",
     "extra": {
       "eas": {
-        "projectId": "24ff4fe1-4d4e-441e-a55e-af700c0ff99b"
+        "projectId": "a7e850ae-ad3d-4631-8ed1-ed1a1c63a356"
       }
-    },
-    "owner": "team3990"
+    }
   }
 }

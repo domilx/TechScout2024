@@ -214,11 +214,11 @@ const TeamScreen = ({ route, navigation }) => {
             fontSize: 14,
             color: "#888",
             textAlign: "center",
-            marginTop: "630" - (teams.length === 10 ? 625: (teams.length-1) * 70),
+            marginTop: "610" - (teams.length === 10 ? 625: (teams.length-1) * 70),
           }}
         >
-          Made with ❤️ by Noril and Raphael, with assistance from Tanya and
-          Domenico.
+          Made with ❤️ by Noril and Domenico, with assistance from Tanya and
+          Raphael.
         </Text>}
         
       </ScrollView>
