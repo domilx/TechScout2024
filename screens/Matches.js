@@ -12,7 +12,11 @@ import {
 import { SaveMatchData } from "../logic/MatchLogic.js";
 import { loadMatchCount } from "../logic/TeamLogic.js";
 import * as MatchModel from "../Models/MatchModel";
-import {RadioButtonGrid, RadioButtonGrid1, ExtraNotes} from "./RadioButtons.js";
+import {
+  RadioButtonGrid,
+  RadioButtonGrid1,
+  ExtraNotes,
+} from "./RadioButtons.js";
 import {
   InputField,
   ToggleSwitch,
@@ -32,13 +36,17 @@ const Matches = ({ route }) => {
   const scrollToTop = () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
-    }else{console.log("no ref")}
+    } else {
+      console.log("no ref");
+    }
   };
   useEffect(() => {
+    console.log(currentTeamNumber);
     const loadMatchDataOnMount = async () => {
       setMatchCount(await loadMatchCount(currentTeamNumber));
     };
     loadMatchDataOnMount();
+    setField("TeamNumber", currentTeamNumber);
   }, []);
 
   const setField = (field, value) => {
@@ -171,7 +179,7 @@ const Matches = ({ route }) => {
                 value={newMatchData.TeleopTrapButtons}
               />
             )}
-             {item.type === "radio1" && (
+            {item.type === "radio1" && (
               <RadioButtonGrid1
                 horizontalAmount={item.horizontal}
                 verticalAmount={item.vertical}
@@ -187,7 +195,7 @@ const Matches = ({ route }) => {
                 value={newMatchData.TeleopShootsFromButtons}
               />
             )}
-             {item.type === "extraNotes" && (
+            {item.type === "extraNotes" && (
               <ExtraNotes
                 columnTitles={item.titles}
                 label={item.label}
@@ -212,7 +220,10 @@ const Matches = ({ route }) => {
       const validationFields = [
         { field: "Scout Name", value: newMatchData.ScoutName },
         { field: "Match Number", value: newMatchData.MatchNumber },
-        { field: "Total Points Alliance", value: newMatchData.AllianceTotalPoints},
+        {
+          field: "Total Points Alliance",
+          value: newMatchData.AllianceTotalPoints,
+        },
       ];
 
       const validationResults = await Promise.all(
@@ -228,7 +239,7 @@ const Matches = ({ route }) => {
       if (failedValidation) {
         alert(failedValidation.errorMessage);
       } else {
-        setField("TeamNumber", currentTeamNumber);
+        
         const saveSuccess = await SaveMatchData(
           newMatchData,
           currentTeamNumber,
@@ -261,7 +272,7 @@ const Matches = ({ route }) => {
   const SpeedItem = generateEnumItems(MatchModel.Speed);
   const AwareTypeItem = generateEnumItems(MatchModel.Awareness);
   const EndGameTrapITem = generateEnumItems(MatchModel.TrapEndGame);
-  
+
   const InfoData = [
     {
       label: "Scout Name",
@@ -318,11 +329,11 @@ const Matches = ({ route }) => {
       titles: ["Extra Notes"],
       saveButton: "AutoExtraNotesButtons",
     },
-   // {
+    // {
     //  label: "drone debug",
-     // key: "AutoExtraNotesButtons",
-     // value: newMatchData.AutoExtraNotesButtons.toString(),
-     // type: "text",
+    // key: "AutoExtraNotesButtons",
+    // value: newMatchData.AutoExtraNotesButtons.toString(),
+    // type: "text",
     //},
     {
       label: "A-Stop Pressed?",
@@ -335,7 +346,7 @@ const Matches = ({ route }) => {
       key: "AutoIncapacitated",
       value: newMatchData.AutoIncapacitated,
       type: "boolean",
-    }, 
+    },
     {
       label: "Fell in Auto?",
       key: "AutoFell",
@@ -364,29 +375,6 @@ const Matches = ({ route }) => {
       type: "counter",
     },
     {
-      label: "Teleop Trap",
-      key: "TeleopTrap",
-      value: newMatchData.TeleopTrap,
-      type: "radio",
-      vertical: 1,
-      horizontal: 3,
-      titles: ["Stage Left", "Center Stage", "Stage Right"],
-      saveButton: "TeleopTrapButtons",
-    },
-    {
-      label: "Fell in Feleop?",
-      key: "TeleopFell",
-      value: newMatchData.TeleopFell,
-      type: "boolean",
-    },
-    {
-      label: "Incapacitated in Teleop",
-      key: "TeleopIncapacitated",
-      value: newMatchData.TeleopIncapacitated,
-      type: "boolean",
-    },
-
-    {
       label: "Shoots From",
       key: "TeleopShootsFrom",
       value: newMatchData.TeleopShootsFrom,
@@ -401,6 +389,29 @@ const Matches = ({ route }) => {
       key: "TeleopUnderStage",
       value: newMatchData.TeleopUnderStage,
       type: "boolean",
+    },
+
+    {
+      label: "Fell in Teleop?",
+      key: "TeleopFell",
+      value: newMatchData.TeleopFell,
+      type: "boolean",
+    },
+    {
+      label: "Incapacitated in Teleop",
+      key: "TeleopIncapacitated",
+      value: newMatchData.TeleopIncapacitated,
+      type: "boolean",
+    },
+    {
+      label: "Teleop Trap",
+      key: "TeleopTrap",
+      value: newMatchData.TeleopTrap,
+      type: "radio",
+      vertical: 1,
+      horizontal: 3,
+      titles: ["Stage Left", "Center Stage", "Stage Right"],
+      saveButton: "TeleopTrapButtons",
     },
   ];
 

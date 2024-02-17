@@ -1,108 +1,95 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Switch,
-  Platform,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const Timer = ({ addCycleTime, addDropPiece, addAmpPiece, addSpeakPiece, addAmpSpeakPiece }) => {
-  const [selectedShape, setSelectedShape] = useState(null);
+const Timer = ({
+  addCycleTime,
+  addDropPiece,
+  addAmpPiece,
+  addSpeakPiece,
+  addAmpSpeakPiece,
+}) => {
   const [timer, setTimer] = useState(0);
+  const [lastThreeTimes, setLastThreeTimes] = useState([]);
 
   useEffect(() => {
-    let interval;
-
-    const resetTimer = () => {
-      clearInterval(interval);
-      setTimer(0);
-    };
-
-    if (selectedShape === "square") {
-      resetTimer();
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer + 1);
-      }, 1000);
-    } else {
-      resetTimer();
-    }
+    let interval = setInterval(() => {
+      setTimer((prevTimer) => prevTimer + 0.1); // Increment by 0.1 seconds
+    }, 100);
 
     return () => clearInterval(interval);
-  }, [selectedShape]);
+  }, []);
 
-  const handleShapePress = (shape) => {
-    
-    setSelectedShape(shape);
+  const handleActionPress = (action) => {
+    const time = timer.toFixed(1);
+    const updatedTimes = [time, ...lastThreeTimes.slice(0, 2)];
+    setLastThreeTimes(updatedTimes);
+
+    switch (action) {
+      case "amp":
+        addAmpPiece();
+        addCycleTime(time);
+        break;
+      case "speaker":
+        addSpeakPiece();
+        addCycleTime(time);
+        break;
+      case "ampSpeaker":
+        addAmpSpeakPiece();
+        addCycleTime(time);
+        break;
+      case "drop":
+        addDropPiece();
+        break;
+      default:
+        break;
+    }
+    setTimer(0);
   };
-
-  const handleStopPress = () => {
-    addCycleTime(timer);
-    setSelectedShape(null);
-  };
-
-  const DropPiece = () => {
-    if (selectedShape === "square") {
-      addDropPiece();
-      handleStopPress();
-    }
-  };
-
-  const Amp = () => {
-    if (selectedShape === "square" && timer > 2) {
-    addAmpPiece();
-    handleStopPress();
-    }
-};
-
-const Speaker = () => {
-    if (selectedShape === "square" && timer > 2) {
-    addSpeakPiece();
-    handleStopPress();
-    }
-};
-
-const AmpSpeaker = () => {
-    if (selectedShape === "square" && timer > 2) {
-    addAmpSpeakPiece();
-    handleStopPress();
-    }
-};
 
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <TouchableOpacity
-          style={[
-            styles.shape,
-            selectedShape === "square" && styles.selectedShape,
-          ]}
-          onPress={() => handleShapePress("square")}
-        >
-          <Icon name="circle-outline" size={64} color={"orange"} />
-        </TouchableOpacity>
         <View style={styles.timerContainer}>
-          <Text style={styles.timerText}>{timer} sec</Text>
+          <Text style={styles.timerText}>{timer.toFixed(1)} sec</Text>
+        </View>
+
+        <View style={styles.lastThreeTimesContainer}>
+          <Text style={styles.lastThreeTimesTitle}>Previous Cycles:</Text>
+          {lastThreeTimes.map((time, index) => (
+            <Text key={index} style={styles.lastThreeTimesText}>
+              {time} sec
+            </Text>
+          ))}
         </View>
       </View>
 
-      <View style={styles.shapesContainer}>
-        <TouchableOpacity style={styles.dropButton} onPress={()=>Amp()}>
-          <Text style={styles.dropButtonText}>Amp</Text>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleActionPress("amp")}
+        >
+          <Text style={styles.actionButtonText}>Amp</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dropButton} onPress={()=>Speaker()}>
-          <Text style={styles.dropButtonText}>Speaker</Text>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleActionPress("speaker")}
+        >
+          <Text style={styles.actionButtonText}>Speaker</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dropButton} onPress={()=>AmpSpeaker()}>
-          <Text style={styles.dropButtonText}>Amped Speaker</Text>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleActionPress("ampSpeaker")}
+        >
+          <Text style={styles.actionButtonText}>Amped Speaker</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.dropButton} onPress={()=>DropPiece()}>
-          <Text style={styles.dropButtonText}>Dropped</Text>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleActionPress("drop")}
+        >
+          <Text style={styles.actionButtonText}>Dropped</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -110,7 +97,7 @@ const AmpSpeaker = () => {
 };
 
 const styles = StyleSheet.create({
-   container: {
+  container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -124,30 +111,12 @@ const styles = StyleSheet.create({
   timerContainer: {
     marginLeft: 10,
   },
-  shapesContainer: {
+  actionsContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 20,
   },
-  shape: {
-    width: 80,
-    height: 80,
-    backgroundColor: "#F0F0F0",
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    borderColor: "#A0A0A0",
-    borderWidth: 1,
-  },
-  selectedShape: {
-    backgroundColor: "lightgreen",
-  },
-  timerText: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  dropButton: {
+  actionButton: {
     backgroundColor: "#333",
     borderRadius: 50,
     width: 80,
@@ -156,10 +125,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 10,
   },
-  dropButtonText: {
+  actionButtonText: {
     color: "#F6EB14",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  lastThreeTimesContainer: {
+    alignItems: "center",
+    marginLeft: 10,
+  },
+  lastThreeTimesTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8},
+  lastThreeTimesText: {
+    fontSize: 14,
+    marginBottom: 3,
+  },
+  timerText: {
+    fontSize: 24,
+    marginBottom: 10,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
