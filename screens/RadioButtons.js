@@ -12,7 +12,7 @@ export const RadioButtonGrid = ({
   saveButtons,
   value,
 }) => {
-  const [selectedButtons, setSelectedButtons] = useState(value);
+  const [selectedButtons, setSelectedButtons] = useState(value || []);
   
 const generateButtons = () => {
     const buttons = [];
@@ -108,7 +108,7 @@ export const RadioButtonGrid1 = ({
   saveButtons,
   value,
 }) => {
-  const [selectedButtons, setSelectedButtons] = useState(value);
+  const [selectedButtons, setSelectedButtons] = useState(value || []);
   
   const generateButtons = () => {
     const buttons = [];

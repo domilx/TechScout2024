@@ -30,7 +30,7 @@ import {
 } from "./ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
 import { validateEmptyField } from "../logic/ValidationLogic";
-import {RadioButtonGrid1} from "./RadioButtons.js";
+import { RadioButtonGrid1, RadioButtonGrid } from "./RadioButtons.js";
 
 function Pits({ route }) {
   const { currentTeamNumber } = route.params;
@@ -45,7 +45,6 @@ function Pits({ route }) {
       if (loadedPitData === null) {
         setNewPitData(initialPitData);
       }
-
     };
 
     loadPitDataOnMount();
@@ -89,8 +88,10 @@ function Pits({ route }) {
         { field: "Robot Width (in)", value: newPitData.WidthInches },
         { field: "Robot Length (in)", value: newPitData.LengthInches },
         { field: "Height (in)", value: newPitData.HeightInches },
-        { field: "Frame Clearance (in)", value: newPitData.FrameClearanceInches },
-        
+        {
+          field: "Frame Clearance (in)",
+          value: newPitData.FrameClearanceInches,
+        },
       ];
 
       const validationResults = await Promise.all(
@@ -266,11 +267,32 @@ function Pits({ route }) {
     },
     {
       label: "Autonomous Program to Leave",
-      key: "AutonomousProgram",
-      value: newPitData.AutonomousProgram,
+      key: "AutoProgramsToLeave",
+      value: newPitData.AutoProgramsToLeave,
       type: "boolean",
     },
-    //{ label: "Auto Programs for Speaker", key: "AutoProgramsForSpeaker", value: newPitData.AutoProgramsForSpeaker, type: "custom" },
+    {
+      label: "Auto Programs for Speaker blue",
+      key: "AutoProgramsForBlue",
+      value: newPitData.AutoProgramsForBlue,
+      type: "radio",
+      vertical: 1,
+      horizontal: 3,
+      titles: ["Blue Left", "Blue Center", "Blue Right"],
+      saveButton: "AutoProgramsForBlueButtons",
+      saveButtonValue: newPitData.AutoProgramsForBlueButtons,
+    },
+    {
+      label: "Auto Programs for Speaker red",
+      key: "AutoProgramsForRed",
+      value: newPitData.AutoProgramsForRed,
+      type: "radio",
+      vertical: 1,
+      horizontal: 3,
+      titles: ["Red Left", "Red Center", "Red Right"],
+      saveButton: "AutoProgramsForRedButtons",
+      saveButtonValue: newPitData.AutoProgramsForRedmButtons,
+    },
     {
       label: "Can Get OnStage",
       key: "CanGetOnStage",
@@ -358,21 +380,36 @@ function Pits({ route }) {
                 />
               )}
               {item.type === "radio1" && (
-              <RadioButtonGrid1
-              horizontalAmount={item.horizontal}
-              verticalAmount={item.vertical}
-              columnTitles={item.titles}
-              rowTitles={["", ""]}
-              label={item.label}
-              onPress={(selectedValue) =>
-                setEnumField(item.key, selectedValue)
-              }
-              saveButtons={(selectedValue) =>
-                setField(item.saveButton, selectedValue)
-              }
-                value={newPitData.AutoExtraNotesButtons}
-              />
-            )}
+                <RadioButtonGrid1
+                  horizontalAmount={item.horizontal}
+                  verticalAmount={item.vertical}
+                  columnTitles={item.titles}
+                  label={item.label}
+                  onPress={(selectedValue) =>
+                    setEnumField(item.key, selectedValue)
+                  }
+                  saveButtons={(selectedValue) =>
+                    setField(item.saveButton, selectedValue)
+                  }
+                  value={newPitData.AutoExtraNotesButtons}
+                />
+              )}
+              {item.type === "radio" && (
+                <RadioButtonGrid
+                  horizontalAmount={item.horizontal}
+                  verticalAmount={item.vertical}
+                  columnTitles={item.titles}
+                  rowTitles={[""]}
+                  label={item.label}
+                  onPress={(selectedValue) =>
+                    setEnumField(item.key, selectedValue)
+                  }
+                  saveButtons={(selectedValue) =>
+                    setField(item.saveButton, selectedValue)
+                  }
+                  value={item.saveButtonValue}
+                />
+              )}
             </View>
           )}
         />
