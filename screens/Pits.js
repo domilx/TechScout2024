@@ -280,7 +280,7 @@ function Pits({ route }) {
       type: "boolean",
     },
     {
-      label: "Auto Programs for Speaker blue",
+      label: "Auto Programs for blue",
       key: "AutonomousProgramBlue",
       value: newPitData.AutonomousProgramBlue,
       type: "radio",
@@ -291,7 +291,7 @@ function Pits({ route }) {
       saveButtonValue: newPitData.AutoProgramsForBlueButtons,
     },
     {
-      label: "Auto Programs for Speaker red",
+      label: "Auto Programs for red",
       key: "AutonomousProgramRed",
       value: newPitData.AutonomousProgramRed,
       type: "radio",
