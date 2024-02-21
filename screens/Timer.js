@@ -20,32 +20,38 @@ const Timer = ({
     return () => clearInterval(interval);
   }, []);
 
-  const handleActionPress = (action) => {
-    const time = timer.toFixed(1);
-    const updatedTimes = [time, ...lastThreeTimes.slice(0, 2)];
-    setLastThreeTimes(updatedTimes);
 
-    switch (action) {
-      case "amp":
-        addAmpPiece();
-        addCycleTime(time);
-        break;
-      case "speaker":
-        addSpeakPiece();
-        addCycleTime(time);
-        break;
-      case "ampSpeaker":
-        addAmpSpeakPiece();
-        addCycleTime(time);
-        break;
-      case "drop":
-        addDropPiece();
-        break;
-      default:
-        break;
+  const handleActionPress = (action) => {
+    if (timer >= 3) {
+      const time = timer.toFixed(1);
+      const updatedTimes = [time, ...lastThreeTimes.slice(0, 2)];
+      setLastThreeTimes(updatedTimes);
+  
+      switch (action) {
+        case "amp":
+          addAmpPiece();
+          addCycleTime(time);
+          break;
+        case "speaker":
+          addSpeakPiece();
+          addCycleTime(time);
+          break;
+        case "ampSpeaker":
+          addAmpSpeakPiece();
+          addCycleTime(time);
+          break;
+        case "drop":
+          addDropPiece();
+          break;
+        default:
+          break;
+      }
+      setTimer(0);
     }
-    setTimer(0);
   };
+  
+    
+  
 
   return (
     <View style={styles.container}>

@@ -250,8 +250,6 @@ function CodeGenerator({ route }) {
       <Modal
         animationIn="slideInRight"
         animationOut="slideOutRight"
-        animationInTiming={250}
-        animationOutTiming={250}
         isVisible={MatchModalState}
         onBackdropPress={closeModal}
         useNativeDriver={true}
@@ -344,15 +342,16 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   modalScreen: {
-    backgroundColor: "white",
     margin: 0,
   },
   modalContainer: {
+    backgroundColor: "white",
     flex: 3,
     justifyContent: "flex-start",
     alignItems: "center",
   },
   tittleContainer: {
+    backgroundColor: "white",
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",

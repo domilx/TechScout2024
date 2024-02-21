@@ -21,6 +21,7 @@ import {
   WellMade,
   Stability,
   Years,
+  AutoPositions,
 } from "../Models/PitModel";
 import {
   DropDownSelector,
@@ -30,7 +31,7 @@ import {
 } from "./ReusableStuff";
 import { loadPitData } from "../logic/PitLogic";
 import { validateEmptyField } from "../logic/ValidationLogic";
-import { RadioButtonGrid1, RadioButtonGrid } from "./RadioButtons.js";
+import { RadioButtonGrid1, RadioButtonGrid3 } from "./RadioButtons.js";
 
 function Pits({ route }) {
   const { currentTeamNumber } = route.params;
@@ -70,6 +71,13 @@ function Pits({ route }) {
     setNewPitData((prevData) => ({
       ...prevData,
       [field]: value,
+    }));
+  };
+
+  const setArrayField = (key, item) => {
+    setNewPitData((prevData) => ({
+      ...prevData,
+      [key]: [...(prevData?.[key] ?? []), item],
     }));
   };
 
@@ -273,8 +281,8 @@ function Pits({ route }) {
     },
     {
       label: "Auto Programs for Speaker blue",
-      key: "AutoProgramsForBlue",
-      value: newPitData.AutoProgramsForBlue,
+      key: "AutonomousProgramBlue",
+      value: newPitData.AutonomousProgramBlue,
       type: "radio",
       vertical: 1,
       horizontal: 3,
@@ -284,14 +292,14 @@ function Pits({ route }) {
     },
     {
       label: "Auto Programs for Speaker red",
-      key: "AutoProgramsForRed",
-      value: newPitData.AutoProgramsForRed,
+      key: "AutonomousProgramRed",
+      value: newPitData.AutonomousProgramRed,
       type: "radio",
       vertical: 1,
       horizontal: 3,
       titles: ["Red Left", "Red Center", "Red Right"],
       saveButton: "AutoProgramsForRedButtons",
-      saveButtonValue: newPitData.AutoProgramsForRedmButtons,
+      saveButtonValue: newPitData.AutoProgramsForRedButtons,
     },
     {
       label: "Can Get OnStage",
@@ -386,7 +394,7 @@ function Pits({ route }) {
                   columnTitles={item.titles}
                   label={item.label}
                   onPress={(selectedValue) =>
-                    setEnumField(item.key, selectedValue)
+                    setArrayField(item.key, selectedValue)
                   }
                   saveButtons={(selectedValue) =>
                     setField(item.saveButton, selectedValue)
@@ -395,20 +403,20 @@ function Pits({ route }) {
                 />
               )}
               {item.type === "radio" && (
-                <RadioButtonGrid
-                  horizontalAmount={item.horizontal}
-                  verticalAmount={item.vertical}
-                  columnTitles={item.titles}
-                  rowTitles={[""]}
-                  label={item.label}
-                  onPress={(selectedValue) =>
-                    setEnumField(item.key, selectedValue)
-                  }
-                  saveButtons={(selectedValue) =>
-                    setField(item.saveButton, selectedValue)
-                  }
-                  value={item.saveButtonValue}
-                />
+                <RadioButtonGrid3
+                horizontalAmount={item.horizontal}
+                verticalAmount={item.vertical}
+                columnTitles={item.titles}
+                rowTitles={["", ""]}
+                label={item.label}
+                onPress={(selectedValue) =>
+                  setEnumField(item.key, selectedValue)
+                }
+                saveButtons={(selectedValue) =>
+                  setField(item.saveButton, selectedValue)
+                }
+                value={item.saveButtonValue}
+              />
               )}
             </View>
           )}

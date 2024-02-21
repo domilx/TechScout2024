@@ -98,6 +98,104 @@ const generateButtons = () => {
   );
 };
 
+export const RadioButtonGrid3 = ({
+  horizontalAmount,
+  verticalAmount,
+  columnTitles,
+  label,
+  onPress,
+  saveButtons,
+  value,
+}) => {
+  const [selectedButtons, setSelectedButtons] = useState(value || []);
+  
+  const generateButtons = () => {
+    const buttons = [];
+    for (let i = 0; i < verticalAmount; i++) {
+      const row = [];
+      for (let j = 0; j < horizontalAmount; j++) {
+        const index = i * horizontalAmount + j;
+        row.push(
+          <View key={index} style={{ marginRight: 20, marginLeft: 20 }}>
+            <TouchableOpacity
+              onPress={() => {
+                const index = i * horizontalAmount + j;
+                const isSelected = selectedButtons.includes(index);
+                let newSelectedButtons;
+  
+                if (isSelected) {
+                  newSelectedButtons = selectedButtons.filter((item) => item !== index);
+                } else {
+                  newSelectedButtons = [...selectedButtons, index];
+                }
+  
+                setSelectedButtons(newSelectedButtons);
+                saveButtons(newSelectedButtons); // Save the selected buttons
+  
+                let valuesToSave = [];
+                if (newSelectedButtons.includes(0)) {
+                  valuesToSave = [...valuesToSave, 'Left'];
+                }
+                if (newSelectedButtons.includes(1)) {
+                  valuesToSave = [...valuesToSave, 'Center'];
+                }
+                if (newSelectedButtons.includes(2)) {
+                  valuesToSave = [...valuesToSave, 'Right'];
+                }
+                if (valuesToSave.length === 0) {
+                  valuesToSave = ['None'];
+                }
+                onPress(valuesToSave);
+              }}
+            >
+              <Icon
+                name={
+                  selectedButtons.includes(index)
+                    ? "radio-button-on"
+                    : "radio-button-off"
+                }
+                size={32}
+                color={"#333"}
+              />
+            </TouchableOpacity>
+          </View>
+        );
+      }
+      buttons.push(
+        <View key={i} style={styles.rowContainer}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {row}
+          </View>
+        </View>
+      );
+    }
+    return buttons;
+  };
+  
+
+  const renderColumnTitles = () => {
+    return (
+      <View style={styles.columnTitleContainer1}>
+        {columnTitles.map((title, index) => (
+          <Text key={index} style={styles.columnTitle}>
+            {title}
+          </Text>
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.subViews}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.counterContainer1}>
+        {renderColumnTitles()}
+        {generateButtons()}
+      </View>
+    </View>
+  );
+};
+
 
 export const RadioButtonGrid1 = ({
   horizontalAmount,
