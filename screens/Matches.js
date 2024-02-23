@@ -184,7 +184,6 @@ const Matches = ({ route }) => {
                 horizontalAmount={item.horizontal}
                 verticalAmount={item.vertical}
                 columnTitles={item.titles}
-                rowTitles={["", ""]}
                 label={item.label}
                 onPress={(selectedValue) =>
                   setEnumField(item.key, selectedValue)
@@ -381,7 +380,7 @@ const Matches = ({ route }) => {
       type: "radio1",
       vertical: 1,
       horizontal: 4,
-      titles: ["Starting Zone", "Podium", "Wing", "Center Line"],
+      titles: ["Starting Zone", "Podium", "Wing", "Subwoofer"],
       saveButton: "TeleopShootsFromButtons",
     },
     {

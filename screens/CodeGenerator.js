@@ -44,6 +44,7 @@ function CodeGenerator({ route }) {
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(route.params.currentTeamNumber);
+        console.log(JSON.stringify(pitData) + "deronrnrnrnr");
         const currentMatchCount = await loadMatchCount(
           route.params.currentTeamNumber
         );
@@ -77,6 +78,7 @@ function CodeGenerator({ route }) {
           setMatchCount(currentMatchCount);
           setCurrentPitData(pitData);
           setItems(loadedItems);
+          console.log(JSON.stringify(loadedItems) + "deronrnrnrnr");
           setIsClickedArray(initialIsClickedArray);
           setLoading(false);
         } else {

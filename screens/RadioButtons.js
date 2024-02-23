@@ -242,7 +242,7 @@ export const RadioButtonGrid1 = ({
                   valuesToSave = [...valuesToSave, 'Elsewhere in Wing'];
                 }
                 if (newSelectedButtons.includes(3)) {
-                  valuesToSave = [...valuesToSave, 'Near Centre Line'];
+                  valuesToSave = [...valuesToSave, 'Subwoofer'];
                 }
                 if (valuesToSave.length === 0) {
                   valuesToSave = ['None'];
@@ -254,7 +254,7 @@ export const RadioButtonGrid1 = ({
                 name={
                   selectedButtons.includes(index)
                     ? "radio-button-on"
-                    : "radio-button-off"
+                    : "radio-button-off"  
                 }
                 size={32}
                 color={"#333"}

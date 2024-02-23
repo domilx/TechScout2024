@@ -258,7 +258,7 @@ function Pits({ route }) {
       type: "radio1",
       vertical: 1,
       horizontal: 4,
-      titles: ["Starting Zone", "Podium", "Wing", "Center Line"],
+      titles: ["Starting Zone", "Podium", "Wing", "Subwoofer"],
       saveButton: "AutoExtraNotesButtons",
     },
     {
@@ -394,7 +394,7 @@ function Pits({ route }) {
                   columnTitles={item.titles}
                   label={item.label}
                   onPress={(selectedValue) =>
-                    setArrayField(item.key, selectedValue)
+                    setEnumField(item.key, selectedValue)
                   }
                   saveButtons={(selectedValue) =>
                     setField(item.saveButton, selectedValue)
