@@ -1,25 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Modal from "react-native-modal";
 import * as Haptics from "expo-haptics";
 import { useIsFocused } from "@react-navigation/native";
-import {
-  loadPitData,
-  isPitScanned,
-  savePitScanned,
-} from "../logic/PitLogic";
-import {
-  loadMatchCount,
-} from "../logic/TeamLogic";
+import { loadPitData, isPitScanned, savePitScanned } from "../logic/PitLogic";
+import { loadMatchCount } from "../logic/TeamLogic";
 import {
   loadMatchData,
   saveMatchScanned,
@@ -36,7 +24,8 @@ function CodeGenerator({ route }) {
   const [matchCount, setMatchCount] = useState(0);
   const isFocused = useIsFocused();
   const [isClickedArray, setIsClickedArray] = useState([]);
-  const Swiper = require('react-native-swiper');
+  const [state, setState] = useState(false);
+  const Swiper = require("react-native-swiper");
 
   useEffect(() => {
     setLoading(true);
@@ -44,7 +33,6 @@ function CodeGenerator({ route }) {
     const loadDataForQR = async () => {
       try {
         const pitData = await loadPitData(route.params.currentTeamNumber);
-        console.log(JSON.stringify(pitData) + "deronrnrnrnr");
         const currentMatchCount = await loadMatchCount(
           route.params.currentTeamNumber
         );
@@ -68,7 +56,7 @@ function CodeGenerator({ route }) {
             async (_, i) => {
               const matchData = await loadMatchData(
                 route.params.currentTeamNumber,
-                i 
+                i
               );
               loadedItems[`MatchData${i + 1}`] = matchData;
             }
@@ -78,7 +66,6 @@ function CodeGenerator({ route }) {
           setMatchCount(currentMatchCount);
           setCurrentPitData(pitData);
           setItems(loadedItems);
-          console.log(JSON.stringify(loadedItems) + "deronrnrnrnr");
           setIsClickedArray(initialIsClickedArray);
           setLoading(false);
         } else {
@@ -93,7 +80,7 @@ function CodeGenerator({ route }) {
     };
 
     loadDataForQR();
-  }, [route.params.currentTeamNumber, isFocused]);
+  }, [route.params.currentTeamNumber, isFocused, state, isClicked]);
 
   if (loading) {
     return <Text>LOADING ...</Text>;
@@ -150,14 +137,58 @@ function CodeGenerator({ route }) {
   );
 
   const handleMatchScanned = async (matchNumber) => {
-    try {
-      await saveMatchScanned(route.params.currentTeamNumber, matchNumber);
+    // Check if the match has already been scanned
+    if (!isClickedArray[matchNumber]) {
+      try {
+        await saveMatchScanned(
+          route.params.currentTeamNumber,
+          matchNumber,
+          true
+        );
+        setState(!state);
 
-      const updatedIsClickedArray = [...isClickedArray];
-      updatedIsClickedArray[matchNumber] = true;
-      setIsClickedArray(updatedIsClickedArray);
-    } catch (error) {
-      console.error("Error:", error);
+        const updatedIsClickedArray = [...isClickedArray];
+        updatedIsClickedArray[matchNumber] = !isClickedArray[matchNumber];
+        setIsClickedArray(updatedIsClickedArray);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    } else {
+      try {
+        // If the match has already been marked as scanned, confirm to toggle the status
+        Alert.alert(
+          "Are you sure?",
+          "You are removing the was scanned status for this match.",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: async () => {
+                // Toggle the scanned status
+                await saveMatchScanned(
+                  route.params.currentTeamNumber,
+                  matchNumber,
+                  false
+                );
+                setState(!state);
+
+                // Update the isClickedArray state
+                const updatedIsClickedArray = [...isClickedArray];
+                updatedIsClickedArray[matchNumber] =
+                  !isClickedArray[matchNumber];
+                setIsClickedArray(updatedIsClickedArray);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
 
@@ -257,7 +288,6 @@ function CodeGenerator({ route }) {
         useNativeDriver={true}
         hideModalContentWhileAnimating={true}
         style={styles.modalScreen}
-        
       >
         <View style={styles.tittleContainer}>
           <Text style={styles.tittleText}>

@@ -79,7 +79,7 @@ export const loadMatchData = async (currentTeamNumber, MatchNumber) => {
   }
 };
 
-export const saveMatchScanned = async (TeamNumber, MatchNumber) => {
+export const saveMatchScanned = async (TeamNumber, MatchNumber, state) => {
   try {
     const teamsJson = await AsyncStorage.getItem("teams");
     const teams = teamsJson ? JSON.parse(teamsJson) : [];
@@ -90,7 +90,8 @@ export const saveMatchScanned = async (TeamNumber, MatchNumber) => {
     );
 
     if (targetTeamIndex !== -1) {
-      teams[targetTeamIndex][matchDataKey].gotScanned = true;
+      teams[targetTeamIndex][matchDataKey].gotScanned = state;
+      console.log(teams[targetTeamIndex][matchDataKey]);
       await AsyncStorage.setItem("teams", JSON.stringify(teams));
     } else {
       console.log("Team not found");
