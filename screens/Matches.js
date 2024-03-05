@@ -270,7 +270,7 @@ const Matches = ({ route }) => {
   const TippinessItem = generateEnumItems(MatchModel.Tippiness);
   const SpeedItem = generateEnumItems(MatchModel.Speed);
   const AwareTypeItem = generateEnumItems(MatchModel.Awareness);
-  const EndGameTrapITem = generateEnumItems(MatchModel.TrapEndGame);
+  const EndGameTrapItem = generateEnumItems(MatchModel.Trap);
 
   const InfoData = [
     {
@@ -434,7 +434,7 @@ const Matches = ({ route }) => {
       key: "EndGameTrap",
       value: newMatchData.EndGameTrap,
       type: "dropdown",
-      droptype: EndGameTrapITem,
+      droptype: EndGameTrapItem,
     },
     {
       label: "End Game Robot Fell",
