@@ -12,6 +12,7 @@ import { savePitData } from "../logic/PitLogic";
 import {
   initialPitData,
   DriveBaseType,
+  SwerveType,
   DriveBaseMotor,
   Gravity,
   HumanPlayerSpotlight,
@@ -130,6 +131,7 @@ function Pits({ route }) {
   }
 
   const driveBaseTypeItems = generateEnumItems(DriveBaseType);
+  const SwerveTypeItems = generateEnumItems(SwerveType);
   const driveBaseMotorItems = generateEnumItems(DriveBaseMotor);
   const years = generateEnumItems(Years);
   const stabilityItems = generateEnumItems(Stability);
@@ -158,6 +160,13 @@ function Pits({ route }) {
       value: newPitData.DriveBaseType,
       type: "dropdown",
       droptype: driveBaseTypeItems,
+    },
+    {
+      label: "Swerve Type",
+      key: "SwerveType",
+      value: newPitData.SwerveType,
+      type: "dropdown",
+      droptype: SwerveTypeItems,
     },
     {
       label: "Drivebase Motor",
