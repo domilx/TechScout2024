@@ -209,7 +209,7 @@ const TeamScreen = ({ route, navigation }) => {
             </View>
           </TouchableOpacity>
         ))}
-        {teams.length === 0 ? null : <Text
+        {teams.length === 0 || teams.length >= 9 ? null : <Text
           style={{
             fontSize: 14,
             color: "#888",

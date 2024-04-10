@@ -8,6 +8,8 @@ import * as Haptics from "expo-haptics";
 import { useIsFocused } from "@react-navigation/native";
 import { loadPitData, isPitScanned, savePitScanned } from "../logic/PitLogic";
 import { loadMatchCount } from "../logic/TeamLogic";
+import { Dimensions } from 'react-native';
+
 import {
   loadMatchData,
   saveMatchScanned,
@@ -26,7 +28,8 @@ function CodeGenerator({ route }) {
   const [isClickedArray, setIsClickedArray] = useState([]);
   const [state, setState] = useState(false);
   const Swiper = require("react-native-swiper");
-
+  const screenWidth = Dimensions.get('window').width;
+  
   useEffect(() => {
     setLoading(true);
 
@@ -85,6 +88,7 @@ function CodeGenerator({ route }) {
   if (loading) {
     return <Text>LOADING ...</Text>;
   }
+  const qrCodeSize = 300 * (screenWidth / 390);
 
   const MatchItem = ({ matchData, isClicked, onWasScanned }) => (
     <View style={styles.slide}>
@@ -93,7 +97,7 @@ function CodeGenerator({ route }) {
       </Text>
       <QRCode
         value={JSON.stringify(matchData, null, 2)}
-        size={300}
+        size={qrCodeSize}
         logo={require("../assets/splash.png")}
         logoSize={75}
       />
@@ -322,7 +326,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  wrapper: {},
   slide: {
     flex: 1,
     justifyContent: "center",
