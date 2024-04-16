@@ -1,31 +1,85 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { validateNewTeam } from "./ValidationLogic";
+import GalileoJSON from "../Models/Galileo.json";
+import ArchimedesJSON from "../Models/Archimedes.json";
+import { Alert } from "react-native";
 
 export const saveTeam = async (teamNumber) => {
   try {
     const teams = await loadTeams();
 
-    if (await validateNewTeam(teamNumber, teams)) {
-      console.warn("Team already exists. Aborting.");
-      return;
+    if (teams.length === 0) {
+      if (!GalileoJSON.teams.includes(Number(teamNumber)) && !ArchimedesJSON.teams.includes(Number(teamNumber))) {
+        Alert.alert('Team is not in the either division');
+        }
+      else {
+      const numericTeamNumber = + teamNumber;
+  ''
+      const id = Date.now().toString();
+      const newTeam = { id, teamNumber: numericTeamNumber };
+  
+      teams.push(newTeam);
+      teams.sort((a, b) => a.teamNumber - b.teamNumber);
+  
+      await AsyncStorage.setItem("teams", JSON.stringify(teams));
+      }
+    } else {
+      if (await validateNewTeam(teamNumber, teams)) {
+        console.warn("Team already exists. Aborting.");
+        return;
+      }
+
+      for (const team of teams) {
+        if (GalileoJSON.teams.includes(Number(team.teamNumber))){
+          if (!GalileoJSON.teams.includes(Number(teamNumber))) {        
+            Alert.alert('New Team is not in Galileo');
+            break;
+        } else {
+          const numericTeamNumber = + teamNumber;
+          const id = Date.now().toString();
+          const newTeam = { id, teamNumber: numericTeamNumber };
+      
+          teams.push(newTeam);
+          teams.sort((a, b) => a.teamNumber - b.teamNumber);
+      
+          await AsyncStorage.setItem("teams", JSON.stringify(teams));
+          break;
+        }
+          
+      }
+        else if (ArchimedesJSON.teams.includes(Number(team.teamNumber))){
+          if (!ArchimedesJSON.teams.includes(Number(teamNumber))) {
+            Alert.alert('New Team is not in Archimedes');
+            break;
+        }
+        else {
+          const numericTeamNumber = + teamNumber;
+          const id = Date.now().toString();
+          const newTeam = { id, teamNumber: numericTeamNumber };
+      
+          teams.push(newTeam);
+          teams.sort((a, b) => a.teamNumber - b.teamNumber);
+      
+          await AsyncStorage.setItem("teams", JSON.stringify(teams));
+          break;
+        }}
+        else {
+          console.warn("Initial team is not in the JSON file. Aborting.");
+          break;
+      }
+    }      
+   
+
     }
-    const numericTeamNumber = +teamNumber;
-
-    const id = Date.now().toString();
-    const newTeam = { id, teamNumber: numericTeamNumber };
-
-    teams.push(newTeam);
-    teams.sort((a, b) => a.teamNumber - b.teamNumber);
-
-    await AsyncStorage.setItem("teams", JSON.stringify(teams));
+    
+    
   } catch (error) {
     console.error("Error saving team:", error);
     throw error;
   }
 };
 
-export const loadTeams = async () => {
-  try {
+export const loadTeams = async () => {  try {
     const teamsJSON = await AsyncStorage.getItem("teams");
     const teams = teamsJSON ? JSON.parse(teamsJSON) : [];
     teams.sort((a, b) => a.teamNumber - b.teamNumber);
