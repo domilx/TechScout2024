@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {} from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import Matches from "./Matches";
@@ -6,8 +6,7 @@ import Pits from "./Pits";
 import Icon from "react-native-vector-icons/Ionicons";
 import Icon2 from "react-native-vector-icons/AntDesign";
 import CodeGenerator from "./CodeGenerator";
-import { StatusBar, StyleSheet, Text, View } from "react-native";
-import { loadCurrentTeam, saveCurrentTeam } from "../logic/TeamLogic";
+import { StatusBar, StyleSheet } from "react-native";
 const Tab = createBottomTabNavigator();
 import { useRoute } from '@react-navigation/native';
 
@@ -52,6 +51,7 @@ function TabNavigator() {
         <Tab.Screen
           name="Matches"
           component={Matches}
+          initialParams={{currentTeamNumber: currentTeamNumber}}
           options={{
             tabBarLabel: "Matches",
             tabBarIcon: ({ color, size, focused }) => (
@@ -84,17 +84,5 @@ function TabNavigator() {
     
   );
 }
-
-style = StyleSheet.create({
-  tabNavigator: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#1E1E1E",
-    borderTopWidth: 1,
-    borderColor: "transparent", 
-    height: 90,
-  },
-});
 
 export default TabNavigator

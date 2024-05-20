@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import TabNavigator from "./TabNavigator";
 import TeamScreen from "./Teams";
@@ -8,15 +8,14 @@ import { TouchableOpacity, View, Text, Button } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import Modal from "react-native-modal";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
-const Settings = ({ onSettingsPress }) => (
-  <TouchableOpacity onPress={onSettingsPress}>
+const Help = ({ onHelpPress }) => (
+  <TouchableOpacity style={styles.help} onPress={onHelpPress}>
     <Icon
-      name={"help"}
+      name={"information-circle-outline"}
       color={"#F6EB14"}
       size={32}
-      style={{ marginRight: 12 }}
     />
   </TouchableOpacity>
 );
@@ -45,8 +44,8 @@ const StackNavigator = () => {
             },
             headerTintColor: "#F6EB14",
             headerRight: () => (
-              <Settings
-                onSettingsPress={() => {
+              <Help
+                onHelpPress={() => {
                   onSettingPressed();
                 }}
               />
@@ -55,7 +54,7 @@ const StackNavigator = () => {
         />
 
         <Stack.Screen
-          name="teamScreen"
+          name="Scouting"
           component={TabNavigator}
           initialParams={{ teamNumber: "" }}
           options={{
@@ -64,8 +63,8 @@ const StackNavigator = () => {
             },
             headerTintColor: "#F6EB14",
             headerRight: () => (
-              <Settings
-                onSettingsPress={() => {
+              <Help
+                onHelpPress={() => {
                   onSettingPressed();
                 }}
               />
@@ -80,6 +79,8 @@ const StackNavigator = () => {
         onSwipeComplete={closeModal}
         swipeDirection={["down"]}
         style={styles.modalit}
+        hideModalContentWhileAnimating={true}
+        useNativeDriver={true}
       >
         <View style={styles.content}>
           <Text style={styles.tittleText}>Help</Text>
@@ -88,6 +89,9 @@ const StackNavigator = () => {
           </Text>
           <Text style={styles.contentTitle}>
             &#x2022; Hold a team button to enter edit mode
+          </Text>
+          <Text style={styles.contentTitle}>
+            &#x2022; Dont forget to tick the "Was Scanned"
           </Text>
           <Button onPress={closeModal} title="Close" />
         </View>
@@ -119,5 +123,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 12,
+  },
+  help: {
+    width: 32,
   },
 });

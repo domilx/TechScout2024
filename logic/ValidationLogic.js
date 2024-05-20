@@ -1,18 +1,24 @@
 import { Alert } from "react-native";
 
 
-// validate if the given value is empty or not, will return a bool
-export function validateEmptyField(fieldName, fieldValue) {
+// validate given fields
+// validate if the given value is empty or not, will return a bool and an error message
+export async function validateEmptyField(fieldName, fieldValue) {
   try {
-    if (!fieldValue || fieldValue.trim() === '') {
-      throw new Error(`${fieldName} cannot be empty`);
+    // will check any type of input --> if the value is null, or of value 0
+    if (fieldValue === undefined || fieldValue === null || fieldValue === '') {
+      return { isValid: false, errorMessage: `${fieldName} cannot be empty` };
+    // for number types
+    } else if (typeof fieldValue === 'number' && fieldValue === 0) {
+      return { isValid: false, errorMessage: `${fieldName} cannot be 0` };
     }
-    return false; // Validation passed
+    return { isValid: true }; // validation passed
   } catch (validationError) {
-    Alert.alert('Missing Data', validationError.message);
-    return true; // Validation failed
+    console.error(validationError);
+    return { isValid: false, errorMessage: 'Validation error occurred' };
   }
 }
+
 
 export async function validateNewTeam(teamNumber, teamList) {
   try {

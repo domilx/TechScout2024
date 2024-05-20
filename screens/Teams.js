@@ -6,11 +6,11 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { saveTeam, loadTeams, removeTeam, editTeam } from "../logic/TeamLogic";
 import Dialog from "react-native-dialog";
-import Modal from "react-native-modal";
 import { clearTeamsStorage, clearModelsStorage } from "../logic/SettingsLogic";
 import * as Haptics from "expo-haptics";
 
@@ -31,7 +31,6 @@ const TeamScreen = ({ route, navigation }) => {
       await clearTeamsStorage();
       await reloadTeams();
       alert("Storage cleared and teams removed");
-      console.log("Teams cleared");
       setVisible1(false);
       closeModal();
     };
@@ -101,7 +100,7 @@ const TeamScreen = ({ route, navigation }) => {
   };
 
   const clearModelsButton = async () => {
-    await clearModelsStorage();
+    await clearModelsStorage(currentTeam);
     alert("Storage cleared and models removed");
   };
 
@@ -130,13 +129,13 @@ const TeamScreen = ({ route, navigation }) => {
   };
 
   const navigateToTeam = (team) => {
-    navigation.navigate("teamScreen", { teamNumber: team });
+    navigation.navigate("Scouting", { teamNumber: team });
   };
 
   const Placeholder = () => {
     return (
       <View style={styles.placeholder}>
-        <Text style={styles.boldText}>Welcome to Scout!</Text>
+        <Text style={styles.boldText}>Welcome to TechScout!</Text>
         <Text style={styles.boldText}>Add a team to get started!</Text>
       </View>
     );
@@ -190,7 +189,7 @@ const TeamScreen = ({ route, navigation }) => {
       <ScrollView>
         {teams.map((team) => (
           <TouchableOpacity
-            key={team.teamNumber} // Add a unique key for each team
+            key={team.teamNumber}
             onPress={() => navigateToTeam(team.teamNumber)}
             onLongPress={() => {
               setModalVisible(!isModalVisible);
@@ -210,19 +209,29 @@ const TeamScreen = ({ route, navigation }) => {
             </View>
           </TouchableOpacity>
         ))}
+        {teams.length === 0 || teams.length >= 9 ? null : <Text
+          style={{
+            fontSize: 14,
+            color: "#888",
+            textAlign: "center",
+            marginTop: "610" - (teams.length === 10 ? 625: (teams.length-1) * 70),
+          }}
+        >
+          Made with ❤️ by Noril and Domenico, with assistance from Tanya and
+          Raphael.
+        </Text>}
+        
       </ScrollView>
 
       <FloatingButton />
       <AddTeamDialog />
 
-      <Modal
-        animationIn="slideInDown"
-        animationOut="slideOutUp"
-        animationInTiming={300}
-        animationOutTiming={300}
-        isVisible={isModalVisible}
-        onBackdropPress={closeModal}
+    
+        <Modal
+        animationType="slide"
+        visible={isModalVisible}
         style={styles.modalScreen}
+        onRequestClose={() => {closeModal()}}
       >
         <View style={styles.tittleContainer}>
           <Text style={styles.tittleText}>Settings</Text>
@@ -296,11 +305,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
   },
-
   floatingButton: {
     position: "absolute",
     right: 20,
-    bottom: 25,
+    bottom: 50,
     backgroundColor: "#1E1E1E",
     borderRadius: 30,
     width: 60,

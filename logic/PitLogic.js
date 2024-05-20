@@ -1,74 +1,105 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-import { Vibration } from 'react-native';
-import { validateEmptyField } from './ValidationLogic';
-
-// save the pit data to Async, will verify if the input is empty
-export const savePitData = async (newPitData) => {
+import { initialPitData } from '../Models/PitModel';
+import { loadTeams } from './TeamLogic';
+export const savePitData = async (newPitData, TeamNumber) => {
   try {
+    const teamsJson = await AsyncStorage.getItem('teams');
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
 
-    // Validation for empty data points
-    if (
-      validateEmptyField('Team Name', newPitData.teamName) ||
-      validateEmptyField('Robot Length', newPitData.RobotLength) ||
-      validateEmptyField('Robot Width', newPitData.RobotWidth) ||
-      validateEmptyField('Robot Weight', newPitData.RobotWeight) ||
-      validateEmptyField('Robot Drive Type', newPitData.DriveType) ||
-      validateEmptyField('Robot Drive Motors', newPitData.DriveMotors) ||
-      validateEmptyField('Driver Experience', newPitData.DriverExperience)
-    ) {
-      return; // break the save function
-    }
-    
+    const targetTeamIndex = teams.findIndex(team => team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber);
+    if (teams[targetTeamIndex].pitData !== undefined) {
+      Alert.alert(
+        'Data Exists',
+        'Do you want to replace existing data?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Replace',
+            onPress: async () => {
+              teams[targetTeamIndex].pitData = newPitData;
 
-    try {
-      const existingPitModels = await AsyncStorage.getItem('pitModels');
-      const pitModels = existingPitModels ? JSON.parse(existingPitModels) : [];
-
-      const existingModelIndex = pitModels.findIndex(
-        (model) => model.teamNumber === newPitData.teamNumber
+              await AsyncStorage.setItem('teams', JSON.stringify(teams));
+              await savePitScanned(TeamNumber, false);
+              alert('Saved!');
+            },
+          },
+        ],
+        { cancelable: false }
       );
+    } else {
+      teams[targetTeamIndex].pitData = newPitData;
 
-      if (existingModelIndex !== -1) {
-        // if model with the same teamNumber exists
+      await AsyncStorage.setItem('teams', JSON.stringify(teams));
 
-        // Handle replacing or rejecting data 
-        Alert.alert(
-          'Data Exists',
-          'A model with the same teamNumber already exists. Do you want to replace it with the new data?',
-          [
-            {
-              text: 'Cancel',
-              style: 'cancel',
-            },
-            {
-              text: 'Replace',
-              onPress: async () => {
-                // Replace existing data with the new one
-                pitModels[existingModelIndex] = newPitData;
-                await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-                Vibration.vibrate();
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      } else {
-        // Add the new Pit Model instance to the array
-        pitModels.push(newPitData);
-        // Return the new models to AsyncStorage
-        await AsyncStorage.setItem('pitModels', JSON.stringify(pitModels));
-        alert('Data saved to AsyncStorage');
-        Vibration.vibrate();
-      }
-    } catch (error) {
-      console.error('Error saving Pit Data:', error);
+      alert('Saved!');
     }
   } catch (error) {
-    console.error('Error in the savePitData function:', error);
-    // Handle the error, you can show an alert or log it
-    Alert.alert('Error', 'An error occurred while processing the data.');
+    console.error('Error saving pit data:', error);
+    throw error;
   }
 };
 
 
+
+export const loadPitData = async (currentTeamNumber) => {
+  try {
+    const teams = await loadTeams();
+    
+    const targetTeam = teams.find(team => team.teamNumber == currentTeamNumber || team.teamNumber.toString() == currentTeamNumber);
+
+    return targetTeam ? targetTeam.pitData || initialPitData : initialPitData;
+  } catch (error) {
+    console.error('Error loading pit data:', error);
+
+    return null;
+  }
+};
+
+export const savePitScanned = async (TeamNumber, state) => {
+  try {
+    const teamsJson = await AsyncStorage.getItem("teams");
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
+    const matchDataKey = 'pitData';
+    const targetTeamIndex = teams.findIndex(
+      (team) =>
+        team.teamNumber == TeamNumber || team.teamNumber.toString() == TeamNumber
+    );
+
+    if (targetTeamIndex !== -1) {
+      teams[targetTeamIndex][matchDataKey].gotScanned = state;
+      await AsyncStorage.setItem("teams", JSON.stringify(teams));
+
+    } else {
+      console.log("Team not found");
+    }
+  } catch (error) {
+    console.error("Error saving match scanned status:", error);
+  }
+};
+
+export const isPitScanned = async (teamNumber) => {
+  try {
+    const teamsJson = await AsyncStorage.getItem("teams");
+    const teams = teamsJson ? JSON.parse(teamsJson) : [];
+    const matchDataKey = `pitData`;
+
+    const targetTeam = teams.find(
+      (team) =>
+        team.teamNumber == teamNumber || team.teamNumber.toString() == teamNumber
+    );
+
+    if (targetTeam) {
+      return !!targetTeam[matchDataKey]?.gotScanned;
+    } else {
+      console.log("Team not found");
+      return false;
+    }
+  } catch (error) {
+    console.error("Error checking if match is scanned:", error);
+    return false;
+  }
+};
